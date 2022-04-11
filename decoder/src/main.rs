@@ -1,6 +1,4 @@
 use std::io;
-use std::convert::TryFrom;
-use std::collections::HashMap;
 
 #[derive(Debug)]
 enum RadioChannel {
@@ -14,49 +12,6 @@ enum PacketType {
 	AIVDM,
 	AIVDO,
 	Unknown
-}
-
-#[derive(Debug)]
-enum NavigationStatus {
-	UnderWayUsingEngine = 0,
-	AtAnchor = 1,
-	NotUnderCommand = 2,
-	RestrictedManoeuverability = 3,
-	ConstrainedByHerDraught = 4,
-	Moored = 5,
-	Aground = 6,
-	EngagedInFishing = 7,
-	UnderWaySailing = 8,
-	ReservedForFutureAmendmentHSC = 9,
-	ReservedForFutureAmendmentWIG = 10,
-	ReservedForFutureUse = 11,
-	ReservedForFutureUse2 = 12,
-	ReservedForFutureUse3 = 13,
-	AISSARTActive = 14,
-	NotDefined = 15,
-	Other
-}
-
-fn get_navigation_status(val: u8) -> NavigationStatus {
-    match val {
-        0 => NavigationStatus::UnderWayUsingEngine,
-        1 => NavigationStatus::AtAnchor,
-        2 => NavigationStatus::NotUnderCommand,
-        3 => NavigationStatus::RestrictedManoeuverability,
-        4 => NavigationStatus::ConstrainedByHerDraught,
-        5 => NavigationStatus::Moored,
-        6 => NavigationStatus::Aground,
-        7 => NavigationStatus::EngagedInFishing,
-        8 => NavigationStatus::UnderWaySailing,
-        9 => NavigationStatus::ReservedForFutureAmendmentHSC,
-        10 => NavigationStatus::ReservedForFutureAmendmentWIG,
-        11 => NavigationStatus::ReservedForFutureUse,
-        12 => NavigationStatus::ReservedForFutureUse2,
-        13 => NavigationStatus::ReservedForFutureUse3,
-        14 => NavigationStatus::AISSARTActive,
-        15 => NavigationStatus::NotDefined,
-        _ => NavigationStatus::Other
-    }
 }
 
 #[derive(Debug)]
@@ -74,7 +29,7 @@ struct NMEAMessage {
 #[derive(Debug)]
 enum MessageData {
 	PositionReport {
-		navigation_status: NavigationStatus,
+		navigation_status: u8,
 		rate_of_turn: i8,
 		speed_over_ground: Option<f32>,
 	},
@@ -144,7 +99,7 @@ fn process_message(input: &str) -> Result<Message, NMEADecoderError> {
 
 fn get_message_position_report(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
 	let navigation_status = match get_number_from_payload(&bytestring[38..42]) {
-		Ok(n) => get_navigation_status(n as u8),
+		Ok(n) => n as u8,
 		Err(e) => return Err(e)
 	};
 
