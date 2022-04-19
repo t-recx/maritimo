@@ -90,7 +90,9 @@ fn decode_should_decode_position_report() {
     match message.data {
         MessageData::PositionReport { 
             navigation_status, rate_of_turn, speed_over_ground,
-            position_accuracy, longitude, latitude
+            position_accuracy, longitude, latitude,
+            course_over_ground, true_heading, manuever_indicator,
+            timestamp, raim_flag
         } => {
             assert_eq!(navigation_status, 5);
             assert_eq!(rate_of_turn, 0.0);
@@ -98,6 +100,11 @@ fn decode_should_decode_position_report() {
             assert_eq!(position_accuracy, false);
             assert!((-122.34584..-122.34583).contains(&longitude.unwrap()));
             assert_eq!(latitude, Some(47.5828333));
+            assert_eq!(course_over_ground, Some(51.0));
+            assert_eq!(true_heading, Some(181));
+            assert_eq!(manuever_indicator, None);
+            assert_eq!(timestamp, 15);
+            assert_eq!(raim_flag, false);
         },
         _ => panic!()
     };
@@ -115,7 +122,9 @@ fn decode_should_decode_position_report2() {
     match message.data {
         MessageData::PositionReport { 
             navigation_status, rate_of_turn, speed_over_ground,
-            position_accuracy, longitude, latitude
+            position_accuracy, longitude, latitude,
+            course_over_ground, true_heading, manuever_indicator,
+            timestamp, raim_flag
         } => {
             assert_eq!(navigation_status, 0);
             assert_eq!(rate_of_turn.round(), -720.0); 
@@ -123,6 +132,11 @@ fn decode_should_decode_position_report2() {
             assert_eq!(position_accuracy, true);
             assert_eq!(longitude, Some(-123.3953833));
             assert_eq!(latitude, Some(48.3816333));
+            assert_eq!(course_over_ground, Some(224.0));
+            assert_eq!(true_heading, Some(215));
+            assert_eq!(manuever_indicator, None);
+            assert_eq!(timestamp, 33);
+            assert_eq!(raim_flag, false);
         },
         _ => panic!()
     };
@@ -139,7 +153,9 @@ fn decode_should_decode_position_report3() {
     match message.data {
         MessageData::PositionReport { 
             navigation_status, rate_of_turn, speed_over_ground,
-            position_accuracy, longitude, latitude
+            position_accuracy, longitude, latitude,
+            course_over_ground, true_heading, manuever_indicator,
+            timestamp, raim_flag
         } => {
             assert_eq!(navigation_status, 0);
             assert!((-2.9..-2.85).contains(&rate_of_turn));
@@ -147,6 +163,11 @@ fn decode_should_decode_position_report3() {
             assert_eq!(position_accuracy, false);
             assert_eq!(longitude, Some(11.8329767));
             assert_eq!(latitude, Some(57.6603533));
+            assert_eq!(course_over_ground, Some(40.4));
+            assert_eq!(true_heading, Some(41));
+            assert_eq!(manuever_indicator, None);
+            assert_eq!(timestamp, 53);
+            assert_eq!(raim_flag, false);
         },
         _ => panic!()
     };

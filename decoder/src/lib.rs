@@ -16,7 +16,12 @@ pub enum MessageData {
 		speed_over_ground: Option<f32>,
         position_accuracy: bool,
         longitude: Option<f32>,
-        latitude: Option<f32>
+        latitude: Option<f32>,
+        course_over_ground: Option<f32>,
+        true_heading: Option<u8>,
+        timestamp: u8,
+        manuever_indicator: Option<u8>,
+        raim_flag: bool,
     },
     Other
 }
@@ -62,17 +67,17 @@ pub fn decode(input: &str, message_acc: &mut HashMap<u8, Vec<String>>)
             if let Some(payload) = data_payload {
 	            let bytestring = payload_to_bytestring(&payload);
 
-	            let message_type = match get_number_from_payload(&bytestring[0..6]) {
+	            let message_type = match get_unsigned_number(&bytestring[0..6]) {
 		            Ok(n) => n as u8,
 		            Err(e) => return Err(e)
 	            };
 
-	            let repeat_indicator = match get_number_from_payload(&bytestring[6..8]) {
+	            let repeat_indicator = match get_unsigned_number(&bytestring[6..8]) {
 		            Ok(n) => n as u8,
 		            Err(e) => return Err(e)
 	            };
 
-	            let mmsi = match get_number_from_payload(&bytestring[8..38]) {
+	            let mmsi = match get_unsigned_number(&bytestring[8..38]) {
 		            Ok(n) => n as u32,
 		            Err(e) => return Err(e)
 	            };
