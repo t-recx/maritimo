@@ -5,7 +5,7 @@ use std::collections::HashMap;
 
 mod nmea;
 mod conversions;
-mod position_report;
+mod position_report_class_a;
 mod static_voyage_data;
 pub mod error;
 
@@ -107,7 +107,7 @@ pub fn decode(input: &str, message_acc: &mut HashMap<u8, Vec<String>>)
 
 	            let data = match message_type {
 		            1..=3 => {
-			            match position_report::get(&bytestring) {
+			            match position_report_class_a::get(&bytestring) {
 				            Ok(x) => x,
 				            Err(e) => return Err(e)
 			            }
