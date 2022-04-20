@@ -6,6 +6,7 @@ use std::collections::HashMap;
 mod nmea;
 mod conversions;
 mod position_report_class_a;
+mod position_report_class_b;
 mod static_voyage_data;
 pub mod error;
 
@@ -14,7 +15,7 @@ use conversions::*;
 
 #[derive(Debug, PartialEq)]
 pub enum MessageData {
-    PositionReport {
+    PositionReportClassA {
 		navigation_status: u8,
 		rate_of_turn: f32,
 		speed_over_ground: Option<f32>,
@@ -26,6 +27,22 @@ pub enum MessageData {
         timestamp: u8,
         manuever_indicator: Option<u8>,
         raim_flag: bool,
+    },
+    PositionReportClassB {
+		speed_over_ground: Option<f32>,
+        position_accuracy: bool,
+        longitude: Option<f32>,
+        latitude: Option<f32>,
+        course_over_ground: Option<f32>,
+        true_heading: Option<u8>,
+        timestamp: u8,
+        cs_unit: bool,
+        display_flag: bool,
+        dsc_flag: bool,
+        band_flag: bool,
+        message_22_flag: bool,
+        assigned: bool,
+        raim_flag: bool
     },
     StaticAndVoyageData {
         ais_version: u8,
@@ -118,6 +135,12 @@ pub fn decode(input: &str, message_acc: &mut HashMap<u8, Vec<String>>)
 				            Err(e) => return Err(e)
 			            }
                     },
+		            18 => {
+			            match position_report_class_b::get(&bytestring) {
+				            Ok(x) => x,
+				            Err(e) => return Err(e)
+			            }
+		            },
 		            _ => MessageData::Other
 	            };
 

@@ -12,7 +12,7 @@ fn decode_when_message_size_incorrect_should_return_error() {
 }
 
 #[test]
-fn decode_should_decode_position_report() {
+fn decode_should_decode_position_report_class_a() {
     let message = decoder::decode("!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C", &mut HashMap::new()).unwrap().unwrap();
 
     assert_eq!(message.message_type, 1);
@@ -20,7 +20,7 @@ fn decode_should_decode_position_report() {
     assert_eq!(message.mmsi, 477553000);
     
     match message.data {
-        MessageData::PositionReport { 
+        MessageData::PositionReportClassA { 
             navigation_status, rate_of_turn, speed_over_ground,
             position_accuracy, longitude, latitude,
             course_over_ground, true_heading, manuever_indicator,
@@ -44,7 +44,7 @@ fn decode_should_decode_position_report() {
 
 
 #[test]
-fn decode_should_decode_position_report2() {
+fn decode_should_decode_position_report_class_a2() {
     let message = decoder::decode("!AIVDM,1,1,,A,15RTgt0PAso;90TKcjM8h6g208CQ,0*4A", &mut HashMap::new()).unwrap().unwrap();
 
     assert_eq!(message.message_type, 1);
@@ -52,7 +52,7 @@ fn decode_should_decode_position_report2() {
     assert_eq!(message.mmsi, 371798000);
     
     match message.data {
-        MessageData::PositionReport { 
+        MessageData::PositionReportClassA { 
             navigation_status, rate_of_turn, speed_over_ground,
             position_accuracy, longitude, latitude,
             course_over_ground, true_heading, manuever_indicator,
@@ -75,7 +75,7 @@ fn decode_should_decode_position_report2() {
 }
 
 #[test]
-fn decode_should_decode_position_report3() {
+fn decode_should_decode_position_report_class_a3() {
     let message = decoder::decode("!AIVDM,1,1,,A,13u?etPv2;0n:dDPwUM1U1Cb069D,0*23", &mut HashMap::new()).unwrap().unwrap();
 
     assert_eq!(message.message_type, 1);
@@ -83,7 +83,7 @@ fn decode_should_decode_position_report3() {
     assert_eq!(message.mmsi, 265547250);
     
     match message.data {
-        MessageData::PositionReport { 
+        MessageData::PositionReportClassA { 
             navigation_status, rate_of_turn, speed_over_ground,
             position_accuracy, longitude, latitude,
             course_over_ground, true_heading, manuever_indicator,

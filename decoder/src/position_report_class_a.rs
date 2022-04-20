@@ -28,7 +28,7 @@ pub fn get(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
 	};
 
 	let position_accuracy = match get_unsigned_number(&bytestring[60..61]) {
-		Ok(n) => (n as i16) == 1,
+		Ok(n) => (n as u8) == 1,
 		Err(e) => return Err(e)
 	};
 
@@ -81,11 +81,11 @@ pub fn get(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
 	};
 
 	let raim_flag = match get_unsigned_number(&bytestring[148..149]) {
-		Ok(n) => (n as i16) == 1,
+		Ok(n) => (n as u8) == 1,
 		Err(e) => return Err(e)
 	};
 
-	return Ok(MessageData::PositionReport {
+	return Ok(MessageData::PositionReportClassA {
 		navigation_status,
 		rate_of_turn,
 		speed_over_ground,
