@@ -3,6 +3,10 @@ use crate::error::*;
 use crate::conversions::*;
 
 pub fn get(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
+	if bytestring.len() < 168 {
+		return Err(NMEADecoderError { error_type: NMEADecoderErrorType::IncorrectMessageSize });
+	}
+
 	let navigation_status = match get_unsigned_number(&bytestring[38..42]) {
 		Ok(n) => n as u8,
 		Err(e) => return Err(e)

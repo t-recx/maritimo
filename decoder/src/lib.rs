@@ -1,8 +1,12 @@
+#[macro_use]
+extern crate lazy_static;
+
 use std::collections::HashMap;
 
 mod nmea;
 mod conversions;
 mod position_report;
+mod static_voyage_data;
 pub mod error;
 
 use error::*;
@@ -22,6 +26,25 @@ pub enum MessageData {
         timestamp: u8,
         manuever_indicator: Option<u8>,
         raim_flag: bool,
+    },
+    StaticAndVoyageData {
+        ais_version: u8,
+        imo_number: u32,
+        call_sign: String,
+        vessel_name: String,
+        ship_type: u8,
+        dimension_to_bow: u16,
+        dimension_to_stern: u16,
+        dimension_to_port: u8,
+        dimension_to_starboard: u8,
+        position_fix_type: u8,
+        eta_month: Option<u8>,
+        eta_day: Option<u8>,
+        eta_hour: Option<u8>,
+        eta_minute: Option<u8>,
+        draught: f32,
+        destination: String,
+        dte: Option<bool>
     },
     Other
 }
@@ -89,6 +112,12 @@ pub fn decode(input: &str, message_acc: &mut HashMap<u8, Vec<String>>)
 				            Err(e) => return Err(e)
 			            }
 		            },
+                    5 => {
+                        match static_voyage_data::get(&bytestring) {
+				            Ok(x) => x,
+				            Err(e) => return Err(e)
+			            }
+                    },
 		            _ => MessageData::Other
 	            };
 

@@ -1,5 +1,6 @@
 #[derive(Debug, Clone, PartialEq)]
 pub enum NMEADecoderErrorType {
+    IncorrectMessageSize,
     UnableToConvertNumberFromPayload,
     PreviousFragmentsNotPresentForMessageId,
     IncorrectFieldType,

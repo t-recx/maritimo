@@ -2,6 +2,14 @@ use std::collections::HashMap;
 
 extern crate decoder;
 use decoder::MessageData;
+use decoder::error::NMEADecoderErrorType;
+
+#[test]
+fn decode_when_message_size_incorrect_should_return_error() {
+    let result = decoder::decode("!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN,0*5C", &mut HashMap::new()).unwrap_err();
+
+    assert_eq!(result.error_type, NMEADecoderErrorType::IncorrectMessageSize);
+}
 
 #[test]
 fn decode_should_decode_position_report() {
