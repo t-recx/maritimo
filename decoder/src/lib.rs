@@ -7,6 +7,7 @@ mod nmea;
 mod conversions;
 mod position_report_class_a;
 mod position_report_class_b;
+mod extended_position_report_class_b;
 mod static_voyage_data;
 mod static_data_report;
 pub mod error;
@@ -44,6 +45,25 @@ pub enum MessageData {
         message_22_flag: bool,
         assigned: bool,
         raim_flag: bool
+    },
+    ExtendedPositionReportClassB {
+		speed_over_ground: Option<f32>,
+        position_accuracy: bool,
+        longitude: Option<f32>,
+        latitude: Option<f32>,
+        course_over_ground: Option<f32>,
+        true_heading: Option<u8>,
+        timestamp: u8,
+        vessel_name: String,
+        ship_type: u8,
+        dimension_to_bow: u16,
+        dimension_to_stern: u16,
+        dimension_to_port: u8,
+        dimension_to_starboard: u8,
+        position_fix_type: u8,
+        raim_flag: bool,
+        dte: bool,
+        assigned: bool
     },
     StaticAndVoyageData {
         ais_version: u8,
@@ -156,6 +176,12 @@ pub fn decode(input: &str, message_acc: &mut HashMap<u8, Vec<String>>)
                     },
 		            18 => {
 			            match position_report_class_b::get(&bytestring) {
+				            Ok(x) => x,
+				            Err(e) => return Err(e)
+			            }
+		            },
+		            19 => {
+			            match extended_position_report_class_b::get(&bytestring) {
 				            Ok(x) => x,
 				            Err(e) => return Err(e)
 			            }
