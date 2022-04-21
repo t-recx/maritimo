@@ -42,7 +42,6 @@ fn decode_should_decode_position_report_class_a() {
     };
 }
 
-
 #[test]
 fn decode_should_decode_position_report_class_a2() {
     let message = decoder::decode("!AIVDM,1,1,,A,15RTgt0PAso;90TKcjM8h6g208CQ,0*4A", &mut HashMap::new()).unwrap().unwrap();

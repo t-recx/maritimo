@@ -8,6 +8,7 @@ mod conversions;
 mod position_report_class_a;
 mod position_report_class_b;
 mod static_voyage_data;
+mod static_data_report;
 pub mod error;
 
 use error::*;
@@ -62,6 +63,24 @@ pub enum MessageData {
         draught: f32,
         destination: String,
         dte: Option<bool>
+    },
+    StaticDataReportPartA {
+        vessel_name: String,
+    },
+    StaticDataReportPartBDimensions {
+        ship_type: u8,
+        vendor_id: String,
+        call_sign: String,
+        dimension_to_bow: u16,
+        dimension_to_stern: u16,
+        dimension_to_port: u8,
+        dimension_to_starboard: u8,
+    },
+    StaticDataReportPartBAuxiliaryCraft {
+        ship_type: u8,
+        vendor_id: String,
+        call_sign: String,
+        mothership_mmsi: u32,
     },
     Other
 }
@@ -137,6 +156,12 @@ pub fn decode(input: &str, message_acc: &mut HashMap<u8, Vec<String>>)
                     },
 		            18 => {
 			            match position_report_class_b::get(&bytestring) {
+				            Ok(x) => x,
+				            Err(e) => return Err(e)
+			            }
+		            },
+		            24 => {
+			            match static_data_report::get(mmsi, &bytestring) {
 				            Ok(x) => x,
 				            Err(e) => return Err(e)
 			            }
