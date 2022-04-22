@@ -5,6 +5,7 @@ use std::collections::HashMap;
 
 mod nmea;
 mod conversions;
+mod base_station_report;
 mod position_report_class_a;
 mod position_report_class_b;
 mod extended_position_report_class_b;
@@ -102,6 +103,19 @@ pub enum MessageData {
         call_sign: String,
         mothership_mmsi: u32,
     },
+    BaseStationReport {
+        utc_year: Option<u16>,
+        utc_month: Option<u8>,
+        utc_day: Option<u8>,
+        utc_hour: Option<u8>,
+        utc_minute: Option<u8>,
+        utc_second: Option<u8>,
+        position_accuracy: bool,
+        longitude: Option<f32>,
+        latitude: Option<f32>,
+        position_fix_type: u8,
+        raim_flag: bool,
+    },
     Other
 }
 
@@ -168,6 +182,12 @@ pub fn decode(input: &str, message_acc: &mut HashMap<u8, Vec<String>>)
 				            Err(e) => return Err(e)
 			            }
 		            },
+                    4 => {
+                        match base_station_report::get(&bytestring) {
+				            Ok(x) => x,
+				            Err(e) => return Err(e)
+			            }
+                    }
                     5 => {
                         match static_voyage_data::get(&bytestring) {
 				            Ok(x) => x,
