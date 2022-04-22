@@ -3,6 +3,7 @@ extern crate lazy_static;
 
 use std::collections::HashMap;
 
+mod aid_to_navigation_report;
 mod base_station_report;
 mod conversions;
 pub mod error;
@@ -116,6 +117,22 @@ pub enum MessageData {
         position_fix_type: u8,
         raim_flag: bool,
     },
+    AidToNavigationReport {
+        aid_type: Option<u8>,
+        name: String,
+        position_accuracy: bool,
+        longitude: Option<f32>,
+        latitude: Option<f32>,
+        dimension_to_bow: u16,
+        dimension_to_stern: u16,
+        dimension_to_port: u8,
+        dimension_to_starboard: u8,
+        timestamp: u8,
+        raim_flag: bool,
+        off_position: bool,
+        virtual_aid_flag: bool,
+        assigned: bool,
+    },
     Other,
 }
 
@@ -201,6 +218,10 @@ pub fn decode(
                         Err(e) => return Err(e),
                     },
                     19 => match extended_position_report_class_b::get(&bytestring) {
+                        Ok(x) => x,
+                        Err(e) => return Err(e),
+                    },
+                    21 => match aid_to_navigation_report::get(&bytestring) {
                         Ok(x) => x,
                         Err(e) => return Err(e),
                     },
