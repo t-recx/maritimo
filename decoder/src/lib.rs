@@ -8,6 +8,7 @@ mod base_station_report;
 mod conversions;
 pub mod error;
 mod extended_position_report_class_b;
+mod long_range_broadcast;
 mod nmea;
 mod position_report_class_a;
 mod position_report_class_b;
@@ -133,6 +134,16 @@ pub enum MessageData {
         virtual_aid_flag: bool,
         assigned: bool,
     },
+    LongRangeBroadcast {
+        position_accuracy: bool,
+        raim_flag: bool,
+        navigation_status: u8,
+        longitude: Option<f32>,
+        latitude: Option<f32>,
+        speed_over_ground: Option<f32>,
+        course_over_ground: Option<f32>,
+        gnss_position_status: bool,
+    },
     Other,
 }
 
@@ -226,6 +237,10 @@ pub fn decode(
                         Err(e) => return Err(e),
                     },
                     24 => match static_data_report::get(mmsi, &bytestring) {
+                        Ok(x) => x,
+                        Err(e) => return Err(e),
+                    },
+                    27 => match long_range_broadcast::get(&bytestring) {
                         Ok(x) => x,
                         Err(e) => return Err(e),
                     },

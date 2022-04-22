@@ -51,6 +51,12 @@ pub fn get(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
         Err(e) => return Err(e),
     };
 
+    let course_over_ground = if course_over_ground == 3600 {
+        None
+    } else {
+        Some(course_over_ground as f32 / 10.0)
+    };
+
     let true_heading = match get_unsigned_number(&bytestring[124..133]) {
         Ok(n) => match n {
             511 => None,
@@ -104,11 +110,7 @@ pub fn get(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
         position_accuracy,
         longitude,
         latitude,
-        course_over_ground: if course_over_ground == 3600 {
-            None
-        } else {
-            Some(course_over_ground as f32 / 10.0)
-        },
+        course_over_ground,
         true_heading,
         timestamp,
         cs_unit,
