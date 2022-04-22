@@ -1,25 +1,39 @@
 use std::collections::HashMap;
 
 extern crate decoder;
-use decoder::MessageData;
 use decoder::error::NMEADecoderErrorType;
+use decoder::MessageData;
 
 #[test]
 fn decode_when_message_size_incorrect_should_return_error() {
     let mut acc = HashMap::new();
 
-    decoder::decode("!AIVDM,2,1,0,A,58wt8Ui`g??r21`7S=:22058<v05Htp000000015>8OA;0sk,0*7B", &mut acc).unwrap();
-    let result = decoder::decode("!AIVDM,2,2,0,A,eQ8823mDm3kP000000000,2*5D", &mut acc).unwrap_err();
+    decoder::decode(
+        "!AIVDM,2,1,0,A,58wt8Ui`g??r21`7S=:22058<v05Htp000000015>8OA;0sk,0*7B",
+        &mut acc,
+    )
+    .unwrap();
+    let result =
+        decoder::decode("!AIVDM,2,2,0,A,eQ8823mDm3kP000000000,2*5D", &mut acc).unwrap_err();
 
-    assert_eq!(result.error_type, NMEADecoderErrorType::IncorrectMessageSize);
+    assert_eq!(
+        result.error_type,
+        NMEADecoderErrorType::IncorrectMessageSize
+    );
 }
 
 #[test]
 fn decode_should_decode_static_and_voyage_data() {
     let mut acc = HashMap::new();
 
-    decoder::decode("!AIVDM,2,1,0,A,58wt8Ui`g??r21`7S=:22058<v05Htp000000015>8OA;0sk,0*7B", &mut acc).unwrap();
-    let message = decoder::decode("!AIVDM,2,2,0,A,eQ8823mDm3kP00000000000,2*5D", &mut acc).unwrap().unwrap();
+    decoder::decode(
+        "!AIVDM,2,1,0,A,58wt8Ui`g??r21`7S=:22058<v05Htp000000015>8OA;0sk,0*7B",
+        &mut acc,
+    )
+    .unwrap();
+    let message = decoder::decode("!AIVDM,2,2,0,A,eQ8823mDm3kP00000000000,2*5D", &mut acc)
+        .unwrap()
+        .unwrap();
 
     assert_eq!(message.message_type, 5);
     assert_eq!(message.repeat_indicator, 0);
@@ -27,12 +41,23 @@ fn decode_should_decode_static_and_voyage_data() {
 
     match message.data {
         MessageData::StaticAndVoyageData {
-            ais_version, imo_number, call_sign,
-            vessel_name, ship_type, dimension_to_bow,
-            dimension_to_stern, dimension_to_port,
-            dimension_to_starboard, position_fix_type,
-            eta_month, eta_day, eta_hour, eta_minute,
-            draught, destination, dte
+            ais_version,
+            imo_number,
+            call_sign,
+            vessel_name,
+            ship_type,
+            dimension_to_bow,
+            dimension_to_stern,
+            dimension_to_port,
+            dimension_to_starboard,
+            position_fix_type,
+            eta_month,
+            eta_day,
+            eta_hour,
+            eta_minute,
+            draught,
+            destination,
+            dte,
         } => {
             assert_eq!(ais_version, 0);
             assert_eq!(imo_number, 439303422);
@@ -51,8 +76,8 @@ fn decode_should_decode_static_and_voyage_data() {
             assert_eq!(draught, 13.2);
             assert_eq!(destination, "HOUSTON");
             assert_eq!(dte, Some(false));
-        },
-        _ => panic!()
+        }
+        _ => panic!(),
     };
 }
 
@@ -60,8 +85,14 @@ fn decode_should_decode_static_and_voyage_data() {
 fn decode_should_decode_static_and_voyage_data2() {
     let mut acc = HashMap::new();
 
-    decoder::decode("!AIVDM,2,1,3,B,55P5TL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E", &mut acc).unwrap();
-    let message = decoder::decode("!AIVDM,2,2,3,B,1@0000000000000,2*55", &mut acc).unwrap().unwrap();
+    decoder::decode(
+        "!AIVDM,2,1,3,B,55P5TL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        &mut acc,
+    )
+    .unwrap();
+    let message = decoder::decode("!AIVDM,2,2,3,B,1@0000000000000,2*55", &mut acc)
+        .unwrap()
+        .unwrap();
 
     assert_eq!(message.message_type, 5);
     assert_eq!(message.repeat_indicator, 0);
@@ -69,12 +100,23 @@ fn decode_should_decode_static_and_voyage_data2() {
 
     match message.data {
         MessageData::StaticAndVoyageData {
-            ais_version, imo_number, call_sign,
-            vessel_name, ship_type, dimension_to_bow,
-            dimension_to_stern, dimension_to_port,
-            dimension_to_starboard, position_fix_type,
-            eta_month, eta_day, eta_hour, eta_minute,
-            draught, destination, dte
+            ais_version,
+            imo_number,
+            call_sign,
+            vessel_name,
+            ship_type,
+            dimension_to_bow,
+            dimension_to_stern,
+            dimension_to_port,
+            dimension_to_starboard,
+            position_fix_type,
+            eta_month,
+            eta_day,
+            eta_hour,
+            eta_minute,
+            draught,
+            destination,
+            dte,
         } => {
             assert_eq!(ais_version, 0);
             assert_eq!(imo_number, 6710932);
@@ -93,8 +135,8 @@ fn decode_should_decode_static_and_voyage_data2() {
             assert_eq!(draught, 6.0);
             assert_eq!(destination, "SEATTLE");
             assert_eq!(dte, Some(false));
-        },
-        _ => panic!()
+        }
+        _ => panic!(),
     };
 }
 
@@ -102,8 +144,14 @@ fn decode_should_decode_static_and_voyage_data2() {
 fn decode_when_message_is_slightly_truncated_should_still_decode_gracefully() {
     let mut acc = HashMap::new();
 
-    decoder::decode("!AIVDM,2,1,0,A,58wt8Ui`g??r21`7S=:22058<v05Htp000000015>8OA;0sk,0*7B", &mut acc).unwrap();
-    let message = decoder::decode("!AIVDM,2,2,0,A,eQ8823mDm3kP0000000000,2*5D", &mut acc).unwrap().unwrap();
+    decoder::decode(
+        "!AIVDM,2,1,0,A,58wt8Ui`g??r21`7S=:22058<v05Htp000000015>8OA;0sk,0*7B",
+        &mut acc,
+    )
+    .unwrap();
+    let message = decoder::decode("!AIVDM,2,2,0,A,eQ8823mDm3kP0000000000,2*5D", &mut acc)
+        .unwrap()
+        .unwrap();
 
     assert_eq!(message.message_type, 5);
     assert_eq!(message.repeat_indicator, 0);
@@ -111,12 +159,23 @@ fn decode_when_message_is_slightly_truncated_should_still_decode_gracefully() {
 
     match message.data {
         MessageData::StaticAndVoyageData {
-            ais_version, imo_number, call_sign,
-            vessel_name, ship_type, dimension_to_bow,
-            dimension_to_stern, dimension_to_port,
-            dimension_to_starboard, position_fix_type,
-            eta_month, eta_day, eta_hour, eta_minute,
-            draught, destination, dte
+            ais_version,
+            imo_number,
+            call_sign,
+            vessel_name,
+            ship_type,
+            dimension_to_bow,
+            dimension_to_stern,
+            dimension_to_port,
+            dimension_to_starboard,
+            position_fix_type,
+            eta_month,
+            eta_day,
+            eta_hour,
+            eta_minute,
+            draught,
+            destination,
+            dte,
         } => {
             assert_eq!(ais_version, 0);
             assert_eq!(imo_number, 439303422);
@@ -135,7 +194,7 @@ fn decode_when_message_is_slightly_truncated_should_still_decode_gracefully() {
             assert_eq!(draught, 13.2);
             assert_eq!(destination, "HOUSTON");
             assert_eq!(dte, None);
-        },
-        _ => panic!()
+        }
+        _ => panic!(),
     };
 }

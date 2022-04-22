@@ -1,10 +1,10 @@
-use std::str;
 use std::collections::HashMap;
+use std::str;
 
 use crate::error::*;
 
 lazy_static! {
-    static ref SIXBIT_ASCII: HashMap<&'static str, &'static str> = { 
+    static ref SIXBIT_ASCII: HashMap<&'static str, &'static str> = {
         return HashMap::from([
             ("000000", "@"),
             ("010000", "P"),
@@ -75,10 +75,12 @@ lazy_static! {
 }
 
 pub fn get_unsigned_number(payload: &str) -> Result<usize, NMEADecoderError> {
-	return match usize::from_str_radix(payload, 2) {
-		Ok(n) => Ok(n),
-		Err(_e) => Err(NMEADecoderError { error_type: NMEADecoderErrorType::UnableToConvertNumberFromPayload })
-	};
+    return match usize::from_str_radix(payload, 2) {
+        Ok(n) => Ok(n),
+        Err(_e) => Err(NMEADecoderError {
+            error_type: NMEADecoderErrorType::UnableToConvertNumberFromPayload,
+        }),
+    };
 }
 
 pub fn get_signed_number(payload: &str) -> Result<isize, NMEADecoderError> {
@@ -89,23 +91,27 @@ pub fn get_signed_number(payload: &str) -> Result<isize, NMEADecoderError> {
             if sign_bit == 0 {
                 match get_unsigned_number(value_bits) {
                     Ok(n) => return Ok(n as isize),
-                    Err(e) => return Err(e)
+                    Err(e) => return Err(e),
                 }
             } else {
-                let value_bits = &value_bits.replace("0", " ").replace("1", "0").replace(" ", "1");
+                let value_bits = &value_bits
+                    .replace("0", " ")
+                    .replace("1", "0")
+                    .replace(" ", "1");
 
                 match get_unsigned_number(value_bits) {
                     Ok(n) => return Ok(-1 - n as isize),
-                    Err(e) => return Err(e)
+                    Err(e) => return Err(e),
                 }
             }
-        },
-        Err(e) => return Err(e)
+        }
+        Err(e) => return Err(e),
     };
 }
 
 pub fn get_string(payload: &str) -> String {
-    return payload.as_bytes()
+    return payload
+        .as_bytes()
         .chunks(6)
         .map(str::from_utf8)
         .map(|s| SIXBIT_ASCII.get(&s.unwrap_or("")).unwrap_or(&""))
@@ -120,9 +126,10 @@ pub fn get_string(payload: &str) -> String {
 }
 
 pub fn payload_to_bytestring(payload: &str) -> String {
-	return payload.bytes()
+    return payload
+        .bytes()
         .map(|n| n - 48)
         .map(|n| if n > 40 { n - 8 } else { n })
         .map(|n| format!("{:06b}", n))
-		.collect();
+        .collect();
 }

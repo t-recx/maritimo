@@ -1,32 +1,55 @@
 use std::collections::HashMap;
 
 extern crate decoder;
-use decoder::MessageData;
 use decoder::error::NMEADecoderErrorType;
+use decoder::MessageData;
 
 #[test]
 fn decode_when_message_size_incorrect_should_return_error() {
-    let result = decoder::decode("!AIVDM,1,1,,B,C5N3SRgPEnJGEBT>NhWAwwo862PaLELTBJ:V00000000S0D:R22,0*0B", &mut HashMap::new()).unwrap_err();
+    let result = decoder::decode(
+        "!AIVDM,1,1,,B,C5N3SRgPEnJGEBT>NhWAwwo862PaLELTBJ:V00000000S0D:R22,0*0B",
+        &mut HashMap::new(),
+    )
+    .unwrap_err();
 
-    assert_eq!(result.error_type, NMEADecoderErrorType::IncorrectMessageSize);
+    assert_eq!(
+        result.error_type,
+        NMEADecoderErrorType::IncorrectMessageSize
+    );
 }
 
 #[test]
 fn decode_should_decode_extended_position_report_class_b() {
-    let message = decoder::decode("!AIVDM,1,1,,B,C5N3SRgPEnJGEBT>NhWAwwo862PaLELTBJ:V00000000S0D:R220,0*0B", &mut HashMap::new()).unwrap().unwrap();
+    let message = decoder::decode(
+        "!AIVDM,1,1,,B,C5N3SRgPEnJGEBT>NhWAwwo862PaLELTBJ:V00000000S0D:R220,0*0B",
+        &mut HashMap::new(),
+    )
+    .unwrap()
+    .unwrap();
 
     assert_eq!(message.message_type, 19);
     assert_eq!(message.repeat_indicator, 0);
     assert_eq!(message.mmsi, 367059850);
-    
+
     match message.data {
-        MessageData::ExtendedPositionReportClassB { 
-		    speed_over_ground, position_accuracy, longitude,
-            latitude, course_over_ground, true_heading,
-		    timestamp, vessel_name, ship_type,
-            dimension_to_bow, dimension_to_stern,
-            dimension_to_port, dimension_to_starboard,
-            position_fix_type, raim_flag, dte, assigned
+        MessageData::ExtendedPositionReportClassB {
+            speed_over_ground,
+            position_accuracy,
+            longitude,
+            latitude,
+            course_over_ground,
+            true_heading,
+            timestamp,
+            vessel_name,
+            ship_type,
+            dimension_to_bow,
+            dimension_to_stern,
+            dimension_to_port,
+            dimension_to_starboard,
+            position_fix_type,
+            raim_flag,
+            dte,
+            assigned,
         } => {
             assert_eq!(speed_over_ground, Some(8.7));
             assert_eq!(position_accuracy, false);
@@ -45,7 +68,7 @@ fn decode_should_decode_extended_position_report_class_b() {
             assert_eq!(raim_flag, false);
             assert_eq!(dte, false);
             assert_eq!(assigned, false);
-        },
-        _ => panic!()
+        }
+        _ => panic!(),
     };
 }

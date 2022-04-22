@@ -7,10 +7,10 @@ pub enum NMEADecoderErrorType {
     IncorrectFieldType,
     MissingFields,
     CheckSumNotPresent,
-    Other
+    Other,
 }
 
 #[derive(Debug, Clone)]
 pub struct NMEADecoderError {
-    pub error_type: NMEADecoderErrorType
+    pub error_type: NMEADecoderErrorType,
 }
