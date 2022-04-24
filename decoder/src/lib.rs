@@ -3,19 +3,13 @@ extern crate lazy_static;
 
 use std::collections::HashMap;
 
-mod aid_to_navigation_report;
-mod base_station_report;
 mod conversions;
+mod decoders;
 pub mod error;
-mod extended_position_report_class_b;
-mod long_range_broadcast;
 mod nmea;
-mod position_report_class_a;
-mod position_report_class_b;
-mod static_data_report;
-mod static_voyage_data;
 
 use conversions::*;
+use decoders::*;
 use error::*;
 
 #[derive(Debug, PartialEq)]
