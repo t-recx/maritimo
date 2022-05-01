@@ -1,8 +1,8 @@
 #[macro_use]
 extern crate lazy_static;
 
+use serde::Serialize;
 use std::collections::HashMap;
-use serde::{Serialize};
 
 mod conversions;
 mod decoders;
