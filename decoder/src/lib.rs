@@ -2,6 +2,7 @@
 extern crate lazy_static;
 
 use std::collections::HashMap;
+use serde::{Serialize};
 
 mod conversions;
 mod decoders;
@@ -12,7 +13,7 @@ use conversions::*;
 use decoders::*;
 use error::*;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Serialize, PartialEq)]
 pub enum MessageData {
     PositionReportClassA {
         navigation_status: u8,
@@ -141,7 +142,7 @@ pub enum MessageData {
     Other,
 }
 
-#[derive(Debug)]
+#[derive(Serialize, Debug)]
 pub struct Message {
     pub message_type: u8,
     pub repeat_indicator: u8,

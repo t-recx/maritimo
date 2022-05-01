@@ -13,7 +13,14 @@ fn main() {
             if let Ok(message) = line {
                 match decoder::decode(&message, &mut acc) {
                     Ok(opt) => match opt {
-                        Some(value) => println!("{:?}", value),
+                        Some(value) => {
+							println!("{:?}", value);
+
+							match serde_json::to_string(&value) {
+								Ok(json) => println!("{:?}", json),
+								Err(e) => println!("{:?}", e),
+							}
+						} 
                         _ => (),
                     },
                     Err(e) => println!("{:?}", e),
