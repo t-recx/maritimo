@@ -24,9 +24,9 @@ pub fn get(mmsi: u32, bytestring: &str) -> Result<MessageData, NMEADecoderError>
 }
 
 fn get_part_a(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
-    let vessel_name = get_string(&bytestring[40..160]);
+    let name = get_string(&bytestring[40..160]);
 
-    return Ok(MessageData::StaticDataReportPartA { vessel_name });
+    return Ok(MessageData::StaticDataReportPartA { name });
 }
 
 fn get_part_b(mmsi: u32, bytestring: &str) -> Result<MessageData, NMEADecoderError> {

@@ -70,7 +70,7 @@ pub fn get(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
         Err(e) => return Err(e),
     };
 
-    let vessel_name = get_string(&bytestring[143..263]);
+    let name = get_string(&bytestring[143..263]);
 
     let ship_type = match get_unsigned_number(&bytestring[263..271]) {
         Ok(n) => match n {
@@ -128,7 +128,7 @@ pub fn get(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
         course_over_ground,
         true_heading,
         timestamp,
-        vessel_name,
+        name,
         ship_type,
         dimension_to_bow,
         dimension_to_stern,

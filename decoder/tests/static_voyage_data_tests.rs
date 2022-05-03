@@ -44,7 +44,7 @@ fn decode_should_decode_static_and_voyage_data() {
             ais_version,
             imo_number,
             call_sign,
-            vessel_name,
+            name,
             ship_type,
             dimension_to_bow,
             dimension_to_stern,
@@ -62,7 +62,7 @@ fn decode_should_decode_static_and_voyage_data() {
             assert_eq!(ais_version, 0);
             assert_eq!(imo_number, 439303422);
             assert_eq!(call_sign, "ZA83R");
-            assert_eq!(vessel_name, "ARCO AVON");
+            assert_eq!(name, "ARCO AVON");
             assert_eq!(ship_type, 69);
             assert_eq!(dimension_to_bow, 113);
             assert_eq!(dimension_to_stern, 31);
@@ -103,7 +103,7 @@ fn decode_should_decode_static_and_voyage_data2() {
             ais_version,
             imo_number,
             call_sign,
-            vessel_name,
+            name,
             ship_type,
             dimension_to_bow,
             dimension_to_stern,
@@ -121,7 +121,7 @@ fn decode_should_decode_static_and_voyage_data2() {
             assert_eq!(ais_version, 0);
             assert_eq!(imo_number, 6710932);
             assert_eq!(call_sign, "WDA9674");
-            assert_eq!(vessel_name, "MT.MITCHELL");
+            assert_eq!(name, "MT.MITCHELL");
             assert_eq!(ship_type, 99);
             assert_eq!(dimension_to_bow, 90);
             assert_eq!(dimension_to_stern, 90);
@@ -162,7 +162,7 @@ fn decode_when_message_is_slightly_truncated_should_still_decode_gracefully() {
             ais_version,
             imo_number,
             call_sign,
-            vessel_name,
+            name,
             ship_type,
             dimension_to_bow,
             dimension_to_stern,
@@ -180,7 +180,7 @@ fn decode_when_message_is_slightly_truncated_should_still_decode_gracefully() {
             assert_eq!(ais_version, 0);
             assert_eq!(imo_number, 439303422);
             assert_eq!(call_sign, "ZA83R");
-            assert_eq!(vessel_name, "ARCO AVON");
+            assert_eq!(name, "ARCO AVON");
             assert_eq!(ship_type, 69);
             assert_eq!(dimension_to_bow, 113);
             assert_eq!(dimension_to_stern, 31);

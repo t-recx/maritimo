@@ -40,7 +40,7 @@ fn decode_should_decode_extended_position_report_class_b() {
             course_over_ground,
             true_heading,
             timestamp,
-            vessel_name,
+            name,
             ship_type,
             dimension_to_bow,
             dimension_to_stern,
@@ -58,7 +58,7 @@ fn decode_should_decode_extended_position_report_class_b() {
             assert_eq!(course_over_ground, Some(335.9));
             assert_eq!(true_heading, None);
             assert_eq!(timestamp, 46);
-            assert_eq!(vessel_name, "CAPT.J.RIMES");
+            assert_eq!(name, "CAPT.J.RIMES");
             assert_eq!(ship_type, 70);
             assert_eq!(dimension_to_bow, 5);
             assert_eq!(dimension_to_stern, 21);

@@ -46,8 +46,8 @@ fn decode_should_decode_static_data_report_part_a() {
     assert_eq!(message.mmsi, 271041815);
 
     match message.data {
-        MessageData::StaticDataReportPartA { vessel_name } => {
-            assert_eq!(vessel_name, "PROGUY");
+        MessageData::StaticDataReportPartA { name } => {
+            assert_eq!(name, "PROGUY");
         }
         _ => panic!(),
     };

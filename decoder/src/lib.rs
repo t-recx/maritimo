@@ -14,6 +14,7 @@ use decoders::*;
 use error::*;
 
 #[derive(Debug, Serialize, PartialEq)]
+#[serde(untagged)]
 pub enum MessageData {
     PositionReportClassA {
         navigation_status: u8,
@@ -52,7 +53,7 @@ pub enum MessageData {
         course_over_ground: Option<f32>,
         true_heading: Option<u8>,
         timestamp: u8,
-        vessel_name: String,
+        name: String,
         ship_type: u8,
         dimension_to_bow: u16,
         dimension_to_stern: u16,
@@ -67,7 +68,7 @@ pub enum MessageData {
         ais_version: u8,
         imo_number: u32,
         call_sign: String,
-        vessel_name: String,
+        name: String,
         ship_type: u8,
         dimension_to_bow: u16,
         dimension_to_stern: u16,
@@ -83,7 +84,7 @@ pub enum MessageData {
         dte: Option<bool>,
     },
     StaticDataReportPartA {
-        vessel_name: String,
+        name: String,
     },
     StaticDataReportPartBDimensions {
         ship_type: u8,
@@ -147,6 +148,7 @@ pub struct Message {
     pub message_type: u8,
     pub repeat_indicator: u8,
     pub mmsi: u32,
+    #[serde(flatten)]
     pub data: MessageData,
 }
 
