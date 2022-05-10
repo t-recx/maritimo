@@ -12,11 +12,12 @@ public class ReceiverModule : NinjectModule
     public override void Load()
     {
         Kernel.Bind<IEventingBasicConsumerFactory>().To<ConsumerFactory>();
-        Kernel.Bind<IReceiver>().To<Receiver>().WithConstructorArgument("exchangeName", exchangeName);;
+        Kernel.Bind<IReceiver>().To<Receiver>().WithConstructorArgument("exchangeName", exchangeName); ;
         Kernel.Bind<IConnectionFactory>().To<ConnectionFactory>().WithConstructorArgument("HostName", hostName);
     }
 
-    public ReceiverModule(string exchangeName, string hostName) {
+    public ReceiverModule(string exchangeName, string hostName)
+    {
         this.exchangeName = exchangeName;
         this.hostName = hostName;
     }

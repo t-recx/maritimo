@@ -40,19 +40,22 @@ public class Receiver : IReceiver
 
             consumer.Received += (model, ea) =>
             {
-                try {
+                try
+                {
                     var jsonString = Encoding.UTF8.GetString(ea.Body.ToArray());
 
-                    DecodedMessage? message = 
+                    DecodedMessage? message =
                         JsonSerializer.Deserialize<DecodedMessage>(jsonString);
 
                     logger.LogDebug("Received: {jsonString}", jsonString);
 
-                    if (message != null) {
+                    if (message != null)
+                    {
                         Received?.Invoke(this, message!);
                     }
                 }
-                catch(Exception exception) {
+                catch (Exception exception)
+                {
                     logger.LogError(exception, "");
                 }
             };

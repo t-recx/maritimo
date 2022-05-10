@@ -14,7 +14,8 @@ public class MaritimoTestContextWithException : IMaritimoContext
 
     public DatabaseFacade Database => throw exception;
 
-    public MaritimoTestContextWithException(Exception exception) {
+    public MaritimoTestContextWithException(Exception exception)
+    {
         this.exception = exception;
     }
 

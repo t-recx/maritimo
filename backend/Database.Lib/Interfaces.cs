@@ -11,10 +11,11 @@ public interface IDatabaseService
     Result<DTOObjectData> Save(DTOObjectData dto);
 }
 
-public interface IMaritimoContext : IDisposable {
+public interface IMaritimoContext : IDisposable
+{
     DbSet<Message> Messages { get; }
     DbSet<ObjectData> Objects { get; }
-    
+
     int SaveChanges();
     DatabaseFacade Database { get; }
 }

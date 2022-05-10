@@ -9,7 +9,7 @@ public class MaritimoTestContext : DbContext, IMaritimoContext
     public DbSet<ObjectData> Objects => Set<ObjectData>();
 
     public MaritimoTestContext(DbContextOptions<MaritimoTestContext> options)
-        :base(options)
+        : base(options)
     {
     }
 }

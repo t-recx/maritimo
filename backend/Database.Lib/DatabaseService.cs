@@ -29,7 +29,8 @@ public class DatabaseService : IDatabaseService
         {
             var query = context.Objects.AsQueryable();
 
-            if (timespan != null) {
+            if (timespan != null)
+            {
                 var startDate = DateTime.UtcNow - timespan;
 
                 query = query

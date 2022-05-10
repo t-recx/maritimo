@@ -8,7 +8,7 @@ public class MaritimoTestContextFactory : IMaritimoContextFactory
 {
     private readonly DbContextOptions<MaritimoTestContext> options;
 
-    public Exception? Exception { get; set;}
+    public Exception? Exception { get; set; }
 
     public MaritimoTestContextFactory(DbContextOptions<MaritimoTestContext> options)
     {
@@ -17,10 +17,12 @@ public class MaritimoTestContextFactory : IMaritimoContextFactory
 
     public IMaritimoContext Get()
     {
-        if (Exception != null) {
+        if (Exception != null)
+        {
             return new MaritimoTestContextWithException(Exception);
         }
-        else {
+        else
+        {
             return new MaritimoTestContext(options);
         }
     }

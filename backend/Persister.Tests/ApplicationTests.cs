@@ -38,8 +38,8 @@ public class Tests
 
         Send(new DecodedMessage() { mmsi = 1, message_type = 22, navigation_status = 5 });
 
-        databaseServiceMock.Verify(x => 
-            x.Insert(It.Is<DTOMessage>(dto => 
+        databaseServiceMock.Verify(x =>
+            x.Insert(It.Is<DTOMessage>(dto =>
                 dto.mmsi == 1 && dto.message_type == 22 && dto.navigation_status == 5)));
     }
 
@@ -50,8 +50,8 @@ public class Tests
 
         Send(new DecodedMessage() { mmsi = 123456789, message_type = 22, speed_over_ground = 20, true_heading = 3 });
 
-        databaseServiceMock.Verify(x => 
-            x.Save(It.Is<DTOObjectData>(dto => 
+        databaseServiceMock.Verify(x =>
+            x.Save(It.Is<DTOObjectData>(dto =>
                 dto.mmsi == 123456789 && dto.speed_over_ground == 20 && dto.true_heading == 3)));
     }
 
@@ -67,7 +67,8 @@ public class Tests
         databaseServiceMock.Verify(x => x.Insert(It.IsAny<DTOMessage>()), Times.Exactly(2));
     }
 
-    void Send(DecodedMessage message) {
+    void Send(DecodedMessage message)
+    {
         receiverMock.Raise(m => m.Received += null, this, message);
     }
 

@@ -67,7 +67,8 @@ public class Tests
     }
 
     [Test]
-    public void Run_WhenConsumerSendsErroneousData_ShouldContinueWorking() {
+    public void Run_WhenConsumerSendsErroneousData_ShouldContinueWorking()
+    {
         SetupReceiver();
 
         Send(@"<test>this is not json!</test>");
@@ -85,9 +86,10 @@ public class Tests
         Assert.AreEqual(9, messagesReceived[1].repeat_indicator);
     }
 
-    void Send(string json) {
+    void Send(string json)
+    {
         consumerMock.Raise(m => m.Received += null, this,
-            new BasicDeliverEventArgs("", 0, false, ExchangeName, "", null, 
+            new BasicDeliverEventArgs("", 0, false, ExchangeName, "", null,
                 new ReadOnlyMemory<byte>(Encoding.UTF8.GetBytes(json)))
             );
     }

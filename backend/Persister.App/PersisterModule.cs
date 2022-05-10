@@ -9,9 +9,10 @@ using Microsoft.Extensions.Logging.Console;
 
 namespace Persister.App;
 
-public class PersisterModule 
+public class PersisterModule
 {
-    public IKernel GetKernel(string connectionString, string exchangeName, string hostName) {
+    public IKernel GetKernel(string connectionString, string exchangeName, string hostName)
+    {
         var databaseModule = new DatabaseModule(connectionString);
         var receiverModule = new ReceiverModule(exchangeName, hostName);
 
@@ -21,10 +22,10 @@ public class PersisterModule
                 options.SingleLine = true;
                 options.TimestampFormat = "hh:mm:ss ";
             };
-        
+
         var loggerFactory = LoggerFactory.Create(cfg => { cfg.AddSimpleConsole(loggingOptions); cfg.SetMinimumLevel(LogLevel.Debug); });
 
-		var kernel = new StandardKernel (databaseModule, receiverModule);
+        var kernel = new StandardKernel(databaseModule, receiverModule);
 
         kernel.Bind<IMapper>().ToMethod(_ => GetMapper());
 
@@ -37,10 +38,12 @@ public class PersisterModule
         return kernel;
     }
 
-    public IMapper GetMapper() {
+    public IMapper GetMapper()
+    {
         return new Mapper(new MapperConfiguration(
-            cfg => {
-                cfg.AddProfile(new DatabaseProfile()); 
+            cfg =>
+            {
+                cfg.AddProfile(new DatabaseProfile());
                 cfg.AddProfile(new PersisterProfile());
             }));
     }

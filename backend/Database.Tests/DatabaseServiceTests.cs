@@ -12,23 +12,24 @@ namespace Database.Tests;
 
 public class DatabaseServiceTests
 {
-    DbConnection connection;
-    DatabaseService service;
+    DbConnection? connection;
+    DatabaseService? service;
 
-    MaritimoTestContextFactory contextFactory;
+    MaritimoTestContextFactory? contextFactory;
 
     [SetUp]
     public void Setup()
     {
         var mapper = new Mapper(
             new MapperConfiguration(
-                cfg => {
+                cfg =>
+                {
                     cfg.AddProfile(new DatabaseProfile());
                 }
             )
         );
 
-        var logger = LoggerFactory.Create(_ => {}).CreateLogger<IDatabaseService>();
+        var logger = LoggerFactory.Create(_ => { }).CreateLogger<IDatabaseService>();
 
         connection = new SqliteConnection("Filename=:memory:");
         connection.Open();
@@ -43,7 +44,7 @@ public class DatabaseServiceTests
     }
 
     [TearDown]
-    public void Teardown() 
+    public void Teardown()
     {
         connection?.Dispose();
     }
@@ -65,11 +66,12 @@ public class DatabaseServiceTests
     }
 
     [Test]
-    public void Insert_ShouldInsertMessageWithCreatedDataFieldFilled() {
+    public void Insert_ShouldInsertMessageWithCreatedDataFieldFilled()
+    {
         var before = DateTime.UtcNow;
 
         service.Insert(new DTOMessage() { mmsi = 123456789, dimension_to_port = 10 });
-        
+
         var after = DateTime.UtcNow;
         var message = contextFactory.Get().Messages.First();
         Assert.GreaterOrEqual(message.created, before);
@@ -77,7 +79,8 @@ public class DatabaseServiceTests
     }
 
     [Test]
-    public void Insert_WhenExceptionIsRaised_ShouldReturnError() {
+    public void Insert_WhenExceptionIsRaised_ShouldReturnError()
+    {
         contextFactory.Exception = new Exception();
 
         var result = service.Insert(new DTOMessage() { mmsi = 123456789, dimension_to_port = 10 });
@@ -86,7 +89,8 @@ public class DatabaseServiceTests
     }
 
     [Test]
-    public void Save_WhenNoItemInDatabase_ShouldAddObjectData() {
+    public void Save_WhenNoItemInDatabase_ShouldAddObjectData()
+    {
         service.Save(new DTOObjectData() { mmsi = 123456789 });
         service.Save(new DTOObjectData() { mmsi = 987654321 });
 
@@ -99,11 +103,12 @@ public class DatabaseServiceTests
     }
 
     [Test]
-    public void Save_ShouldInsertItemWithCreatedDataFieldFilled() {
+    public void Save_ShouldInsertItemWithCreatedDataFieldFilled()
+    {
         var before = DateTime.UtcNow;
 
         service.Save(new DTOObjectData() { mmsi = 123456789 });
-        
+
         var after = DateTime.UtcNow;
         var objectData = contextFactory.Get().Objects.First();
         Assert.GreaterOrEqual(objectData.created, before);
@@ -112,7 +117,8 @@ public class DatabaseServiceTests
     }
 
     [Test]
-    public void Save_WhenItemWithSameMMSIAlreadyPresent_ShouldUpdateAllFieldsThatAreNotNullInDTO() {
+    public void Save_WhenItemWithSameMMSIAlreadyPresent_ShouldUpdateAllFieldsThatAreNotNullInDTO()
+    {
         service.Save(new DTOObjectData() { mmsi = 123456789, dimension_to_bow = 30 });
         service.Save(new DTOObjectData() { mmsi = 123456789, name = "CHINA ROSE" });
 
@@ -123,14 +129,15 @@ public class DatabaseServiceTests
         Assert.AreEqual(30, objectData.dimension_to_bow);
         Assert.AreEqual("CHINA ROSE", objectData.name);
     }
-    
+
     [Test]
-    public void Save_WhenItemWithSameMMSIAlreadyPresent_ShouldUpdateItemWithUpdatedDataFieldFilled() {
+    public void Save_WhenItemWithSameMMSIAlreadyPresent_ShouldUpdateItemWithUpdatedDataFieldFilled()
+    {
         service.Save(new DTOObjectData() { mmsi = 123456789 });
 
         var before = DateTime.UtcNow;
         service.Save(new DTOObjectData() { mmsi = 123456789 });
-        
+
         var after = DateTime.UtcNow;
         var objectData = contextFactory.Get().Objects.First();
         Assert.GreaterOrEqual(objectData.updated, before);
@@ -138,7 +145,8 @@ public class DatabaseServiceTests
     }
 
     [Test]
-    public void Save_WhenExceptionIsRaised_ShouldReturnError() {
+    public void Save_WhenExceptionIsRaised_ShouldReturnError()
+    {
         contextFactory.Exception = new Exception();
 
         var result = service.Save(new DTOObjectData() { mmsi = 123456789, dimension_to_port = 10 });
@@ -147,7 +155,8 @@ public class DatabaseServiceTests
     }
 
     [Test]
-    public void Get_ShouldReturnAllObjects() {
+    public void Get_ShouldReturnAllObjects()
+    {
         service.Save(new DTOObjectData() { mmsi = 123456789 });
         service.Save(new DTOObjectData() { mmsi = 987654321 });
 
@@ -159,7 +168,8 @@ public class DatabaseServiceTests
     }
 
     [Test]
-    public void Get_WhenTimeSpanIsSpecified_ShouldReturnOnlyObjectsThatMatchIt() {
+    public void Get_WhenTimeSpanIsSpecified_ShouldReturnOnlyObjectsThatMatchIt()
+    {
         service.Save(new DTOObjectData() { mmsi = 123456789 });
         var before = DateTime.UtcNow;
         service.Save(new DTOObjectData() { mmsi = 1 });
@@ -173,7 +183,8 @@ public class DatabaseServiceTests
     }
 
     [Test]
-    public void Get_WhenExceptionIsRaised_ShouldReturnError() {
+    public void Get_WhenExceptionIsRaised_ShouldReturnError()
+    {
         contextFactory.Exception = new Exception();
 
         var result = service.Get();

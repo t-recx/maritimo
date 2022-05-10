@@ -3,26 +3,32 @@ using Database.Lib;
 using Microsoft.Extensions.Logging;
 using Receiver.Lib;
 
-public class Application {
+public class Application
+{
     private readonly IReceiver receiver;
     private readonly IDatabaseService databaseService;
     private readonly IMapper mapper;
     private readonly ILogger<Application> logger;
 
-    public Application(IReceiver receiver, IDatabaseService databaseService, ILogger<Application> logger, IMapper mapper) {
+    public Application(IReceiver receiver, IDatabaseService databaseService, ILogger<Application> logger, IMapper mapper)
+    {
         this.receiver = receiver;
         this.databaseService = databaseService;
         this.logger = logger;
         this.mapper = mapper;
     }
 
-    public void Run(CancellationToken token) {
-        receiver.Received += (_, decodedMessage) => {
-            try {
+    public void Run(CancellationToken token)
+    {
+        receiver.Received += (_, decodedMessage) =>
+        {
+            try
+            {
                 databaseService.Save(mapper.Map<DTOObjectData>(decodedMessage));
                 databaseService.Insert(mapper.Map<DTOMessage>(decodedMessage));
             }
-            catch(Exception exception) {
+            catch (Exception exception)
+            {
                 this.logger.LogError(exception, "");
             }
         };
