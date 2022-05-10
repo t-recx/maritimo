@@ -11,11 +11,7 @@ namespace Persister.App;
 
 public class PersisterModule 
 {
-    private readonly string connectionString;
-    private readonly string exchangeName;
-    private readonly string hostName;
-
-    public IKernel GetKernel() {
+    public IKernel GetKernel(string connectionString, string exchangeName, string hostName) {
         var databaseModule = new DatabaseModule(connectionString);
         var receiverModule = new ReceiverModule(exchangeName, hostName);
 
@@ -30,25 +26,22 @@ public class PersisterModule
 
 		var kernel = new StandardKernel (databaseModule, receiverModule);
 
-        kernel.Bind<IMapper>().ToMethod(_ => 
-            new Mapper(new MapperConfiguration(
-                cfg => {
-                    cfg.AddProfile(new DatabaseProfile()); 
-                    cfg.AddProfile(new PersisterProfile());
-                })));
+        kernel.Bind<IMapper>().ToMethod(_ => GetMapper());
 
         kernel.Bind<ILogger<IDatabaseService>>().ToMethod(x => loggerFactory.CreateLogger<IDatabaseService>());
         kernel.Bind<ILogger<IReceiver>>().ToMethod(x => loggerFactory.CreateLogger<IReceiver>());
+        kernel.Bind<ILogger<Application>>().ToMethod(x => loggerFactory.CreateLogger<Application>());
 
         kernel.Get<IMaritimoContextFactory>().Get().Database.Migrate();
 
         return kernel;
     }
 
-    public PersisterModule(string connectionString, string exchangeName, string hostName)
-    {
-        this.connectionString = connectionString;
-        this.exchangeName = exchangeName;
-        this.hostName = hostName;
+    public IMapper GetMapper() {
+        return new Mapper(new MapperConfiguration(
+            cfg => {
+                cfg.AddProfile(new DatabaseProfile()); 
+                cfg.AddProfile(new PersisterProfile());
+            }));
     }
 }

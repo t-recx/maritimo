@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using RabbitMQ.Client.Events;
 using System.Text;
 using System;
-using System.Threading.Tasks;
 
 namespace Receiver.Tests;
 

@@ -24,22 +24,14 @@ class Program
             return;
         }
         else if (hostName == null) {
-            Console.Error.WriteLine("No host name configured. Set MMARITIMO_PERSISTER_RABBITMQ_HOSTNAME environment variable.");
+            Console.Error.WriteLine("No host name configured. Set MARITIMO_PERSISTER_RABBITMQ_HOSTNAME environment variable.");
 
             return;
         }
 
-        var kernel = (new PersisterModule(connectionString!, exchangeName!, hostName!)).GetKernel();
-
-        var databaseService = kernel.Get<IDatabaseService>();
-        var receiver = kernel.Get<IReceiver>();
-        var mapper = kernel.Get<IMapper>();
-
-        receiver.Received += (_, decodedMessage) => {
-            databaseService.Insert(mapper.Map<DTOMessage>(decodedMessage));
-            databaseService.Save(mapper.Map<DTOObjectData>(decodedMessage));
-        };
-
-        receiver.Run(new CancellationToken());
+        (new PersisterModule())
+            .GetKernel(connectionString!, exchangeName!, hostName!)
+            .Get<Application>()
+            .Run(new CancellationToken());
     }
 }
