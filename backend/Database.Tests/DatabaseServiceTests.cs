@@ -12,10 +12,10 @@ namespace Database.Tests;
 
 public class DatabaseServiceTests
 {
-    DbConnection? connection;
-    DatabaseService? service;
+    DbConnection connection = null!;
+    DatabaseService service = null!;
 
-    MaritimoTestContextFactory? contextFactory;
+    MaritimoTestContextFactory contextFactory = null!;
 
     [SetUp]
     public void Setup()
