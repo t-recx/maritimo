@@ -2,18 +2,71 @@ use amiquip::{
     Connection, ConsumerMessage, ConsumerOptions, ExchangeDeclareOptions, ExchangeType, FieldTable,
     Publish, QueueDeclareOptions, Result,
 };
+use decoder::error::MissingEnvironmentVariableError;
 use std::collections::HashMap;
+use std::env;
+use std::error::Error;
 
-fn main() -> Result<()> {
+fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
-    let mut incoming_connection = Connection::insecure_open("amqp://guest:guest@localhost:5672")?;
+    let rabbitmq_hostname_env_var_name = "MARITIMO_RABBITMQ_HOST_NAME";
+    let incoming_exchange_env_var_name = "MARITIMO_RABBITMQ_ENCODED_MESSAGES_EXCHANGE_NAME";
+    let outgoing_exchange_env_var_name = "MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME";
+
+    let rabbitmq_hostname;
+    let incoming_exchange;
+    let outgoing_exchange;
+
+    match env::var(rabbitmq_hostname_env_var_name) {
+        Ok(value) => rabbitmq_hostname = value,
+        Err(_) => {
+            return Err(MissingEnvironmentVariableError {
+                message: format!(
+                    "No host name configured. Set {} environment variable",
+                    rabbitmq_hostname_env_var_name
+                )
+                .to_string(),
+            }
+            .into());
+        }
+    }
+
+    match env::var(incoming_exchange_env_var_name) {
+        Ok(value) => incoming_exchange = value,
+        Err(_) => {
+            return Err(MissingEnvironmentVariableError {
+                message: format!(
+                    "No exchange name for encoded messages configured. Set {} environment variable",
+                    incoming_exchange_env_var_name
+                )
+                .to_string(),
+            }
+            .into());
+        }
+    }
+
+    match env::var(outgoing_exchange_env_var_name) {
+        Ok(value) => outgoing_exchange = value,
+        Err(_) => {
+            return Err(MissingEnvironmentVariableError {
+                message: format!(
+                    "No exchange name for decoded messages configured. Set {} environment variable",
+                    outgoing_exchange_env_var_name
+                )
+                .to_string(),
+            }
+            .into());
+        }
+    }
+
+    let mut incoming_connection = Connection::insecure_open(&rabbitmq_hostname)?;
 
     let incoming_channel = incoming_connection.open_channel(None)?;
 
     let incoming_exchange = incoming_channel.exchange_declare(
         ExchangeType::Fanout,
-        "stations",
+        incoming_exchange,
         ExchangeDeclareOptions::default(),
     )?;
 
@@ -24,7 +77,6 @@ fn main() -> Result<()> {
             ..QueueDeclareOptions::default()
         },
     )?;
-    println!("created exclusive queue {}", queue.name());
 
     queue.bind(&incoming_exchange, "", FieldTable::new())?;
 
@@ -32,17 +84,16 @@ fn main() -> Result<()> {
         no_ack: true,
         ..ConsumerOptions::default()
     })?;
-    println!("Waiting for stations. Press Ctrl-C to exit.");
 
     let mut acc = HashMap::new();
 
-    let mut outgoing_connection = Connection::insecure_open("amqp://guest:guest@localhost:5672")?;
+    let mut outgoing_connection = Connection::insecure_open(&rabbitmq_hostname)?;
 
     let outgoing_channel = outgoing_connection.open_channel(None)?;
 
     let outgoing_exchange = outgoing_channel.exchange_declare(
         ExchangeType::Fanout,
-        "messages",
+        outgoing_exchange,
         ExchangeDeclareOptions::default(),
     )?;
 
@@ -74,5 +125,7 @@ fn main() -> Result<()> {
     }
 
     incoming_connection.close()?;
-    outgoing_connection.close()
+    outgoing_connection.close()?;
+
+    Ok(())
 }
