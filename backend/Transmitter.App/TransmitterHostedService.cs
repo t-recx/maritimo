@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Transmitter.App;
 
-public class TransmitterHostedService : IHostedService {
+public class TransmitterHostedService : IHostedService
+{
     readonly ILogger<TransmitterHostedService> logger;
     readonly IHubContext<AisHub, IAisHub> aisHubContext;
     readonly IReceiver receiver;
@@ -18,7 +19,8 @@ public class TransmitterHostedService : IHostedService {
         this.mapper = mapper;
     }
 
-    async void HandleReceivedEvent(object? sender, DecodedMessage decodedMessage) {
+    async void HandleReceivedEvent(object? sender, DecodedMessage decodedMessage)
+    {
         await aisHubContext.Clients.All.Receive(mapper.Map<DTOObjectData>(decodedMessage));
     }
 
