@@ -1,7 +1,6 @@
 using AutoMapper;
 using Database.Lib;
 using Ninject;
-using Persiter.App;
 using Receiver.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
