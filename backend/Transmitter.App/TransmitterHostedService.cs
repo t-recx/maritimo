@@ -1,32 +1,21 @@
 using AutoMapper;
 using Receiver.Lib;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Ninject;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Transmitter.App;
 
 public class TransmitterHostedService : IHostedService {
-    IReceiver receiver;
-    IMapper mapper;
     readonly ILogger<TransmitterHostedService> logger;
-    private readonly IHubContext<AisHub, IAisHub> aisHubContext;
+    readonly IHubContext<AisHub, IAisHub> aisHubContext;
+    readonly IReceiver receiver;
+    readonly IMapper mapper;
 
-    public TransmitterHostedService(ILogger<TransmitterHostedService> logger, IHubContext<AisHub, IAisHub> aisHubContext)
+    public TransmitterHostedService(ILogger<TransmitterHostedService> logger, IHubContext<AisHub, IAisHub> aisHubContext, IReceiver receiver, IMapper mapper)
     {
-        var module = new TransmitterModule();
-
-        const string DecodedMessagesExchangeNameEnvVarName = "MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME";
-        const string RabbitMqHostNameEnvVarName = "MARITIMO_RABBITMQ_HOST_NAME";
-        var exchangeName = Environment.GetEnvironmentVariable(DecodedMessagesExchangeNameEnvVarName);
-        var hostName = Environment.GetEnvironmentVariable(RabbitMqHostNameEnvVarName);
-
-        var kernel = module.GetKernel(exchangeName!, hostName!);
-        receiver = kernel.Get<IReceiver>();
-        mapper = kernel.Get<IMapper>();
         this.logger = logger;
         this.aisHubContext = aisHubContext;
+        this.receiver = receiver;
+        this.mapper = mapper;
     }
 
     async void HandleReceivedEvent(object? sender, DecodedMessage decodedMessage) {
