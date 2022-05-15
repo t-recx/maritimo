@@ -6,7 +6,7 @@ namespace Database.Lib;
 
 public interface IDatabaseService
 {
-    Result<List<DTOObjectData>> Get(TimeSpan? timespan = null);
+    Task<List<DTOObjectData>> Get(TimeSpan? timespan = null);
     Result<DTOMessage> Insert(DTOMessage dto);
     Result<DTOObjectData> Save(DTOObjectData dto);
 }

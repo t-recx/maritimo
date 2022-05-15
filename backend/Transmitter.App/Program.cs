@@ -35,8 +35,8 @@ builder.Services.AddSignalR().AddJsonProtocol(options =>
     options.PayloadSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
 
-builder.Services.AddSingleton<IReceiver>(x => kernel.Get<IReceiver>());
 builder.Services.AddSingleton<IMapper>(x => kernel.Get<IMapper>());
+builder.Services.AddSingleton<IReceiver>(x => kernel.Get<IReceiver>());
 
 builder.Services.AddHostedService<TransmitterHostedService>();
 
