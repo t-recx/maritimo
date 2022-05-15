@@ -24,7 +24,8 @@ public class DatabaseService : IDatabaseService
 
     public async Task<List<DTOObjectData>> Get(TimeSpan? timespan = null)
     {
-        using (var context = contextFactory.Get()) {
+        using (var context = contextFactory.Get())
+        {
             var query = context.Objects.AsQueryable();
 
             if (timespan != null)

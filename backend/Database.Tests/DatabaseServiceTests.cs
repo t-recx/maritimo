@@ -162,7 +162,7 @@ public class DatabaseServiceTests
         service.Save(new DTOObjectData() { mmsi = 987654321 });
 
         var objects = await service.Get();
-        
+
         Assert.AreEqual(2, objects.Count);
         Assert.AreEqual(123456789, objects.First().mmsi);
         Assert.AreEqual(987654321, objects.Last().mmsi);
@@ -177,7 +177,7 @@ public class DatabaseServiceTests
         service.Save(new DTOObjectData() { mmsi = 2 });
 
         var objects = await service.Get(DateTime.UtcNow - before);
-        
+
         Assert.AreEqual(2, objects.Count);
         Assert.AreEqual(1, objects.First().mmsi);
         Assert.AreEqual(2, objects.Last().mmsi);
