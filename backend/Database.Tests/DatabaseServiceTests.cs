@@ -7,6 +7,7 @@ using AutoMapper;
 using System.Linq;
 using System;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace Database.Tests;
 
@@ -155,40 +156,30 @@ public class DatabaseServiceTests
     }
 
     [Test]
-    public void Get_ShouldReturnAllObjects()
+    public async Task Get_ShouldReturnAllObjects()
     {
         service.Save(new DTOObjectData() { mmsi = 123456789 });
         service.Save(new DTOObjectData() { mmsi = 987654321 });
 
-        var objects = service.Get().Value;
-
+        var objects = await service.Get();
+        
         Assert.AreEqual(2, objects.Count);
         Assert.AreEqual(123456789, objects.First().mmsi);
         Assert.AreEqual(987654321, objects.Last().mmsi);
     }
 
     [Test]
-    public void Get_WhenTimeSpanIsSpecified_ShouldReturnOnlyObjectsThatMatchIt()
+    public async Task Get_WhenTimeSpanIsSpecified_ShouldReturnOnlyObjectsThatMatchIt()
     {
         service.Save(new DTOObjectData() { mmsi = 123456789 });
         var before = DateTime.UtcNow;
         service.Save(new DTOObjectData() { mmsi = 1 });
         service.Save(new DTOObjectData() { mmsi = 2 });
 
-        var objects = service.Get(DateTime.UtcNow - before).Value;
-
+        var objects = await service.Get(DateTime.UtcNow - before);
+        
         Assert.AreEqual(2, objects.Count);
         Assert.AreEqual(1, objects.First().mmsi);
         Assert.AreEqual(2, objects.Last().mmsi);
-    }
-
-    [Test]
-    public void Get_WhenExceptionIsRaised_ShouldReturnError()
-    {
-        contextFactory.Exception = new Exception();
-
-        var result = service.Get();
-
-        Assert.IsTrue(result.IsError);
     }
 }

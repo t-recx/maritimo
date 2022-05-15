@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.Extensions.Logging;
 using OperationResult;
 using static OperationResult.Helpers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Database.Lib;
 
@@ -21,12 +22,9 @@ public class DatabaseService : IDatabaseService
         this.logger = logger;
     }
 
-    public Result<List<DTOObjectData>> Get(TimeSpan? timespan = null)
+    public async Task<List<DTOObjectData>> Get(TimeSpan? timespan = null)
     {
-        var context = contextFactory.Get();
-
-        try
-        {
+        using (var context = contextFactory.Get()) {
             var query = context.Objects.AsQueryable();
 
             if (timespan != null)
@@ -37,19 +35,9 @@ public class DatabaseService : IDatabaseService
                     .Where(x => x.created >= startDate || (x.updated != null && x.updated >= startDate));
             }
 
-            return Ok(mapper
+            return await mapper
                 .ProjectTo<DTOObjectData>(query)
-                .ToList());
-        }
-        catch (Exception exception)
-        {
-            logger.LogError(exception, "");
-
-            return Error();
-        }
-        finally
-        {
-            context.Dispose();
+                .ToListAsync();
         }
     }
 
