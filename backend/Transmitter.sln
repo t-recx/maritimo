@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Transmitter.App", "Transmitter.App\Transmitter.App.csproj", "{46694FBB-1689-41C9-A8DE-0907009E0EEE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Receiver.Lib", "Receiver.Lib\Receiver.Lib.csproj", "{8F94DB9D-3351-43C3-8959-D85529596758}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Receiver.Tests", "Receiver.Tests\Receiver.Tests.csproj", "{5731E2DE-5778-4F6D-8BCD-F21096E6D873}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{46694FBB-1689-41C9-A8DE-0907009E0EEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46694FBB-1689-41C9-A8DE-0907009E0EEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46694FBB-1689-41C9-A8DE-0907009E0EEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46694FBB-1689-41C9-A8DE-0907009E0EEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F94DB9D-3351-43C3-8959-D85529596758}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F94DB9D-3351-43C3-8959-D85529596758}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F94DB9D-3351-43C3-8959-D85529596758}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F94DB9D-3351-43C3-8959-D85529596758}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5731E2DE-5778-4F6D-8BCD-F21096E6D873}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5731E2DE-5778-4F6D-8BCD-F21096E6D873}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5731E2DE-5778-4F6D-8BCD-F21096E6D873}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5731E2DE-5778-4F6D-8BCD-F21096E6D873}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

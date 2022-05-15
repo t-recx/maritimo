@@ -1,18 +1,15 @@
 using AutoMapper;
-using Database.Lib;
 using Ninject;
 using Receiver.Lib;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 
-namespace Persister.App;
+namespace Transmitter.App;
 
-public class PersisterModule
+public class TransmitterModule
 {
-    public IKernel GetKernel(string connectionString, string exchangeName, string hostName)
+    public IKernel GetKernel(string exchangeName, string hostName)
     {
-        var databaseModule = new DatabaseModule(connectionString);
         var receiverModule = new ReceiverModule(exchangeName, hostName);
 
         Action<SimpleConsoleFormatterOptions> loggingOptions = options =>
@@ -24,15 +21,11 @@ public class PersisterModule
 
         var loggerFactory = LoggerFactory.Create(cfg => { cfg.AddSimpleConsole(loggingOptions); cfg.SetMinimumLevel(LogLevel.Debug); });
 
-        var kernel = new StandardKernel(databaseModule, receiverModule);
+        var kernel = new StandardKernel(receiverModule);
 
         kernel.Bind<IMapper>().ToMethod(_ => GetMapper());
 
-        kernel.Bind<ILogger<IDatabaseService>>().ToMethod(x => loggerFactory.CreateLogger<IDatabaseService>());
         kernel.Bind<ILogger<IReceiver>>().ToMethod(x => loggerFactory.CreateLogger<IReceiver>());
-        kernel.Bind<ILogger<Application>>().ToMethod(x => loggerFactory.CreateLogger<Application>());
-
-        kernel.Get<IMaritimoContextFactory>().Get().Database.Migrate();
 
         return kernel;
     }
@@ -42,8 +35,8 @@ public class PersisterModule
         return new Mapper(new MapperConfiguration(
             cfg =>
             {
-                cfg.AddProfile(new DatabaseProfile());
-                cfg.AddProfile(new PersisterProfile());
+                cfg.AddProfile(new TransmitterProfile());
             }));
     }
 }
+

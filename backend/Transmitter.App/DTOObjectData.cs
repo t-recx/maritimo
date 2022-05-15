@@ -1,4 +1,4 @@
-namespace Database.Lib;
+namespace Transmitter.App;
 
 public class DTOObjectData
 {
@@ -50,5 +50,7 @@ public class DTOObjectData
     public bool? off_position { get; set; }
     public bool? virtual_aid_flag { get; set; }
     public bool? gnss_position_status { get; set; }
-}
 
+    public DateTime created { get; set; }
+    public DateTime? updated { get; set; }
+}

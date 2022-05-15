@@ -2,7 +2,7 @@ using AutoMapper;
 using Database.Lib;
 using Receiver.Lib;
 
-namespace Persiter.App;
+namespace Persister.App;
 
 public class PersisterProfile : Profile
 {
