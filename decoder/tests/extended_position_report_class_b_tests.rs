@@ -50,6 +50,7 @@ fn decode_should_decode_extended_position_report_class_b() {
             raim_flag,
             dte,
             assigned,
+            magnetic_declination: _,
         } => {
             assert_eq!(speed_over_ground, Some(8.7));
             assert_eq!(position_accuracy, false);

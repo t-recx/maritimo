@@ -44,6 +44,7 @@ fn decode_should_decode_position_report_class_a() {
             manuever_indicator,
             timestamp,
             raim_flag,
+            magnetic_declination: _,
         } => {
             assert_eq!(navigation_status, 5);
             assert_eq!(rate_of_turn, 0.0);
@@ -87,6 +88,7 @@ fn decode_should_decode_position_report_class_a2() {
             manuever_indicator,
             timestamp,
             raim_flag,
+            magnetic_declination: _,
         } => {
             assert_eq!(navigation_status, 0);
             assert_eq!(rate_of_turn.round(), -720.0);
@@ -130,6 +132,7 @@ fn decode_should_decode_position_report_class_a3() {
             manuever_indicator,
             timestamp,
             raim_flag,
+            magnetic_declination: _,
         } => {
             assert_eq!(navigation_status, 0);
             assert!((-2.9..-2.85).contains(&rate_of_turn));

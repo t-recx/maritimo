@@ -52,6 +52,7 @@ fn decode_should_decode_aid_to_navigation_report() {
             off_position,
             virtual_aid_flag,
             assigned,
+            magnetic_declination: _,
         } => {
             assert_eq!(aid_type, Some(20));
             assert_eq!(name, "CHINA ROSE MURPHY EXPRESS ALERT");

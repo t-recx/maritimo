@@ -47,6 +47,7 @@ fn decode_should_decode_position_report_class_b() {
             message_22_flag,
             assigned,
             display_flag,
+            magnetic_declination: _,
         } => {
             assert_eq!(speed_over_ground, Some(1.4));
             assert_eq!(position_accuracy, true);
@@ -96,6 +97,7 @@ fn decode_should_decode_position_report_class_b2() {
             message_22_flag,
             assigned,
             display_flag,
+            magnetic_declination: _,
         } => {
             assert_eq!(speed_over_ground, Some(0.1));
             assert_eq!(position_accuracy, false);
@@ -145,6 +147,7 @@ fn decode_should_decode_position_report_class_b3() {
             message_22_flag,
             assigned,
             display_flag,
+            magnetic_declination: _,
         } => {
             assert_eq!(speed_over_ground, Some(0.0));
             assert_eq!(position_accuracy, false);

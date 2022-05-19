@@ -44,6 +44,7 @@ fn decode_should_decode_base_station_report() {
             latitude,
             raim_flag,
             position_fix_type,
+            magnetic_declination: _,
         } => {
             assert_eq!(utc_year, Some(2007));
             assert_eq!(utc_month, Some(5));
