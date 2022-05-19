@@ -7,6 +7,7 @@ use std::collections::HashMap;
 mod conversions;
 mod decoders;
 pub mod error;
+mod magnetic_declination;
 mod nmea;
 
 use conversions::*;
@@ -28,6 +29,7 @@ pub enum MessageData {
         timestamp: u8,
         manuever_indicator: Option<u8>,
         raim_flag: bool,
+        magnetic_declination: Option<f32>,
     },
     PositionReportClassB {
         speed_over_ground: Option<f32>,
@@ -44,6 +46,7 @@ pub enum MessageData {
         message_22_flag: bool,
         assigned: bool,
         raim_flag: bool,
+        magnetic_declination: Option<f32>,
     },
     ExtendedPositionReportClassB {
         speed_over_ground: Option<f32>,
@@ -63,6 +66,7 @@ pub enum MessageData {
         raim_flag: bool,
         dte: bool,
         assigned: bool,
+        magnetic_declination: Option<f32>,
     },
     StaticAndVoyageData {
         ais_version: u8,
@@ -113,6 +117,7 @@ pub enum MessageData {
         latitude: Option<f32>,
         position_fix_type: u8,
         raim_flag: bool,
+        magnetic_declination: Option<f32>,
     },
     AidToNavigationReport {
         aid_type: Option<u8>,
@@ -129,6 +134,7 @@ pub enum MessageData {
         off_position: bool,
         virtual_aid_flag: bool,
         assigned: bool,
+        magnetic_declination: Option<f32>,
     },
     LongRangeBroadcast {
         position_accuracy: bool,
@@ -139,6 +145,7 @@ pub enum MessageData {
         speed_over_ground: Option<f32>,
         course_over_ground: Option<f32>,
         gnss_position_status: bool,
+        magnetic_declination: Option<f32>,
     },
     Other,
 }

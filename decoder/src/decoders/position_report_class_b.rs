@@ -1,5 +1,6 @@
 use crate::conversions::*;
 use crate::error::*;
+use crate::magnetic_declination::get_magnetic_declination;
 use crate::MessageData;
 
 pub fn get(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
@@ -105,6 +106,8 @@ pub fn get(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
         Err(e) => return Err(e),
     };
 
+    let magnetic_declination = get_magnetic_declination(latitude, longitude);
+
     return Ok(MessageData::PositionReportClassB {
         speed_over_ground,
         position_accuracy,
@@ -120,5 +123,6 @@ pub fn get(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
         message_22_flag,
         assigned,
         raim_flag,
+        magnetic_declination,
     });
 }

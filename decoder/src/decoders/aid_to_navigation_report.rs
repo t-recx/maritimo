@@ -1,5 +1,6 @@
 use crate::conversions::*;
 use crate::error::*;
+use crate::magnetic_declination::*;
 use crate::MessageData;
 
 pub fn get(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
@@ -97,6 +98,8 @@ pub fn get(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
         Err(e) => return Err(e),
     };
 
+    let magnetic_declination = get_magnetic_declination(latitude, longitude);
+
     return Ok(MessageData::AidToNavigationReport {
         aid_type,
         name,
@@ -112,5 +115,6 @@ pub fn get(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
         off_position,
         virtual_aid_flag,
         assigned,
+        magnetic_declination,
     });
 }

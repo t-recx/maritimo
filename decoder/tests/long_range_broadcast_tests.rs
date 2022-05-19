@@ -35,6 +35,7 @@ fn decode_should_decode_long_range_broadcast() {
             speed_over_ground,
             course_over_ground,
             gnss_position_status: _,
+            magnetic_declination: _,
         } => {
             assert_eq!(position_accuracy, false);
             assert_eq!(raim_flag, false);
@@ -71,6 +72,7 @@ fn decode_should_decode_full_slot_long_range_broadcast() {
             speed_over_ground,
             course_over_ground,
             gnss_position_status: _,
+            magnetic_declination: _,
         } => {
             assert_eq!(position_accuracy, false);
             assert_eq!(raim_flag, false);
