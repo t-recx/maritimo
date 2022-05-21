@@ -33,6 +33,10 @@ public class Application
             }
         };
 
+        receiver.Initialized += (_, brokerUri) => {
+            this.logger.LogInformation("Connected to {0}", brokerUri);
+        };
+
         receiver.Run(token);
     }
 }

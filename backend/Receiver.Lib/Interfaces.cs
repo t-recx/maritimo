@@ -5,6 +5,7 @@ namespace Receiver.Lib;
 
 public interface IReceiver
 {
+    event EventHandler<string>? Initialized;
     event EventHandler<DecodedMessage>? Received;
 
     void Run(CancellationToken cancellationToken);
