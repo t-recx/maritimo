@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14.3-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+    restart: always
+  broker:
+    image: rabbitmq:3.10-alpine
+    restart: always
+  decoder:
+    build: 
+      context: ./decoder/
+      dockerfile: ../docker/decoder/Dockerfile
+    command: sh -c 'wait-for-it -q broker:5672 -- decoder'
+    env_file:
+      - ./.env
+    depends_on:
+      - broker
+    restart: always
+  persister: 
+    build:
+      context: ./backend/
+      dockerfile: ../docker/dotnet/Dockerfile
+      args:
+        - PROJECT_NAME=Persister.App
+    command: sh -c 'wait-for-it -q broker:5672 -- wait-for-it -q db:5432 -- dotnet Persister.App.dll'
+    env_file:
+      - ./.env
+    depends_on:
+      - broker
+      - db
+    restart: always
+  transmitter: 
+    build:
+      context: ./backend/
+      dockerfile: ../docker/aspnet/Dockerfile
+      args:
+        - PROJECT_NAME=Transmitter.App
+    command: sh -c 'wait-for-it -q broker:5672 -- dotnet Transmitter.App.dll'
+    env_file:
+      - ./.env
+    depends_on:
+      - broker
+    restart: always
+  webapi: 
+    build:
+      context: ./backend/
+      dockerfile: ../docker/aspnet/Dockerfile
+      args:
+        - PROJECT_NAME=WebApi.App
+    command: sh -c 'wait-for-it -q db:5432 -- dotnet WebApi.App.dll'
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+    restart: always
+
+volumes:
+  postgres_data:
