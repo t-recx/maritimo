@@ -97,6 +97,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         ExchangeDeclareOptions::default(),
     )?;
 
+    println!("Connected to {}", rabbitmq_uri);
+
     for (i, message) in consumer.receiver().iter().enumerate() {
         match message {
             ConsumerMessage::Delivery(delivery) => {
