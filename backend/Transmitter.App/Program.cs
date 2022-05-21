@@ -5,10 +5,10 @@ using Ninject;
 using AutoMapper;
 
 const string DecodedMessagesExchangeNameEnvVarName = "MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME";
-const string RabbitMqHostNameEnvVarName = "MARITIMO_RABBITMQ_HOST_NAME";
+const string RabbitMqUriEnvVarName = "MARITIMO_RABBITMQ_URI";
 
 var exchangeName = Environment.GetEnvironmentVariable(DecodedMessagesExchangeNameEnvVarName);
-var hostName = Environment.GetEnvironmentVariable(RabbitMqHostNameEnvVarName);
+var brokerUri = Environment.GetEnvironmentVariable(RabbitMqUriEnvVarName);
 
 if (exchangeName == null)
 {
@@ -16,16 +16,16 @@ if (exchangeName == null)
 
     return;
 }
-else if (hostName == null)
+else if (brokerUri == null)
 {
-    Console.Error.WriteLine("No host name configured. Set {0} environment variable.", RabbitMqHostNameEnvVarName);
+    Console.Error.WriteLine("No broker URI configured. Set {0} environment variable.", RabbitMqUriEnvVarName);
 
     return;
 }
 
 var builder = WebApplication.CreateBuilder(args);
 
-var kernel = (new TransmitterModule()).GetKernel(exchangeName!, hostName!);
+var kernel = (new TransmitterModule()).GetKernel(exchangeName!, brokerUri!);
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();

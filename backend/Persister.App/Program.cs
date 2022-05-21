@@ -6,13 +6,13 @@ class Program
 {
     const string DbConnectionStringEnvVarName = "MARITIMO_DB_CONNECTION_STRING";
     const string DecodedMessagesExchangeNameEnvVarName = "MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME";
-    const string RabbitMqHostNameEnvVarName = "MARITIMO_RABBITMQ_HOST_NAME";
+    const string RabbitMqUriEnvVarName = "MARITIMO_RABBITMQ_URI";
 
     static void Main(string[] args)
     {
         var connectionString = Environment.GetEnvironmentVariable(DbConnectionStringEnvVarName);
         var exchangeName = Environment.GetEnvironmentVariable(DecodedMessagesExchangeNameEnvVarName);
-        var hostName = Environment.GetEnvironmentVariable(RabbitMqHostNameEnvVarName);
+        var brokerUri = Environment.GetEnvironmentVariable(RabbitMqUriEnvVarName);
 
         if (connectionString == null)
         {
@@ -26,15 +26,15 @@ class Program
 
             return;
         }
-        else if (hostName == null)
+        else if (brokerUri == null)
         {
-            Console.Error.WriteLine("No host name configured. Set {0} environment variable.", RabbitMqHostNameEnvVarName);
+            Console.Error.WriteLine("No broker URI configured. Set {0} environment variable.", RabbitMqUriEnvVarName);
 
             return;
         }
 
         (new PersisterModule())
-            .GetKernel(connectionString!, exchangeName!, hostName!)
+            .GetKernel(connectionString!, exchangeName!, brokerUri!)
             .Get<Application>()
             .Run(new CancellationToken());
     }

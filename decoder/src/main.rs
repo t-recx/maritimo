@@ -10,21 +10,21 @@ use std::error::Error;
 fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
-    let rabbitmq_hostname_env_var_name = "MARITIMO_RABBITMQ_HOST_NAME";
+    let rabbitmq_uri_env_var_name = "MARITIMO_RABBITMQ_URI";
     let incoming_exchange_env_var_name = "MARITIMO_RABBITMQ_ENCODED_MESSAGES_EXCHANGE_NAME";
     let outgoing_exchange_env_var_name = "MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME";
 
-    let rabbitmq_hostname;
+    let rabbitmq_uri;
     let incoming_exchange;
     let outgoing_exchange;
 
-    match env::var(rabbitmq_hostname_env_var_name) {
-        Ok(value) => rabbitmq_hostname = value,
+    match env::var(rabbitmq_uri_env_var_name) {
+        Ok(value) => rabbitmq_uri = value,
         Err(_) => {
             return Err(MissingEnvironmentVariableError {
                 message: format!(
-                    "No host name configured. Set {} environment variable",
-                    rabbitmq_hostname_env_var_name
+                    "No broker URI configured. Set {} environment variable",
+                    rabbitmq_uri_env_var_name
                 )
                 .to_string(),
             }
@@ -60,7 +60,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    let mut incoming_connection = Connection::insecure_open(&rabbitmq_hostname)?;
+    let mut incoming_connection = Connection::insecure_open(&rabbitmq_uri)?;
 
     let incoming_channel = incoming_connection.open_channel(None)?;
 
@@ -87,7 +87,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut acc = HashMap::new();
 
-    let mut outgoing_connection = Connection::insecure_open(&rabbitmq_hostname)?;
+    let mut outgoing_connection = Connection::insecure_open(&rabbitmq_uri)?;
 
     let outgoing_channel = outgoing_connection.open_channel(None)?;
 

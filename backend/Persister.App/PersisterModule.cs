@@ -10,10 +10,10 @@ namespace Persister.App;
 
 public class PersisterModule
 {
-    public IKernel GetKernel(string connectionString, string exchangeName, string hostName)
+    public IKernel GetKernel(string connectionString, string exchangeName, string brokerUri)
     {
         var databaseModule = new DatabaseModule(connectionString);
-        var receiverModule = new ReceiverModule(exchangeName, hostName);
+        var receiverModule = new ReceiverModule(exchangeName, brokerUri);
 
         Action<SimpleConsoleFormatterOptions> loggingOptions = options =>
             {
