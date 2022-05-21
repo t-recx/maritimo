@@ -8,9 +8,9 @@ namespace Transmitter.App;
 
 public class TransmitterModule
 {
-    public IKernel GetKernel(string exchangeName, string hostName)
+    public IKernel GetKernel(string exchangeName, string brokerUri)
     {
-        var receiverModule = new ReceiverModule(exchangeName, hostName);
+        var receiverModule = new ReceiverModule(exchangeName, brokerUri);
 
         Action<SimpleConsoleFormatterOptions> loggingOptions = options =>
             {

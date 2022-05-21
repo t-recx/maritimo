@@ -12,6 +12,7 @@ public class Receiver : IReceiver
     private readonly ILogger logger;
     private readonly string exchangeName;
 
+    public event EventHandler<string>? Initialized;
     public event EventHandler<DecodedMessage>? Received;
 
     public Receiver(
@@ -63,6 +64,8 @@ public class Receiver : IReceiver
             channel.BasicConsume(queue: queueName,
                                  autoAck: true,
                                  consumer: consumer);
+
+            Initialized?.Invoke(this, connection.Endpoint.ToString());
 
             cancellationToken.WaitHandle.WaitOne();
         }
