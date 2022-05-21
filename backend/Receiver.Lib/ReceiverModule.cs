@@ -13,7 +13,8 @@ public class ReceiverModule : NinjectModule
     {
         Kernel.Bind<IEventingBasicConsumerFactory>().To<ConsumerFactory>();
         Kernel.Bind<IReceiver>().To<Receiver>().WithConstructorArgument("exchangeName", exchangeName); ;
-        Kernel.Bind<IConnectionFactory>().ToMethod(_ => {
+        Kernel.Bind<IConnectionFactory>().ToMethod(_ =>
+        {
             var connectionFactory = new ConnectionFactory();
 
             connectionFactory.Uri = new Uri(brokerUri);
