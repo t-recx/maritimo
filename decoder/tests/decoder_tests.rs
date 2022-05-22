@@ -124,6 +124,43 @@ fn decode_should_decode_basic_message_info() {
     assert_eq!(message.message_type, 1);
     assert_eq!(message.repeat_indicator, 0);
     assert_eq!(message.mmsi, 477553000);
+    assert_eq!(message.source_id, None);
+}
+
+#[test]
+fn decode_should_extract_source_id_when_present_testcase1() {
+    let message = decoder::decode(
+        "\\s:2573315,c:1653148247*05\\!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C",
+        &mut HashMap::new(),
+    )
+    .unwrap()
+    .unwrap();
+
+    assert_eq!(message.source_id.unwrap(), "2573315");
+}
+
+#[test]
+fn decode_should_extract_source_id_when_present_testcase2() {
+    let message = decoder::decode(
+        "\\s:STX348i-93A*05\\!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C",
+        &mut HashMap::new(),
+    )
+    .unwrap()
+    .unwrap();
+
+    assert_eq!(message.source_id.unwrap(), "STX348i-93A");
+}
+
+#[test]
+fn decode_should_extract_source_id_when_present_testcase3() {
+    let message = decoder::decode(
+        "\\c:3423423,s:S43209c,y:3432432*05\\!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C",
+        &mut HashMap::new(),
+    )
+    .unwrap()
+    .unwrap();
+
+    assert_eq!(message.source_id.unwrap(), "S43209c");
 }
 
 fn assert_decode_when_field_is_of_incorrect_type_should_return_error(input: &str) {

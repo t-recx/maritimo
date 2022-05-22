@@ -11,6 +11,7 @@ pub enum RadioChannel {
 pub enum PacketType {
     AIVDM,
     AIVDO,
+    BSVDM,
     Unknown,
 }
 
@@ -48,6 +49,7 @@ pub fn decode_nmea(input: &str) -> Result<NMEAMessage, NMEADecoderError> {
     let packet_type = match tokens[0] {
         "!AIVDM" => PacketType::AIVDM,
         "!AIVDO" => PacketType::AIVDO,
+        "!BSVDM" => PacketType::BSVDM,
         _ => PacketType::Unknown,
     };
 
