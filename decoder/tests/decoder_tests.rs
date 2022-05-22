@@ -54,9 +54,9 @@ fn decode_when_more_than_one_fragment_should_store_fragment_payload() {
     .unwrap();
 
     assert!(result.is_none());
-    assert_eq!(h[&3].len(), 1);
+    assert_eq!(h[""][&3].len(), 1);
     assert_eq!(
-        h[&3][0],
+        h[""][&3][0],
         "55P5TL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
     );
 }
@@ -97,19 +97,19 @@ fn decode_when_more_than_one_fragment_and_message_contains_last_fragment_should_
         &mut h,
     )
     .unwrap();
-    assert_eq!(h[&3].len(), 1);
+    assert_eq!(h[""][&3].len(), 1);
     decoder::decode(
         "!AIVDM,3,2,3,B,55P5TL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
         &mut h,
     )
     .unwrap();
-    assert_eq!(h[&3].len(), 2);
+    assert_eq!(h[""][&3].len(), 2);
     decoder::decode(
         "!AIVDM,3,3,3,B,55P5TL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
         &mut h,
     )
     .unwrap();
-    assert_eq!(h.contains_key(&3), false);
+    assert_eq!(h[""].contains_key(&3), false);
 }
 
 #[test]
@@ -161,6 +161,70 @@ fn decode_should_extract_source_id_when_present_testcase3() {
     .unwrap();
 
     assert_eq!(message.source_id.unwrap(), "S43209c");
+}
+
+#[test]
+fn decode_when_source_id_present_should_store_fragments_correctly() {
+    let mut h = HashMap::new();
+
+    decoder::decode(
+        "\\s:STATIONONE*05\\!AIVDM,3,1,3,B,FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        &mut h,
+    )
+    .unwrap();
+    assert_eq!(h["STATIONONE"].len(), 1);
+    assert_eq!(h["STATIONONE"][&3].len(), 1);
+    assert_eq!(
+        h["STATIONONE"][&3][0],
+        "FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    decoder::decode(
+        "\\c:439843,s:STATIONTWO,y:34984398\\!AIVDM,3,1,3,B,SECOND01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        &mut h,
+    )
+    .unwrap();
+    assert_eq!(h["STATIONONE"].len(), 1);
+    assert_eq!(h["STATIONTWO"].len(), 1);
+    assert_eq!(h["STATIONONE"][&3].len(), 1);
+    assert_eq!(h["STATIONTWO"][&3].len(), 1);
+    assert_eq!(
+        h["STATIONTWO"][&3][0],
+        "SECOND01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    decoder::decode(
+        "\\c:439843,s:STATIONTWO,y:34984398\\!AIVDM,3,2,3,B,MORESECONDaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        &mut h,
+    )
+    .unwrap();
+    assert_eq!(h["STATIONONE"].len(), 1);
+    assert_eq!(h["STATIONTWO"].len(), 1);
+    assert_eq!(h["STATIONTWO"][&3].len(), 2);
+    assert_eq!(
+        h["STATIONTWO"][&3][0],
+        "SECOND01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    assert_eq!(
+        h["STATIONTWO"][&3][1],
+        "MORESECONDaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    decoder::decode(
+        "\\s:STATIONONE*05\\!AIVDM,3,1,4,B,ANOTHERVIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        &mut h,
+    )
+    .unwrap();
+    assert_eq!(h["STATIONONE"].len(), 2);
+    assert_eq!(h["STATIONONE"][&3].len(), 1);
+    assert_eq!(h["STATIONONE"][&4].len(), 1);
+    assert_eq!(
+        h["STATIONONE"][&3][0],
+        "FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    assert_eq!(
+        h["STATIONONE"][&4][0],
+        "ANOTHERVIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    assert_eq!(h["STATIONTWO"].len(), 1);
+    assert_eq!(h["STATIONTWO"][&3].len(), 2);
 }
 
 fn assert_decode_when_field_is_of_incorrect_type_should_return_error(input: &str) {

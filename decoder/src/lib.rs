@@ -160,10 +160,10 @@ pub struct Message {
     #[serde(flatten)]
     pub data: MessageData,
 }
-// todo: take into account source id in message_acc
+
 pub fn decode(
     input: &str,
-    message_acc: &mut HashMap<u8, Vec<String>>,
+    sources_messages_acc: &mut HashMap<String, HashMap<u8, Vec<String>>>,
 ) -> Result<Option<Message>, NMEADecoderError> {
     let tokens = input.split('!').collect::<Vec<&str>>();
 
@@ -175,6 +175,10 @@ pub fn decode(
             let mut data_payload: Option<String> = None;
 
             if nmea_message.fragment_count > 1 {
+                let message_acc = sources_messages_acc
+                    .entry(source_id.as_ref().map_or("".to_string(), |x| x.to_string()))
+                    .or_insert(HashMap::new());
+
                 match nmea_message.message_id {
                     Some(id) => {
                         if nmea_message.fragment_number > 1 && !message_acc.contains_key(&id) {
