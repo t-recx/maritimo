@@ -70,8 +70,10 @@ describe Application do
       it "should be received and published" do
         exercise_run
 
-        _(@connection.channel.fake_queue.published).must_equal [["1", {persistent: true}],
-          ["2", {persistent: true}]]
+        _(@connection.channel.fake_queue.published).must_equal [
+          ["1", {persistent: true}],
+          ["2", {persistent: true}]
+        ]
       end
     end
   end
