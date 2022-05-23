@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rake'
+require "rake"
 
 require_relative "lib/station/version"
 
@@ -18,11 +18,11 @@ Gem::Specification.new do |spec|
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/t-recx/maritimo"
 
-  spec.files = FileList['lib/*.rb',
-                        'exe/*',
-                        'bin/*',
-                        '[A-Z]*',
-                        'test/*'].to_a
+  spec.files = FileList["lib/*.rb",
+    "exe/*",
+    "bin/*",
+    "[A-Z]*",
+    "test/*"].to_a
 
   spec.bindir = "exe"
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
