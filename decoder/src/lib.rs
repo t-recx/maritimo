@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate lazy_static;
 
+use regex::Regex;
 use serde::Serialize;
 use std::collections::HashMap;
 
@@ -155,19 +156,29 @@ pub struct Message {
     pub message_type: u8,
     pub repeat_indicator: u8,
     pub mmsi: u32,
+    pub source_id: Option<String>,
     #[serde(flatten)]
     pub data: MessageData,
 }
 
 pub fn decode(
     input: &str,
-    message_acc: &mut HashMap<u8, Vec<String>>,
+    sources_messages_acc: &mut HashMap<String, HashMap<u8, Vec<String>>>,
 ) -> Result<Option<Message>, NMEADecoderError> {
-    match nmea::decode_nmea(&input) {
+    let tokens = input.split('!').collect::<Vec<&str>>();
+
+    let source_id = get_source_id(tokens[0]);
+    let ais_sentence = format!("!{}", tokens[1]);
+
+    match nmea::decode_nmea(&ais_sentence) {
         Ok(nmea_message) => {
             let mut data_payload: Option<String> = None;
 
             if nmea_message.fragment_count > 1 {
+                let message_acc = sources_messages_acc
+                    .entry(source_id.as_ref().map_or("".to_string(), |x| x.to_string()))
+                    .or_insert(HashMap::new());
+
                 match nmea_message.message_id {
                     Some(id) => {
                         if nmea_message.fragment_number > 1 && !message_acc.contains_key(&id) {
@@ -256,6 +267,7 @@ pub fn decode(
                     repeat_indicator,
                     mmsi,
                     data,
+                    source_id,
                 }));
             }
         }
@@ -263,4 +275,15 @@ pub fn decode(
     }
 
     return Ok(None);
+}
+
+fn get_source_id(input: &str) -> Option<String> {
+    lazy_static! {
+        static ref RE: Regex = Regex::new(r"s:(.*?)[,|*]").unwrap();
+    }
+
+    match RE.captures(input) {
+        Some(v) => v.get(1).map_or(None, |m| Some(m.as_str().to_string())),
+        None => None,
+    }
 }

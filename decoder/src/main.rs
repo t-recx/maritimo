@@ -1,6 +1,6 @@
 use amiquip::{
-    Connection, ConsumerMessage, ConsumerOptions, ExchangeDeclareOptions, ExchangeType, FieldTable,
-    Publish, QueueDeclareOptions, Result,
+    Connection, ConsumerMessage, ConsumerOptions, ExchangeDeclareOptions, ExchangeType, Publish,
+    QueueDeclareOptions, Result,
 };
 use decoder::error::MissingEnvironmentVariableError;
 use std::collections::HashMap;
@@ -11,11 +11,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
     let rabbitmq_uri_env_var_name = "MARITIMO_RABBITMQ_URI";
-    let incoming_exchange_env_var_name = "MARITIMO_RABBITMQ_ENCODED_MESSAGES_EXCHANGE_NAME";
+    let incoming_queue_env_var_name = "MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME";
     let outgoing_exchange_env_var_name = "MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME";
 
     let rabbitmq_uri;
-    let incoming_exchange;
+    let incoming_queue;
     let outgoing_exchange;
 
     match env::var(rabbitmq_uri_env_var_name) {
@@ -32,13 +32,13 @@ fn main() -> Result<(), Box<dyn Error>> {
         }
     }
 
-    match env::var(incoming_exchange_env_var_name) {
-        Ok(value) => incoming_exchange = value,
+    match env::var(incoming_queue_env_var_name) {
+        Ok(value) => incoming_queue = value,
         Err(_) => {
             return Err(MissingEnvironmentVariableError {
                 message: format!(
-                    "No exchange name for encoded messages configured. Set {} environment variable",
-                    incoming_exchange_env_var_name
+                    "No queue name for encoded messages configured. Set {} environment variable",
+                    incoming_queue_env_var_name
                 )
                 .to_string(),
             }
@@ -64,26 +64,17 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let incoming_channel = incoming_connection.open_channel(None)?;
 
-    let incoming_exchange = incoming_channel.exchange_declare(
-        ExchangeType::Fanout,
-        incoming_exchange,
-        ExchangeDeclareOptions::default(),
-    )?;
-
     let queue = incoming_channel.queue_declare(
-        "",
+        incoming_queue,
         QueueDeclareOptions {
-            exclusive: true,
+            durable: true,
             ..QueueDeclareOptions::default()
         },
     )?;
 
-    queue.bind(&incoming_exchange, "", FieldTable::new())?;
+    incoming_channel.qos(0, 1, false)?;
 
-    let consumer = queue.consume(ConsumerOptions {
-        no_ack: true,
-        ..ConsumerOptions::default()
-    })?;
+    let consumer = queue.consume(ConsumerOptions::default())?;
 
     let mut acc = HashMap::new();
 
@@ -118,6 +109,8 @@ fn main() -> Result<(), Box<dyn Error>> {
                     },
                     Err(e) => println!("{:?}", e),
                 }
+
+                consumer.ack(delivery)?;
             }
             other => {
                 println!("Consumer ended: {:?}", other);
