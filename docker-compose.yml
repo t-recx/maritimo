@@ -11,6 +11,16 @@ services:
   broker:
     image: rabbitmq:3.10-alpine
     restart: always
+  station:
+    build:
+      context: ./station/
+      dockerfile: ../docker/ruby/Dockerfile
+    command: sh -c 'wait-for-it -q broker:5672 -- bundle exec exe/station'
+    env_file:
+      - ./.env
+    depends_on:
+      - broker
+    restart: always
   decoder:
     build: 
       context: ./decoder/
