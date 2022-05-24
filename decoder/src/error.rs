@@ -10,6 +10,10 @@ pub enum NMEADecoderErrorType {
     IncorrectFieldType,
     MissingFields,
     CheckSumNotPresent,
+    ErrorQueryingRedis,
+    ErrorSettingKeyRedis,
+    ErrorDeletingKeyRedis,
+    NumberOfRecordedFragmentsDoesNotMatchMessageFragmentCount,
     Other,
 }
 
