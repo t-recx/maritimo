@@ -167,7 +167,7 @@ pub struct Message {
 pub fn decode(
     input: &str,
     redis_connection: &mut Connection,
-    hash_key_when_no_source_id: &str
+    hash_key_when_no_source_id: &str,
 ) -> Result<Option<Message>, NMEADecoderError> {
     let tokens = input.split('!').collect::<Vec<&str>>();
 
@@ -181,91 +181,57 @@ pub fn decode(
             if nmea_message.fragment_count > 1 {
                 let hash_key = match &source_id {
                     Some(v) => v.to_string(),
-                    None => hash_key_when_no_source_id.to_string()
+                    None => hash_key_when_no_source_id.to_string(),
                 };
 
                 match nmea_message.message_id {
                     Some(id) => {
-                        let result = redis::cmd("HGET")
+                        let payload = redis::cmd("HGET")
                             .arg(&hash_key)
                             .arg(&id)
-                            .query::<Option<String>>(redis_connection);
+                            .query::<Option<String>>(redis_connection)
+                            .unwrap()
+                            .unwrap_or("".to_string());
 
-                        if result.is_err() {
+                        if nmea_message.fragment_number > 1 && payload.len() == 0 {
                             return Err(NMEADecoderError {
                                 error_type:
-                                    NMEADecoderErrorType::ErrorQueryingRedis,
+                                    NMEADecoderErrorType::PreviousFragmentsNotPresentForMessageId,
                             });
-                        }
-
-                        let payload = result.unwrap().unwrap_or("".to_string());
-
-                        if nmea_message.fragment_number > 1 {
-                            if payload.len() == 0 {
-                                return Err(NMEADecoderError {
-                                    error_type:
-                                        NMEADecoderErrorType::PreviousFragmentsNotPresentForMessageId,
-                                });
-                            }
                         }
 
                         let payload = format!("{}{}", payload, nmea_message.data_payload);
 
-                        let result = redis::cmd("HSET")
+                        redis::cmd("HSET")
                             .arg(&hash_key)
                             .arg(&id)
                             .arg(&payload)
-                            .query::<i32>(redis_connection);
-
-                        if result.is_err() {
-                            return Err(NMEADecoderError {
-                                error_type:
-                                    NMEADecoderErrorType::ErrorSettingKeyRedis,
-                            });
-                        }
+                            .execute(redis_connection);
 
                         let fragment_number_hash_key = format!("{}#FN", id);
 
-                        let result = redis::cmd("HINCRBY")
+                        let current_recorded_fragment_number = redis::cmd("HINCRBY")
                             .arg(&hash_key)
                             .arg(&fragment_number_hash_key)
                             .arg::<u8>(1)
-                            .query::<u8>(redis_connection);
+                            .query::<u8>(redis_connection)
+                            .unwrap();
 
-                        if result.is_err() {
-                            return Err(NMEADecoderError {
-                                error_type:
-                                    NMEADecoderErrorType::ErrorSettingKeyRedis,
-                            });
-                        }
-
-                        let current_recorded_fragment_number = result.unwrap();
-
-                        if nmea_message.fragment_number != current_recorded_fragment_number {
-                            let result = redis::cmd("HDEL")
+                        if current_recorded_fragment_number != nmea_message.fragment_number
+                            || nmea_message.fragment_count == nmea_message.fragment_number
+                        {
+                            redis::cmd("HDEL")
                                 .arg(&hash_key)
                                 .arg(&id)
-                                .query::<i32>(redis_connection);
+                                .execute(redis_connection);
 
-                            if result.is_err() {
-                                return Err(NMEADecoderError {
-                                    error_type:
-                                        NMEADecoderErrorType::ErrorDeletingKeyRedis,
-                                });
-                            }
-
-                            let result = redis::cmd("HDEL")
+                            redis::cmd("HDEL")
                                 .arg(&hash_key)
                                 .arg(&fragment_number_hash_key)
-                                .query::<i32>(redis_connection);
+                                .execute(redis_connection);
+                        }
 
-                            if result.is_err() {
-                                return Err(NMEADecoderError {
-                                    error_type:
-                                        NMEADecoderErrorType::ErrorDeletingKeyRedis,
-                                });
-                            }
-
+                        if current_recorded_fragment_number != nmea_message.fragment_number {
                             return Err(NMEADecoderError {
                                 error_type:
                                     NMEADecoderErrorType::NumberOfRecordedFragmentsDoesNotMatchMessageFragmentCount,
@@ -274,30 +240,6 @@ pub fn decode(
 
                         if nmea_message.fragment_count == nmea_message.fragment_number {
                             data_payload = Some(payload);
-
-                            let result = redis::cmd("HDEL")
-                                .arg(&hash_key)
-                                .arg(nmea_message.message_id)
-                                .query::<i32>(redis_connection);
-
-                            if result.is_err() {
-                                return Err(NMEADecoderError {
-                                    error_type:
-                                        NMEADecoderErrorType::ErrorDeletingKeyRedis,
-                                });
-                            }
-
-                            let result = redis::cmd("HDEL")
-                                .arg(&hash_key)
-                                .arg(&fragment_number_hash_key)
-                                .query::<i32>(redis_connection);
-
-                            if result.is_err() {
-                                return Err(NMEADecoderError {
-                                    error_type:
-                                        NMEADecoderErrorType::ErrorDeletingKeyRedis,
-                                });
-                            }
                         }
                     }
                     None => {

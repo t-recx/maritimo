@@ -2,8 +2,8 @@ use amiquip::{
     Connection, ConsumerMessage, ConsumerOptions, ExchangeDeclareOptions, ExchangeType, Publish,
     QueueDeclareOptions, Result,
 };
-use redis::Client;
 use decoder::error::MissingEnvironmentVariableError;
+use redis::Client;
 use std::env;
 use std::error::Error;
 
