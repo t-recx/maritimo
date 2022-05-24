@@ -1,20 +1,23 @@
-use std::collections::HashMap;
-
 extern crate decoder;
 use decoder::error::NMEADecoderErrorType;
 use decoder::MessageData;
 
+use crate::support::*;
+
+pub mod support;
+
 #[test]
 fn decode_when_message_size_incorrect_should_return_error() {
-    let mut acc = HashMap::new();
+    let connection = &mut get_redis_connection();
 
     decoder::decode(
         "!AIVDM,2,1,0,A,58wt8Ui`g??r21`7S=:22058<v05Htp000000015>8OA;0sk,0*7B",
-        &mut acc,
+        connection,
+        "",
     )
     .unwrap();
     let result =
-        decoder::decode("!AIVDM,2,2,0,A,eQ8823mDm3kP000000000,2*5D", &mut acc).unwrap_err();
+        decoder::decode("!AIVDM,2,2,0,A,eQ8823mDm3kP000000000,2*5D", connection, "").unwrap_err();
 
     assert_eq!(
         result.error_type,
@@ -24,16 +27,21 @@ fn decode_when_message_size_incorrect_should_return_error() {
 
 #[test]
 fn decode_should_decode_static_and_voyage_data() {
-    let mut acc = HashMap::new();
+    let connection = &mut get_redis_connection();
 
     decoder::decode(
         "!AIVDM,2,1,0,A,58wt8Ui`g??r21`7S=:22058<v05Htp000000015>8OA;0sk,0*7B",
-        &mut acc,
+        connection,
+        "",
     )
     .unwrap();
-    let message = decoder::decode("!AIVDM,2,2,0,A,eQ8823mDm3kP00000000000,2*5D", &mut acc)
-        .unwrap()
-        .unwrap();
+    let message = decoder::decode(
+        "!AIVDM,2,2,0,A,eQ8823mDm3kP00000000000,2*5D",
+        connection,
+        "",
+    )
+    .unwrap()
+    .unwrap();
 
     assert_eq!(message.message_type, 5);
     assert_eq!(message.repeat_indicator, 0);
@@ -83,14 +91,15 @@ fn decode_should_decode_static_and_voyage_data() {
 
 #[test]
 fn decode_should_decode_static_and_voyage_data2() {
-    let mut acc = HashMap::new();
+    let connection = &mut get_redis_connection();
 
     decoder::decode(
         "!AIVDM,2,1,3,B,55P5TL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
-        &mut acc,
+        connection,
+        "",
     )
     .unwrap();
-    let message = decoder::decode("!AIVDM,2,2,3,B,1@0000000000000,2*55", &mut acc)
+    let message = decoder::decode("!AIVDM,2,2,3,B,1@0000000000000,2*55", connection, "")
         .unwrap()
         .unwrap();
 
@@ -142,14 +151,15 @@ fn decode_should_decode_static_and_voyage_data2() {
 
 #[test]
 fn decode_when_message_is_slightly_truncated_should_still_decode_gracefully() {
-    let mut acc = HashMap::new();
+    let connection = &mut get_redis_connection();
 
     decoder::decode(
         "!AIVDM,2,1,0,A,58wt8Ui`g??r21`7S=:22058<v05Htp000000015>8OA;0sk,0*7B",
-        &mut acc,
+        connection,
+        "",
     )
     .unwrap();
-    let message = decoder::decode("!AIVDM,2,2,0,A,eQ8823mDm3kP0000000000,2*5D", &mut acc)
+    let message = decoder::decode("!AIVDM,2,2,0,A,eQ8823mDm3kP0000000000,2*5D", connection, "")
         .unwrap()
         .unwrap();
 

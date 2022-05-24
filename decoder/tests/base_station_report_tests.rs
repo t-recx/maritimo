@@ -1,14 +1,17 @@
-use std::collections::HashMap;
-
 extern crate decoder;
 use decoder::error::NMEADecoderErrorType;
 use decoder::MessageData;
+
+use crate::support::*;
+
+pub mod support;
 
 #[test]
 fn decode_when_message_size_incorrect_should_return_error() {
     let result = decoder::decode(
         "!AIVDM,1,1,,A,403OviQuMGCqWrRO9>E6fE700@G,0*4D",
-        &mut HashMap::new(),
+        &mut get_redis_connection(),
+        "",
     )
     .unwrap_err();
 
@@ -22,7 +25,8 @@ fn decode_when_message_size_incorrect_should_return_error() {
 fn decode_should_decode_base_station_report() {
     let message = decoder::decode(
         "!AIVDM,1,1,,A,403OviQuMGCqWrRO9>E6fE700@GO,0*4D",
-        &mut HashMap::new(),
+        &mut get_redis_connection(),
+        "",
     )
     .unwrap()
     .unwrap();
