@@ -1,9 +1,12 @@
 #[macro_use]
 extern crate lazy_static;
 
+extern crate redis;
+
 use regex::Regex;
 use serde::Serialize;
-use std::collections::HashMap;
+
+use redis::Connection;
 
 mod conversions;
 mod decoders;
@@ -163,7 +166,8 @@ pub struct Message {
 
 pub fn decode(
     input: &str,
-    sources_messages_acc: &mut HashMap<String, HashMap<u8, Vec<String>>>,
+    redis_connection: &mut Connection,
+    hash_key_when_no_source_id: &str,
 ) -> Result<Option<Message>, NMEADecoderError> {
     let tokens = input.split('!').collect::<Vec<&str>>();
 
@@ -175,27 +179,67 @@ pub fn decode(
             let mut data_payload: Option<String> = None;
 
             if nmea_message.fragment_count > 1 {
-                let message_acc = sources_messages_acc
-                    .entry(source_id.as_ref().map_or("".to_string(), |x| x.to_string()))
-                    .or_insert(HashMap::new());
+                let hash_key = match &source_id {
+                    Some(v) => v.to_string(),
+                    None => hash_key_when_no_source_id.to_string(),
+                };
 
                 match nmea_message.message_id {
                     Some(id) => {
-                        if nmea_message.fragment_number > 1 && !message_acc.contains_key(&id) {
+                        let payload = redis::cmd("HGET")
+                            .arg(&hash_key)
+                            .arg(&id)
+                            .query::<Option<String>>(redis_connection)
+                            .unwrap()
+                            .unwrap_or("".to_string());
+
+                        if nmea_message.fragment_number > 1 && payload.len() == 0 {
                             return Err(NMEADecoderError {
                                 error_type:
                                     NMEADecoderErrorType::PreviousFragmentsNotPresentForMessageId,
                             });
                         }
 
-                        let payload_vector = message_acc.entry(id).or_insert(Vec::new());
+                        let payload = format!("{}{}", payload, nmea_message.data_payload);
 
-                        payload_vector.push(nmea_message.data_payload);
+                        redis::cmd("HSET")
+                            .arg(&hash_key)
+                            .arg(&id)
+                            .arg(&payload)
+                            .execute(redis_connection);
+
+                        let fragment_number_hash_key = format!("{}#FN", id);
+
+                        let current_recorded_fragment_number = redis::cmd("HINCRBY")
+                            .arg(&hash_key)
+                            .arg(&fragment_number_hash_key)
+                            .arg::<u8>(1)
+                            .query::<u8>(redis_connection)
+                            .unwrap();
+
+                        if current_recorded_fragment_number != nmea_message.fragment_number
+                            || nmea_message.fragment_count == nmea_message.fragment_number
+                        {
+                            redis::cmd("HDEL")
+                                .arg(&hash_key)
+                                .arg(&id)
+                                .execute(redis_connection);
+
+                            redis::cmd("HDEL")
+                                .arg(&hash_key)
+                                .arg(&fragment_number_hash_key)
+                                .execute(redis_connection);
+                        }
+
+                        if current_recorded_fragment_number != nmea_message.fragment_number {
+                            return Err(NMEADecoderError {
+                                error_type:
+                                    NMEADecoderErrorType::NumberOfRecordedFragmentsDoesNotMatchMessageFragmentCount,
+                            });
+                        }
 
                         if nmea_message.fragment_count == nmea_message.fragment_number {
-                            data_payload = Some(message_acc[&id].join(""));
-
-                            message_acc.remove_entry(&id);
+                            data_payload = Some(payload);
                         }
                     }
                     None => {

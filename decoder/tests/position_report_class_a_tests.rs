@@ -1,14 +1,17 @@
-use std::collections::HashMap;
-
 extern crate decoder;
 use decoder::error::NMEADecoderErrorType;
 use decoder::MessageData;
+
+use crate::support::*;
+
+pub mod support;
 
 #[test]
 fn decode_when_message_size_incorrect_should_return_error() {
     let result = decoder::decode(
         "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN,0*5C",
-        &mut HashMap::new(),
+        &mut get_redis_connection(),
+        "",
     )
     .unwrap_err();
 
@@ -22,7 +25,8 @@ fn decode_when_message_size_incorrect_should_return_error() {
 fn decode_should_decode_position_report_class_a() {
     let message = decoder::decode(
         "!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C",
-        &mut HashMap::new(),
+        &mut get_redis_connection(),
+        "",
     )
     .unwrap()
     .unwrap();
@@ -66,7 +70,8 @@ fn decode_should_decode_position_report_class_a() {
 fn decode_should_decode_position_report_class_a2() {
     let message = decoder::decode(
         "!AIVDM,1,1,,A,15RTgt0PAso;90TKcjM8h6g208CQ,0*4A",
-        &mut HashMap::new(),
+        &mut get_redis_connection(),
+        "",
     )
     .unwrap()
     .unwrap();
@@ -110,7 +115,8 @@ fn decode_should_decode_position_report_class_a2() {
 fn decode_should_decode_position_report_class_a3() {
     let message = decoder::decode(
         "!AIVDM,1,1,,A,13u?etPv2;0n:dDPwUM1U1Cb069D,0*23",
-        &mut HashMap::new(),
+        &mut get_redis_connection(),
+        "",
     )
     .unwrap()
     .unwrap();

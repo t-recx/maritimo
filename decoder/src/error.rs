@@ -10,6 +10,7 @@ pub enum NMEADecoderErrorType {
     IncorrectFieldType,
     MissingFields,
     CheckSumNotPresent,
+    NumberOfRecordedFragmentsDoesNotMatchMessageFragmentCount,
     Other,
 }
 

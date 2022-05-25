@@ -1,13 +1,19 @@
-use std::collections::HashMap;
-
 extern crate decoder;
 use decoder::error::NMEADecoderErrorType;
 use decoder::MessageData;
 
+use crate::support::*;
+
+pub mod support;
+
 #[test]
 fn decode_when_message_size_incorrect_should_return_error() {
-    let result =
-        decoder::decode("!AIVDM,1,1,,A,KCQ9r=hrFUnH7P0,0*41", &mut HashMap::new()).unwrap_err();
+    let result = decoder::decode(
+        "!AIVDM,1,1,,A,KCQ9r=hrFUnH7P0,0*41",
+        &mut get_redis_connection(),
+        "",
+    )
+    .unwrap_err();
 
     assert_eq!(
         result.error_type,
@@ -17,9 +23,13 @@ fn decode_when_message_size_incorrect_should_return_error() {
 
 #[test]
 fn decode_should_decode_long_range_broadcast() {
-    let message = decoder::decode("!AIVDM,1,1,,A,KCQ9r=hrFUnH7P00,0*41", &mut HashMap::new())
-        .unwrap()
-        .unwrap();
+    let message = decoder::decode(
+        "!AIVDM,1,1,,A,KCQ9r=hrFUnH7P00,0*41",
+        &mut get_redis_connection(),
+        "",
+    )
+    .unwrap()
+    .unwrap();
 
     assert_eq!(message.message_type, 27);
     assert_eq!(message.repeat_indicator, 1);
@@ -53,7 +63,8 @@ fn decode_should_decode_long_range_broadcast() {
 fn decode_should_decode_full_slot_long_range_broadcast() {
     let message = decoder::decode(
         "!AIVDM,1,1,,B,KC5E2b@U19PFdLbMuc5=ROv62<7m,0*16",
-        &mut HashMap::new(),
+        &mut get_redis_connection(),
+        "",
     )
     .unwrap()
     .unwrap();
