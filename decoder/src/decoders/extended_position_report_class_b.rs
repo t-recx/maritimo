@@ -61,7 +61,7 @@ pub fn get(bytestring: &str) -> Result<MessageData, NMEADecoderError> {
     let true_heading = match get_unsigned_number(&bytestring[124..133]) {
         Ok(n) => match n {
             511 => None,
-            _ => Some(n as u8),
+            _ => Some(n as u16),
         },
         Err(e) => return Err(e),
     };

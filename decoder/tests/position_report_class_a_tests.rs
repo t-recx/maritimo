@@ -155,3 +155,49 @@ fn decode_should_decode_position_report_class_a3() {
         _ => panic!(),
     };
 }
+
+#[test]
+fn decode_should_decode_position_report_class_a4() {
+    let message = decoder::decode(
+        "!AIVDM,1,1,,A,38Id705000rRVJhE7cl9n;160000,0*40",
+        &mut get_redis_connection(),
+        "",
+    )
+    .unwrap()
+    .unwrap();
+
+    assert_eq!(message.message_type, 3);
+    assert_eq!(message.repeat_indicator, 0);
+    assert_eq!(message.mmsi, 563808000);
+
+    match message.data {
+        MessageData::PositionReportClassA {
+            navigation_status,
+            rate_of_turn,
+            speed_over_ground,
+            position_accuracy,
+            longitude,
+            latitude,
+            course_over_ground,
+            true_heading,
+            manuever_indicator,
+            timestamp,
+            raim_flag,
+            magnetic_declination: _,
+        } => {
+            assert_eq!(navigation_status, 5);
+            assert_eq!(rate_of_turn, 0.0);
+            assert_eq!(speed_over_ground, Some(0.0));
+            assert_eq!(position_accuracy, true);
+            assert_eq!(longitude, Some(-76.327533));
+            assert_eq!(latitude, Some(36.91));
+            assert_eq!(course_over_ground, Some(252.0));
+            assert_eq!(true_heading, Some(352));
+            assert_eq!(manuever_indicator, None);
+            assert_eq!(timestamp, 35);
+            assert_eq!(raim_flag, false);
+        }
+        _ => panic!(),
+    };
+}
+
