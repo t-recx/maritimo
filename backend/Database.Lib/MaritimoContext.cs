@@ -15,6 +15,6 @@ public class MaritimoContext : DbContext, IMaritimoContext
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql(connectionString ?? Environment.GetEnvironmentVariable("MARITIMO_CONNECTION_STRING")!);
+        => optionsBuilder.UseNpgsql(connectionString ?? Environment.GetEnvironmentVariable("MARITIMO_DB_CONNECTION_STRING")!);
 
 }

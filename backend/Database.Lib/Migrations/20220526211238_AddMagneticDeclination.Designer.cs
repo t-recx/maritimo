@@ -3,6 +3,7 @@ using System;
 using Database.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Lib.Migrations
 {
     [DbContext(typeof(MaritimoContext))]
-    partial class MaritimoContextModelSnapshot : ModelSnapshot
+    [Migration("20220526211238_AddMagneticDeclination")]
+    partial class AddMagneticDeclination
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,8 +158,8 @@ namespace Database.Lib.Migrations
                     b.Property<byte?>("timestamp")
                         .HasColumnType("smallint");
 
-                    b.Property<int?>("true_heading")
-                        .HasColumnType("integer");
+                    b.Property<byte?>("true_heading")
+                        .HasColumnType("smallint");
 
                     b.Property<byte?>("utc_day")
                         .HasColumnType("smallint");
@@ -313,8 +315,8 @@ namespace Database.Lib.Migrations
                     b.Property<byte?>("timestamp")
                         .HasColumnType("smallint");
 
-                    b.Property<int?>("true_heading")
-                        .HasColumnType("integer");
+                    b.Property<byte?>("true_heading")
+                        .HasColumnType("smallint");
 
                     b.Property<DateTime?>("updated")
                         .HasColumnType("timestamp with time zone");

@@ -11,7 +11,7 @@ public class DTOObjectData
     public float? longitude { get; set; }
     public float? latitude { get; set; }
     public float? course_over_ground { get; set; }
-    public byte? true_heading { get; set; }
+    public int? true_heading { get; set; }
     public byte? timestamp { get; set; }
     public byte? manuever_indicator { get; set; }
     public bool? raim_flag { get; set; }
@@ -50,5 +50,6 @@ public class DTOObjectData
     public bool? off_position { get; set; }
     public bool? virtual_aid_flag { get; set; }
     public bool? gnss_position_status { get; set; }
+    public float? magnetic_declination { get; set; }
 }
 
