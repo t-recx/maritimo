@@ -59,5 +59,5 @@ public class Message
     public bool? gnss_position_status { get; set; }
     public float? magnetic_declination { get; set; }
 
-    public DateTime created { get; set; }
+    public DateTime updated { get; set; }
 }

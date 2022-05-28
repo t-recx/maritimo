@@ -33,7 +33,7 @@ public class DatabaseService : IDatabaseService
                 var startDate = DateTime.UtcNow - timespan;
 
                 query = query
-                    .Where(x => x.created >= startDate || (x.updated != null && x.updated >= startDate));
+                    .Where(x => x.updated >= startDate);
             }
 
             return await mapper
@@ -50,7 +50,7 @@ public class DatabaseService : IDatabaseService
         {
             var message = mapper.Map<Message>(dto);
 
-            message.created = DateTime.UtcNow;
+            message.updated = DateTime.UtcNow;
 
             context.Messages.Add(message);
             context.SaveChanges();
@@ -81,7 +81,7 @@ public class DatabaseService : IDatabaseService
             {
                 objectData = mapper.Map<ObjectData>(dto);
 
-                objectData.created = DateTime.UtcNow;
+                objectData.updated = DateTime.UtcNow;
 
                 context.Objects.Add(objectData);
             }
