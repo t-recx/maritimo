@@ -5,12 +5,14 @@ import AisShipObject from "./AisShipObject";
 
 import { useMap, useMapEvents } from "react-leaflet";
 
-// todo: cleanup older ships
 // todo: make popup with ship info
 // todo: add some leeway in bounds when filtering ships
 // todo: configure rest and ws urls
-
 function AisMap() {
+  const onlyObjectsFromHoursAgo = 1;
+  const objectLifeSpanMilliseconds = onlyObjectsFromHoursAgo * 3600000;
+  const lifeSpanPollingIntervalMilliseconds = 30000;
+
   const [data, setData] = useState({});
   const [objectsInView, setObjectsInView] = useState({});
   const latestData = useRef(null);
@@ -43,7 +45,7 @@ function AisMap() {
         const result = await axios.get("http://localhost:5245/api/ais", {
           withCredentials: true,
           params: {
-            fromHoursAgo: 1,
+            fromHoursAgo: onlyObjectsFromHoursAgo,
           },
           headers: {
             "Content-Type": "application/json",
@@ -101,6 +103,27 @@ function AisMap() {
 
     return stopConnection;
   }, [map]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (latestData && latestData.current) {
+        let toDelete = Object.entries(latestData.current)
+          .filter(
+            ([k, v]) =>
+              new Date() - new Date(v.updated) > objectLifeSpanMilliseconds
+          )
+          .map(([k, v]) => k);
+
+        if (toDelete.length > 0) {
+          toDelete.forEach((k) => delete latestData.current[k]);
+          setData({ ...latestData.current });
+          filterObjectsInView(map, { ...latestData.current });
+        }
+      }
+    }, lifeSpanPollingIntervalMilliseconds);
+
+    return () => clearInterval(interval);
+  }, []);
 
   function filterObjectsInView(map, objs) {
     setObjectsInView(getObjectsInView(objs, map.getBounds()));

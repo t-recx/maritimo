@@ -23,13 +23,7 @@ function AisShipObject({ data, zoom }) {
 
   useEffect(() => {
     if (data) {
-      if (
-        data.dimension_to_bow &&
-        data.dimension_to_port &&
-        data.dimension_to_starboard &&
-        data.dimension_to_stern &&
-        data.true_heading
-      ) {
+      if (canBePolygon(data)) {
         setDisplayType(DisplayTypes.ShipPolygon);
       } else {
         setDisplayType(DisplayTypes.Circle);
@@ -74,14 +68,7 @@ function AisShipObject({ data, zoom }) {
   }, [data.true_heading, colorScheme]);
 
   useEffect(() => {
-    if (displayType === DisplayTypes.ShipPolygon) {
-      //if (
-      //data.dimension_to_bow &&
-      //data.dimension_to_port &&
-      //data.dimension_to_starboard &&
-      //data.dimension_to_stern &&
-      //data.true_heading
-      //) {
+    if (displayType === DisplayTypes.ShipPolygon && canBePolygon(data)) {
       const angle = ((data.true_heading + 180) % 360) - 180;
 
       const beakSize = (data.dimension_to_bow + data.dimension_to_stern) / 10;
@@ -153,6 +140,17 @@ function AisShipObject({ data, zoom }) {
       setIconLocation([data.latitude, data.longitude]);
     }
   }, [data, objectPolygon]);
+
+  function canBePolygon(d) {
+    return (
+      d &&
+      d.dimension_to_bow &&
+      d.dimension_to_port &&
+      d.dimension_to_starboard &&
+      d.dimension_to_stern &&
+      d.true_heading
+    );
+  }
 
   return (
     <React.Fragment>
