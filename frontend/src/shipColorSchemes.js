@@ -37,22 +37,22 @@ function getShipColorScheme(shipType) {
     hue = factor * 15;
   }
 
-  const scheme = new colorScheme();
-
-  const colors = scheme
-    .from_hue(hue)
-    .scheme("monochromatic")
-    .distance(0.5)
-    .add_complement(false)
-    .variation("default")
-    .web_safe(true)
-    .colors();
+  const [color, fillColor, colorTransmitter, fillColorTransmitter] =
+    new colorScheme()
+      .from_hue(hue)
+      .scheme("monochromatic")
+      .distance(0.5)
+      .add_complement(false)
+      .variation("default")
+      .web_safe(true)
+      .colors()
+      .map((x) => "#" + x);
 
   return {
-    color: "#" + colors[0],
-    fillColor: "#" + colors[1],
-    colorTransmitter: "#" + colors[3],
-    fillColorTransmitter: "#" + colors[2],
+    color,
+    fillColor,
+    colorTransmitter,
+    fillColorTransmitter,
   };
 }
 
