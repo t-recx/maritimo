@@ -45,11 +45,10 @@ function AisShipObject({ data, zoom }) {
           className: "",
         });
         setIcon(i);
-      }
-      else {
+      } else {
         const i = new L.DivIcon({
           html:
-            '<svg xmlns="http://www.w3.org/2000/svg"  width="8" height="8" transform="translate(3, -3)"> <circle ' + 
+            '<svg xmlns="http://www.w3.org/2000/svg"  width="8" height="8" transform="translate(3, -3)"> <circle ' +
             '"  fill="' +
             colorScheme.fillColor +
             '" cx="4" cy="4" r="3" /> </svg>',
@@ -166,11 +165,11 @@ function AisShipObject({ data, zoom }) {
       )}
       {zoom >= 14 && !objectPolygon && (
         <React.Fragment>
-            <Circle
-              center={[data.latitude, data.longitude]}
-              pathOptions={pathOptions}
-              radius={0.1}
-            ></Circle>
+          <Circle
+            center={[data.latitude, data.longitude]}
+            pathOptions={pathOptions}
+            radius={0.1}
+          ></Circle>
         </React.Fragment>
       )}
       {zoom < 14 && icon && (
