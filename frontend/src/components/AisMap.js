@@ -7,11 +7,12 @@ import { useMap, useMapEvents } from "react-leaflet";
 
 // todo: make popup with ship info
 // todo: add some leeway in bounds when filtering ships
-// todo: configure rest and ws urls
 function AisMap() {
-  const onlyObjectsFromHoursAgo = 1;
-  const objectLifeSpanMilliseconds = onlyObjectsFromHoursAgo * 3600000;
-  const lifeSpanPollingIntervalMilliseconds = 30000;
+  const onlyObjectsFromHoursAgo =
+    process.env.REACT_APP_MAP_OBJECT_LIFESPAN_HOURS;
+  const objectLifeSpanMilliseconds =
+    process.env.REACT_APP_MAP_OBJECT_LIFESPAN_HOURS * 3600000;
+  const lifeSpanPollingIntervalMilliseconds = 60000; // 1 minute
 
   const [data, setData] = useState({});
   const [objectsInView, setObjectsInView] = useState({});
@@ -42,7 +43,7 @@ function AisMap() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const result = await axios.get("http://localhost:5245/api/ais", {
+        const result = await axios.get(process.env.REACT_APP_WEB_API_URL, {
           withCredentials: true,
           params: {
             fromHoursAgo: onlyObjectsFromHoursAgo,
@@ -68,7 +69,7 @@ function AisMap() {
   useEffect(() => {
     // todo: configure new auto reconnect policy to keep reconnecting
     const newConnection = new HubConnectionBuilder()
-      .withUrl("http://localhost:5004/hub")
+      .withUrl(process.env.REACT_APP_TRANSMITTER_HUB_URL)
       .withAutomaticReconnect()
       .build();
 
