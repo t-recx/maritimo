@@ -123,7 +123,7 @@ function AisMap() {
     }, lifeSpanPollingIntervalMilliseconds);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [map, objectLifeSpanMilliseconds]);
 
   function filterObjectsInView(map, objs) {
     setObjectsInView(getObjectsInView(objs, map.getBounds()));
