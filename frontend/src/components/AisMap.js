@@ -69,7 +69,20 @@ function AisMap() {
     // todo: configure new auto reconnect policy to keep reconnecting
     const newConnection = new HubConnectionBuilder()
       .withUrl(process.env.REACT_APP_TRANSMITTER_HUB_URL)
-      .withAutomaticReconnect()
+      .withAutomaticReconnect({
+        nextRetryDelayInMilliseconds: (retryContext) => {
+          switch (retryContext.previousRetryCount) {
+            case 0:
+              return 0;
+            case 1:
+              return 2000;
+            case 2:
+              return 10000;
+          }
+
+          return 30000;
+        },
+      })
       .build();
 
     newConnection.on("Receive", (dto) => {
