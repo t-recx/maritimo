@@ -6,6 +6,15 @@ import AisShipObject from "./AisShipObject";
 import { useMap, useMapEvents } from "react-leaflet";
 
 // todo: make popup with ship info
+const ConnectionStatus = {
+  NotBuilt: "NotBuilt",
+  Built: "Built",
+  Starting: "Starting",
+  Running: "Running",
+  ErrorStarting: "ErrorStarting",
+  RetryStarting: "RetryStarting",
+};
+
 function AisMap() {
   const onlyObjectsFromHoursAgo =
     process.env.REACT_APP_MAP_OBJECT_LIFESPAN_HOURS;
@@ -17,8 +26,15 @@ function AisMap() {
   const [objectsInView, setObjectsInView] = useState({});
   const latestData = useRef(null);
   const [zoom, setZoom] = useState(4);
+  const [connectionStatus, setConnectionStatus] = useState(
+    ConnectionStatus.NotBuilt
+  );
+  const [connection, setConnection] = useState(null);
+  const [startConnectionTries, setStartConnectionTries] = useState(0);
+  const latestStartConnectionTries = useRef(null);
 
   latestData.current = data;
+  latestStartConnectionTries.current = startConnectionTries;
 
   const map = useMap();
 
@@ -66,56 +82,68 @@ function AisMap() {
   }, [map]);
 
   useEffect(() => {
-    // todo: configure new auto reconnect policy to keep reconnecting
-    const newConnection = new HubConnectionBuilder()
-      .withUrl(process.env.REACT_APP_TRANSMITTER_HUB_URL)
-      .withAutomaticReconnect({
-        nextRetryDelayInMilliseconds: (retryContext) => {
-          switch (retryContext.previousRetryCount) {
-            case 0:
-              return 0;
-            case 1:
-              return 2000;
-            case 2:
-              return 10000;
-          }
+    if (connectionStatus == ConnectionStatus.NotBuilt) {
+      const newConnection = new HubConnectionBuilder()
+        .withUrl(process.env.REACT_APP_TRANSMITTER_HUB_URL)
+        .withAutomaticReconnect({
+          nextRetryDelayInMilliseconds: (retryContext) => {
+            return getMillisecondsToNextTry(retryContext.previousRetryCount);
+          },
+        })
+        .build();
 
-          return 30000;
-        },
-      })
-      .build();
+      // todo: subscribe on reconnecting method to display something indicating connection was lost
+      newConnection.on("Receive", (dto) => {
+        latestData.current[dto.mmsi] = {
+          ...latestData.current[dto.mmsi],
+          ...dto,
+        };
 
-    newConnection.on("Receive", (dto) => {
-      latestData.current[dto.mmsi] = {
-        ...latestData.current[dto.mmsi],
-        ...dto,
-      };
+        //setData(Object.assign({}, latestData.current));
+        setData({ ...latestData.current });
 
-      //setData(Object.assign({}, latestData.current));
-      setData({ ...latestData.current });
-
-      // todo: filter just the ship in question
-      filterObjectsInView(map, { ...latestData.current });
-    });
-
-    // todo: start failures are not handled by auto reconnects, so handle them in this method
-    newConnection
-      .start()
-      .then((result) => {
-        console.log("Connected");
-      })
-      .catch((err) => {
-        console.error("Connection failed: " + err.toString());
+        // todo: filter just the ship in question
+        filterObjectsInView(map, { ...latestData.current });
       });
 
-    // todo: subscribe on reconnecting method to display something indicating connection was lost
+      setConnection(newConnection);
+      setConnectionStatus(ConnectionStatus.Built);
+    }
+  }, [map, connectionStatus]);
+
+  useEffect(() => {
+    if (
+      connection &&
+      (connectionStatus == ConnectionStatus.Built ||
+        connectionStatus == ConnectionStatus.RetryStarting)
+    ) {
+      setConnectionStatus(ConnectionStatus.Starting);
+      setStartConnectionTries(latestStartConnectionTries.current + 1);
+
+      connection
+        .start()
+        .then((result) => {
+          setStartConnectionTries(0);
+          console.log("Connected");
+          setConnectionStatus(ConnectionStatus.Running);
+        })
+        .catch((err) => {
+          console.error("Connection failed: " + err.toString());
+          setConnectionStatus(ConnectionStatus.ErrorStarting);
+          setTimeout(() => {
+            setConnectionStatus(ConnectionStatus.RetryStarting);
+          }, getMillisecondsToNextTry(latestStartConnectionTries.current - 1));
+        });
+    }
 
     async function stopConnection() {
-      newConnection.stop();
+      if (connection && connectionStatus == ConnectionStatus.Running) {
+        connection.stop();
+      }
     }
 
     return stopConnection;
-  }, [map]);
+  }, [map, connection, connectionStatus]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -164,6 +192,19 @@ function AisMap() {
     return Object.fromEntries(
       Object.entries(objs).filter(([k, v]) => objectInView(v, bounds))
     );
+  }
+
+  function getMillisecondsToNextTry(previousTries) {
+    switch (previousTries) {
+      case 0:
+        return 0;
+      case 1:
+        return 2000;
+      case 2:
+        return 10000;
+    }
+
+    return 30000;
   }
 
   return (
