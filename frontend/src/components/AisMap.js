@@ -6,7 +6,6 @@ import AisShipObject from "./AisShipObject";
 import { useMap, useMapEvents } from "react-leaflet";
 
 // todo: make popup with ship info
-// todo: add some leeway in bounds when filtering ships
 function AisMap() {
   const onlyObjectsFromHoursAgo =
     process.env.REACT_APP_MAP_OBJECT_LIFESPAN_HOURS;
@@ -126,8 +125,18 @@ function AisMap() {
     return () => clearInterval(interval);
   }, [map, objectLifeSpanMilliseconds]);
 
-  function filterObjectsInView(map, objs) {
-    setObjectsInView(getObjectsInView(objs, map.getBounds()));
+  function filterObjectsInView(m, objs) {
+    const bounds = m.getBounds();
+    const offset = 0.005;
+
+    // we'll add a bit of an offset to every edge of the map's bounds
+    // to display ships that are not fully visible in the map
+    bounds._northEast.lat += offset;
+    bounds._northEast.lng += offset;
+    bounds._southWest.lat -= offset;
+    bounds._southWest.lng -= offset;
+
+    setObjectsInView(getObjectsInView(objs, bounds));
   }
 
   function objectInView(dto, bounds) {
