@@ -79,10 +79,10 @@ function AisMap() {
     }
 
     fetchData();
-  }, [map]);
+  }, [map, onlyObjectsFromHoursAgo]);
 
   useEffect(() => {
-    if (connectionStatus == ConnectionStatus.NotBuilt) {
+    if (connectionStatus === ConnectionStatus.NotBuilt) {
       const newConnection = new HubConnectionBuilder()
         .withUrl(process.env.REACT_APP_TRANSMITTER_HUB_URL)
         .withAutomaticReconnect({
@@ -114,8 +114,8 @@ function AisMap() {
   useEffect(() => {
     if (
       connection &&
-      (connectionStatus == ConnectionStatus.Built ||
-        connectionStatus == ConnectionStatus.RetryStarting)
+      (connectionStatus === ConnectionStatus.Built ||
+        connectionStatus === ConnectionStatus.RetryStarting)
     ) {
       setConnectionStatus(ConnectionStatus.Starting);
       setStartConnectionTries(latestStartConnectionTries.current + 1);
@@ -137,7 +137,7 @@ function AisMap() {
     }
 
     async function stopConnection() {
-      if (connection && connectionStatus == ConnectionStatus.Running) {
+      if (connection && connectionStatus === ConnectionStatus.Running) {
         connection.stop();
       }
     }
@@ -202,9 +202,9 @@ function AisMap() {
         return 2000;
       case 2:
         return 10000;
+      default:
+        return 30000;
     }
-
-    return 30000;
   }
 
   return (

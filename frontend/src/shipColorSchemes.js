@@ -1,5 +1,5 @@
 import * as colorScheme from "color-scheme";
-import ShipTypes from "./shipTypes";
+import { ShipTypes } from "./shipTypes";
 
 function getShipColorScheme(shipType) {
   let hue = 0;

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Polygon, Circle, Marker } from "react-leaflet";
 import L from "leaflet";
 import { getShipColorScheme } from "../shipColorSchemes";
+import ShipObjectPopup from "./ShipObjectPopup";
 
 // todo: change ship svg when ship is stopped
 // todo: change (and only use) svg when it's not a ship (example: weather station/ais station)
@@ -173,7 +174,9 @@ function AisShipObject({ data, zoom }) {
         </React.Fragment>
       )}
       {zoom < 14 && icon && (
-        <Marker position={iconLocation} icon={icon}></Marker>
+        <Marker position={iconLocation} icon={icon}>
+          <ShipObjectPopup data={data} />
+        </Marker>
       )}
     </React.Fragment>
   );
