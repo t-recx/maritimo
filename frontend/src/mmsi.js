@@ -996,12 +996,73 @@ const CountryDescriptionsByMid = {
   775: "Venezuela",
 };
 
+const TypeOfObject = {
+  Ship: 'Ship',
+  GroupsOfShips: 'GroupsOfShips',
+  BaseStations: 'BaseStations',
+  SearchAndRescueAircraft: 'SearchAndRescueAircraft',
+  AidsToNavigation: 'AidsToNavigation',
+  CraftAssociatedWithParentShip: 'CraftAssociatedWithParentShip',
+  SearchAndRescueTransmitter: 'SearchAndRescueTransmitter',
+  ManOverboard: 'ManOverboard',
+  EmergencyPositionIndicatingRadioBeacons: 'EmergencyPositionIndicatingRadioBeacons',
+};
+
+const MidStartPositionByObjectType = {
+  [TypeOfObject.Ship]: 0,
+  [TypeOfObject.GroupsOfShips]: 1,
+  [TypeOfObject.BaseStations]: 2,
+  [TypeOfObject.SearchAndRescueAircraft]: 3,
+  [TypeOfObject.AidsToNavigation]: 2,
+  [TypeOfObject.CraftAssociatedWithParentShip]: 2,
+};
+
+function getTypeOfObject(mmsi) {
+  if (mmsi == null) {
+    return null;
+  }
+
+  if (mmsi.startsWith('974')) {
+    return TypeOfObject.EmergencyPositionIndicatingRadioBeacons;
+  }
+  else if (mmsi.startsWith('972')) {
+    return TypeOfObject.ManOverboard;
+  }
+  else if (mmsi.startsWith('970')) {
+    return TypeOfObject.SearchAndRescueTransmitter;
+  }
+  else if (mmsi.startsWith('111')) {
+    return TypeOfObject.SearchAndRescueAircraft;
+  }
+  else if (mmsi.startsWith('98')) {
+    return TypeOfObject.CraftAssociatedWithParentShip;
+  }
+  else if (mmsi.startsWith('99')) {
+    return TypeOfObject.AidsToNavigation;
+  }
+  else if (mmsi.startsWith('00')) {
+    return TypeOfObject.BaseStations;
+  }
+  else if (mmsi.startsWith('0')) {
+    return TypeOfObject.GroupsOfShips;
+  }
+  else {
+    return TypeOfObject.Ship;
+  }
+}
+
 function getMMSIMid(mmsi) {
   if (mmsi == null) {
     return null;
   }
 
-  return mmsi.toString().slice(0, 3);
+  const startPosition = MidStartPositionByObjectType[getTypeOfObject(mmsi)];
+
+  if (startPosition) {
+    return mmsi.toString().slice(startPosition, 3);
+  }
+
+  return null;
 }
 
 function getCountryDescription(mmsi) {
@@ -1012,4 +1073,4 @@ function getFlagInformation(mmsi) {
   return FlagsByMid[getMMSIMid(mmsi)];
 }
 
-export { getCountryDescription, getFlagInformation };
+export { getCountryDescription, getFlagInformation, getTypeOfObject };
