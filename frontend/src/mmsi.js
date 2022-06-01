@@ -1053,11 +1053,11 @@ function getMMSIMid(mmsi) {
 
   const startPosition = MidStartPositionByObjectType[getTypeOfObject(mmsi)];
 
-  if (startPosition) {
-    return mmsi.toString().slice(startPosition, 3);
+  if (startPosition == null) {
+    return null;
   }
 
-  return null;
+  return mmsi.toString().slice(startPosition, 3);
 }
 
 function getCountryDescription(mmsi) {
