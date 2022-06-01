@@ -151,16 +151,17 @@ function AisShipObject({ data, zoom }) {
     <React.Fragment>
       {zoom >= 14 && objectPolygon && (
         <React.Fragment>
-          <Polygon
-            pathOptions={pathOptions}
-            positions={objectPolygon}
-          ></Polygon>
+          <Polygon pathOptions={pathOptions} positions={objectPolygon}>
+            <ShipObjectPopup data={data} />
+          </Polygon>
           {zoom >= 17 && (
             <Circle
               center={[data.latitude, data.longitude]}
               pathOptions={transmitterPathOptions}
               radius={0.1}
-            ></Circle>
+            >
+              <ShipObjectPopup data={data} />
+            </Circle>
           )}
         </React.Fragment>
       )}
@@ -170,7 +171,9 @@ function AisShipObject({ data, zoom }) {
             center={[data.latitude, data.longitude]}
             pathOptions={pathOptions}
             radius={0.1}
-          ></Circle>
+          >
+            <ShipObjectPopup data={data} />
+          </Circle>
         </React.Fragment>
       )}
       {zoom < 14 && icon && (
