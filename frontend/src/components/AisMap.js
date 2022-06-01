@@ -68,7 +68,24 @@ function AisMap() {
           },
         });
 
-        const dict = result.data.reduce((a, v) => ({ ...a, [v.mmsi]: v }), {});
+        // we start by converting the array into an object with key = mmsi
+        const dict = result.data.reduce((a, v) => {
+          a[v.mmsi] = v;
+
+          return a;
+        }, {});
+
+        // in the event that the transmitter has already started feeding us data
+        // but this query to get everything still hasn't executed
+        // we pick the data we currently have that was transmitted and add it to
+        // the data we just received from the webapi
+        Object.keys(latestData.current || {}).forEach((mmsi) => {
+          if (dict[mmsi]) {
+            dict[mmsi] = { ...dict[mmsi], ...latestData.current[mmsi] };
+          } else {
+            dict[mmsi] = latestData.current[mmsi];
+          }
+        });
 
         setData(dict);
 
