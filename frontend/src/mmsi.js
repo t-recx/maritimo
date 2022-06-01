@@ -997,15 +997,16 @@ const CountryDescriptionsByMid = {
 };
 
 const TypeOfObject = {
-  Ship: 'Ship',
-  GroupsOfShips: 'GroupsOfShips',
-  BaseStations: 'BaseStations',
-  SearchAndRescueAircraft: 'SearchAndRescueAircraft',
-  AidsToNavigation: 'AidsToNavigation',
-  CraftAssociatedWithParentShip: 'CraftAssociatedWithParentShip',
-  SearchAndRescueTransmitter: 'SearchAndRescueTransmitter',
-  ManOverboard: 'ManOverboard',
-  EmergencyPositionIndicatingRadioBeacons: 'EmergencyPositionIndicatingRadioBeacons',
+  Ship: "Ship",
+  GroupsOfShips: "GroupsOfShips",
+  BaseStations: "BaseStations",
+  SearchAndRescueAircraft: "SearchAndRescueAircraft",
+  AidsToNavigation: "AidsToNavigation",
+  CraftAssociatedWithParentShip: "CraftAssociatedWithParentShip",
+  SearchAndRescueTransmitter: "SearchAndRescueTransmitter",
+  ManOverboard: "ManOverboard",
+  EmergencyPositionIndicatingRadioBeacons:
+    "EmergencyPositionIndicatingRadioBeacons",
 };
 
 const MidStartPositionByObjectType = {
@@ -1022,31 +1023,25 @@ function getTypeOfObject(mmsi) {
     return null;
   }
 
-  if (mmsi.startsWith('974')) {
+  mmsi = mmsi.toString();
+
+  if (mmsi.startsWith("974")) {
     return TypeOfObject.EmergencyPositionIndicatingRadioBeacons;
-  }
-  else if (mmsi.startsWith('972')) {
+  } else if (mmsi.startsWith("972")) {
     return TypeOfObject.ManOverboard;
-  }
-  else if (mmsi.startsWith('970')) {
+  } else if (mmsi.startsWith("970")) {
     return TypeOfObject.SearchAndRescueTransmitter;
-  }
-  else if (mmsi.startsWith('111')) {
+  } else if (mmsi.startsWith("111")) {
     return TypeOfObject.SearchAndRescueAircraft;
-  }
-  else if (mmsi.startsWith('98')) {
+  } else if (mmsi.startsWith("98")) {
     return TypeOfObject.CraftAssociatedWithParentShip;
-  }
-  else if (mmsi.startsWith('99')) {
+  } else if (mmsi.startsWith("99")) {
     return TypeOfObject.AidsToNavigation;
-  }
-  else if (mmsi.startsWith('00')) {
+  } else if (mmsi.startsWith("00")) {
     return TypeOfObject.BaseStations;
-  }
-  else if (mmsi.startsWith('0')) {
+  } else if (mmsi.startsWith("0")) {
     return TypeOfObject.GroupsOfShips;
-  }
-  else {
+  } else {
     return TypeOfObject.Ship;
   }
 }
