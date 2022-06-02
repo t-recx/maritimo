@@ -116,10 +116,8 @@ function AisMap() {
           ...dto,
         };
 
-        //setData(Object.assign({}, latestData.current));
         setData({ ...latestData.current });
 
-        // todo: filter just the ship in question
         filterObjectsInView(map, { ...latestData.current });
       });
 
