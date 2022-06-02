@@ -5,7 +5,6 @@ import AisShipObject from "./AisShipObject";
 
 import { useMap, useMapEvents } from "react-leaflet";
 
-// todo: make popup with ship info
 const ConnectionStatus = {
   NotBuilt: "NotBuilt",
   Built: "Built",
@@ -32,9 +31,12 @@ function AisMap() {
   const [connection, setConnection] = useState(null);
   const [startConnectionTries, setStartConnectionTries] = useState(0);
   const latestStartConnectionTries = useRef(null);
+  const [fetchConnectionTries, setFetchConnectionTries] = useState(0);
+  const latestFetchConnectionTries = useRef(null);
 
   latestData.current = data;
   latestStartConnectionTries.current = startConnectionTries;
+  latestFetchConnectionTries.current = fetchConnectionTries;
 
   const map = useMap();
 
@@ -56,9 +58,15 @@ function AisMap() {
   });
 
   useEffect(() => {
+    const controller = new AbortController();
+
     async function fetchData() {
+      console.log("Fetching data");
+      setFetchConnectionTries(latestFetchConnectionTries.current + 1);
+
       try {
         const result = await axios.get(process.env.REACT_APP_WEB_API_URL, {
+          signal: controller.signal,
           withCredentials: true,
           params: {
             fromHoursAgo: onlyObjectsFromHoursAgo,
@@ -68,6 +76,7 @@ function AisMap() {
           },
         });
 
+        setFetchConnectionTries(0);
         // we start by converting the array into an object with key = mmsi
         const dict = result.data.reduce((a, v) => {
           a[v.mmsi] = v;
@@ -90,12 +99,23 @@ function AisMap() {
         setData(dict);
 
         filterObjectsInView(map, dict);
+        console.log("finished fetching data");
       } catch (error) {
         console.error(error);
+
+        // todo clean up timeout on unmount component
+        if (!controller.signal.aborted) {
+          console.log("schedulling another fetch try for later");
+          setTimeout(() => {
+            fetchData();
+          }, getMillisecondsToNextTry(latestFetchConnectionTries.current - 1));
+        }
       }
     }
 
     fetchData();
+
+    return () => controller.abort();
   }, [map, onlyObjectsFromHoursAgo]);
 
   useEffect(() => {
@@ -109,16 +129,30 @@ function AisMap() {
         })
         .build();
 
-      // todo: subscribe on reconnecting method to display something indicating connection was lost
       newConnection.on("Receive", (dto) => {
-        latestData.current[dto.mmsi] = {
-          ...latestData.current[dto.mmsi],
-          ...dto,
-        };
+        const previousDto = latestData.current[dto.mmsi];
 
-        setData({ ...latestData.current });
+        const newData = { ...latestData.current };
 
-        filterObjectsInView(map, { ...latestData.current });
+        if (previousDto) {
+          newData[dto.mmsi] = {
+            ...previousDto,
+            ...dto,
+          };
+        } else {
+          newData[dto.mmsi] = dto;
+        }
+
+        setData(newData);
+
+        // todo: maybe collect stuff for X seconds and then filter instead of filtering on every receive
+        if (
+          previousDto &&
+          (previousDto.latitude != dto.latitude ||
+            previousDto.longitude != dto.longitude)
+        ) {
+          filterObjectsInView(map, newData);
+        }
       });
 
       setConnection(newConnection);
@@ -145,19 +179,15 @@ function AisMap() {
         .catch((err) => {
           console.error("Connection failed: " + err.toString());
           setConnectionStatus(ConnectionStatus.ErrorStarting);
+          // todo: clean up timeout on component unmount
+          console.log("scheduling another connection to signal r for later");
           setTimeout(() => {
             setConnectionStatus(ConnectionStatus.RetryStarting);
           }, getMillisecondsToNextTry(latestStartConnectionTries.current - 1));
         });
     }
 
-    async function stopConnection() {
-      if (connection && connectionStatus === ConnectionStatus.Running) {
-        connection.stop();
-      }
-    }
-
-    return stopConnection;
+    // todo: check how to do the clean up of connection, maybe also on unmount only
   }, [map, connection, connectionStatus]);
 
   useEffect(() => {
@@ -173,6 +203,7 @@ function AisMap() {
         if (toDelete.length > 0) {
           toDelete.forEach((k) => delete latestData.current[k]);
           setData({ ...latestData.current });
+
           filterObjectsInView(map, { ...latestData.current });
         }
       }
@@ -204,9 +235,15 @@ function AisMap() {
   }
 
   function getObjectsInView(objs, bounds) {
-    return Object.fromEntries(
-      Object.entries(objs).filter(([k, v]) => objectInView(v, bounds))
-    );
+    const inView = {};
+
+    for (const key in objs) {
+      if (objectInView(objs[key], bounds)) {
+        inView[key] = objs[key];
+      }
+    }
+
+    return inView;
   }
 
   function getMillisecondsToNextTry(previousTries) {
