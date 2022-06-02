@@ -300,9 +300,9 @@ function AisMap() {
         return 0.025;
       case 9:
         return 0.01;
+      default:
+        return null;
     }
-
-    return null;
   }
 
   function removeAround(objs) {
