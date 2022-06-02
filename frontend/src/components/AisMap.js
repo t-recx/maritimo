@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import axios from "axios";
-import AisShipObject from "./AisShipObject";
+import AisObject from "./AisObject";
 
 import { useMap, useMapEvents } from "react-leaflet";
+import { getTypeOfObject, TypeOfObject } from "../mmsi";
 
 const ConnectionStatus = {
   NotBuilt: "NotBuilt",
@@ -321,16 +322,16 @@ function AisMap() {
       // todo: delete ATONs/moored/older/first?
 
       if (objKey) {
-        ents
-          .filter(
-            (o) =>
-              o.mmsi != key &&
-              o.latitude >= objKey.latitude - offset &&
-              o.latitude <= objKey.latitude + offset &&
-              o.longitude >= objKey.longitude - offset &&
-              o.longitude <= objKey.longitude + offset
-          )
-          .forEach((x) => delete inView[x.mmsi]);
+        const toDelete = ents.filter(
+          (o) =>
+            o.mmsi != key &&
+            o.latitude >= objKey.latitude - offset &&
+            o.latitude <= objKey.latitude + offset &&
+            o.longitude >= objKey.longitude - offset &&
+            o.longitude <= objKey.longitude + offset
+        );
+
+        toDelete.forEach((x) => delete inView[x.mmsi]);
       }
     }
 
@@ -355,7 +356,7 @@ function AisMap() {
       {Object.keys(objectsInView)
         .filter((key) => data[key].latitude && data[key].longitude)
         .map((key) => (
-          <AisShipObject key={key} data={data[key]} zoom={zoom} />
+          <AisObject key={key} data={data[key]} zoom={zoom} />
         ))}
     </React.Fragment>
   );

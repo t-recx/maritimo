@@ -1,15 +1,22 @@
 import { Popup } from "react-leaflet";
-import "./ShipObjectPopup.css";
+import "./AisObjectPopup.css";
 import { getShipTypeDescription } from "../shipTypes";
+import { getNavAidTypeDescription } from "../navAids";
 import { getCountryDescription, getFlagInformation } from "../mmsi";
 import { getShipStatusDescription } from "../shipStatus";
 import React, { useEffect, useState } from "react";
+import TimeAgo from "timeago-react";
 
-function ShipObjectPopup({ data }) {
+function AisObjectPopup({ data }) {
   const [shipTypeDescription, setShipTypeDescription] = useState(null);
   const [shipCountryDescription, setShipCountryDescription] = useState(null);
   const [shipStatusDescription, setShipStatusDescription] = useState(null);
   const [flagInformation, setFlagInformation] = useState(null);
+  const [navAidTypeDescription, setNavAidTypeDescription] = useState(null);
+
+  useEffect(() => {
+    setNavAidTypeDescription(getNavAidTypeDescription(data.aid_type));
+  }, [data.aid_type]);
 
   useEffect(() => {
     setShipTypeDescription(getShipTypeDescription(data.ship_type));
@@ -27,7 +34,6 @@ function ShipObjectPopup({ data }) {
   return (
     <Popup className="ship-object-popup">
       <h1 className="title ">{data.name}</h1>
-
       {flagInformation != null && shipTypeDescription != null && (
         <p className="subtitle ship-object-popup-table-title-container">
           {flagInformation && (
@@ -35,6 +41,16 @@ function ShipObjectPopup({ data }) {
           )}
           {shipTypeDescription != null && (
             <React.Fragment>{shipTypeDescription}</React.Fragment>
+          )}
+        </p>
+      )}
+      {flagInformation != null && navAidTypeDescription != null && (
+        <p className="subtitle ship-object-popup-table-title-container">
+          {flagInformation && (
+            <img className="flag-img" src={flagInformation.img} />
+          )}
+          {navAidTypeDescription != null && (
+            <React.Fragment>{navAidTypeDescription}</React.Fragment>
           )}
         </p>
       )}
@@ -126,8 +142,21 @@ function ShipObjectPopup({ data }) {
             </tbody>
           </table>
         )}
+      {data.updated != null && (
+        <div className="has-text-centered">
+          Received{" "}
+          <TimeAgo className="has-text-weight-bold" datetime={data.updated} />
+          &nbsp;
+          {data.source_id != null && (
+            <React.Fragment>
+              (Source:{" "}
+              <span className="has-text-weight-bold">{data.source_id}</span>)
+            </React.Fragment>
+          )}
+        </div>
+      )}
     </Popup>
   );
 }
 
-export default ShipObjectPopup;
+export default AisObjectPopup;

@@ -1057,7 +1057,7 @@ function getMMSIMid(mmsi) {
     return null;
   }
 
-  return mmsi.toString().slice(startPosition, 3);
+  return mmsi.toString().slice(startPosition, startPosition + 3);
 }
 
 function getCountryDescription(mmsi) {
@@ -1068,4 +1068,9 @@ function getFlagInformation(mmsi) {
   return FlagsByMid[getMMSIMid(mmsi)];
 }
 
-export { getCountryDescription, getFlagInformation, getTypeOfObject };
+export {
+  getCountryDescription,
+  getFlagInformation,
+  getTypeOfObject,
+  TypeOfObject,
+};

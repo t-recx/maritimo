@@ -3,12 +3,12 @@ import React, { useState, useEffect } from "react";
 import { Polygon, Circle, Marker } from "react-leaflet";
 import L from "leaflet";
 import { getShipColorScheme } from "../shipColorSchemes";
-import ShipObjectPopup from "./ShipObjectPopup";
+import AisObjectPopup from "./AisObjectPopup";
 
 // todo: change ship svg when ship is stopped
 // todo: change (and only use) svg when it's not a ship (example: weather station/ais station)
 
-function AisShipObject({ data, zoom }) {
+function AisObject({ data, zoom }) {
   const [objectPolygon, setObjectPolygon] = useState(null);
   const [icon, setIcon] = useState(null);
   const [iconLocation, setIconLocation] = useState([]);
@@ -152,7 +152,7 @@ function AisShipObject({ data, zoom }) {
       {zoom >= 14 && objectPolygon && (
         <React.Fragment>
           <Polygon pathOptions={pathOptions} positions={objectPolygon}>
-            <ShipObjectPopup data={data} />
+            <AisObjectPopup data={data} />
           </Polygon>
           {zoom >= 17 && (
             <Circle
@@ -160,7 +160,7 @@ function AisShipObject({ data, zoom }) {
               pathOptions={transmitterPathOptions}
               radius={0.1}
             >
-              <ShipObjectPopup data={data} />
+              <AisObjectPopup data={data} />
             </Circle>
           )}
         </React.Fragment>
@@ -172,17 +172,17 @@ function AisShipObject({ data, zoom }) {
             pathOptions={pathOptions}
             radius={0.1}
           >
-            <ShipObjectPopup data={data} />
+            <AisObjectPopup data={data} />
           </Circle>
         </React.Fragment>
       )}
       {zoom < 14 && icon && (
         <Marker position={iconLocation} icon={icon}>
-          <ShipObjectPopup data={data} />
+          <AisObjectPopup data={data} />
         </Marker>
       )}
     </React.Fragment>
   );
 }
 
-export default AisShipObject;
+export default AisObject;
