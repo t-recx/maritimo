@@ -34,6 +34,9 @@ function AisMap() {
   const [fetchConnectionTries, setFetchConnectionTries] = useState(0);
   const latestFetchConnectionTries = useRef(null);
 
+  const filtering = useRef(false);
+  const filteringDelayTimerId = useRef(null);
+
   latestData.current = data;
   latestStartConnectionTries.current = startConnectionTries;
   latestFetchConnectionTries.current = fetchConnectionTries;
@@ -44,15 +47,19 @@ function AisMap() {
     load(e) {
       setZoom(map.getZoom());
       filterObjectsInView(map, data);
+      console.log("load end");
     },
     resize(e) {
       filterObjectsInView(map, data);
+      console.log("resize end");
     },
     zoomend(e) {
+      console.log("zoom end");
       filterObjectsInView(map, data);
       setZoom(map.getZoom());
     },
     moveend(e) {
+      console.log("move end");
       filterObjectsInView(map, data);
     },
   });
@@ -151,7 +158,7 @@ function AisMap() {
           (previousDto.latitude != dto.latitude ||
             previousDto.longitude != dto.longitude)
         ) {
-          filterObjectsInView(map, newData);
+          filterObjectsInView(map, newData, true);
         }
       });
 
@@ -212,7 +219,32 @@ function AisMap() {
     return () => clearInterval(interval);
   }, [map, objectLifeSpanMilliseconds]);
 
-  function filterObjectsInView(m, objs) {
+  function filterObjectsInView(m, objs, delay = false) {
+    if (!delay) {
+      if (filteringDelayTimerId.current) {
+        clearTimeout(filteringDelayTimerId.current);
+        filteringDelayTimerId.current = null;
+      }
+    }
+
+    if (!delay || !filtering.current) {
+      filtering.current = true;
+      console.log("started filtering ", new Date());
+      _filterObjectsInView(m, objs);
+
+      if (filteringDelayTimerId.current) {
+        clearTimeout(filteringDelayTimerId.current);
+        filteringDelayTimerId.current = null;
+      }
+
+      filteringDelayTimerId.current = setTimeout(
+        () => (filtering.current = false),
+        5000
+      );
+    }
+  }
+
+  function _filterObjectsInView(m, objs) {
     const bounds = m.getBounds();
     const offset = 0.005;
 
@@ -240,6 +272,65 @@ function AisMap() {
     for (const key in objs) {
       if (objectInView(objs[key], bounds)) {
         inView[key] = objs[key];
+      }
+    }
+
+    return removeAround(inView);
+  }
+
+  function getOffsetByZoom(z) {
+    switch (z) {
+      case 0:
+        return 2;
+      case 1:
+        return 1.5;
+      case 2:
+        return 1;
+      case 3:
+        return 0.6;
+      case 4:
+        return 0.4;
+      case 5:
+        return 0.25;
+      case 6:
+        return 0.1;
+      case 7:
+        return 0.05;
+      case 8:
+        return 0.025;
+      case 9:
+        return 0.01;
+    }
+
+    return null;
+  }
+
+  function removeAround(objs) {
+    const offset = getOffsetByZoom(map.getZoom());
+
+    if (offset == null) {
+      return objs;
+    }
+
+    const inView = { ...objs };
+    const ents = Object.values(objs);
+
+    for (const key in objs) {
+      const objKey = inView[key];
+
+      // todo: delete ATONs/moored/older/first?
+
+      if (objKey) {
+        ents
+          .filter(
+            (o) =>
+              o.mmsi != key &&
+              o.latitude >= objKey.latitude - offset &&
+              o.latitude <= objKey.latitude + offset &&
+              o.longitude >= objKey.longitude - offset &&
+              o.longitude <= objKey.longitude + offset
+          )
+          .forEach((x) => delete inView[x.mmsi]);
       }
     }
 
