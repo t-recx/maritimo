@@ -1,4 +1,11 @@
 .leaflet-container {
-  width: 100wh;
+  /* width: 100wh; */
+  /* height: 100vh; */
+  height: 100%;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
   height: 100vh;
 }
