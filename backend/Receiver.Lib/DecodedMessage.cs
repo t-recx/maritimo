@@ -53,5 +53,6 @@ public class DecodedMessage
     public bool? virtual_aid_flag { get; set; }
     public bool? gnss_position_status { get; set; }
     public float? magnetic_declination { get; set; }
+    public string? source_id { get; set; }
 }
 
