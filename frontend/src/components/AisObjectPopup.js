@@ -2,7 +2,12 @@ import { Popup } from "react-leaflet";
 import "./AisObjectPopup.css";
 import { getShipTypeDescription } from "../shipTypes";
 import { getNavAidTypeDescription } from "../navAids";
-import { getCountryDescription, getFlagInformation } from "../mmsi";
+import {
+  getCountryDescription,
+  getFlagInformation,
+  getTypeOfObject,
+  TypeOfObject,
+} from "../mmsi";
 import { getShipStatusDescription } from "../shipStatus";
 import React, { useEffect, useState } from "react";
 import TimeAgo from "timeago-react";
@@ -13,10 +18,15 @@ function AisObjectPopup({ data }) {
   const [shipStatusDescription, setShipStatusDescription] = useState(null);
   const [flagInformation, setFlagInformation] = useState(null);
   const [navAidTypeDescription, setNavAidTypeDescription] = useState(null);
+  const [objectType, setObjectType] = useState(null);
 
   useEffect(() => {
     setNavAidTypeDescription(getNavAidTypeDescription(data.aid_type));
   }, [data.aid_type]);
+
+  useEffect(() => {
+    setObjectType(getTypeOfObject(data.mmsi));
+  }, [data.mmsi]);
 
   useEffect(() => {
     setShipTypeDescription(getShipTypeDescription(data.ship_type));
@@ -31,20 +41,26 @@ function AisObjectPopup({ data }) {
     setShipStatusDescription(getShipStatusDescription(data.navigation_status));
   }, [data.navigation_status]);
 
+  // todo: add more sections for each type of object
   return (
     <Popup className="ship-object-popup">
       <h1 className="title ">{data.name}</h1>
-      {flagInformation != null && shipTypeDescription != null && (
-        <p className="subtitle ship-object-popup-table-title-container">
-          {flagInformation && (
-            <img className="flag-img" src={flagInformation.img} />
-          )}
-          {shipTypeDescription != null && (
-            <React.Fragment>{shipTypeDescription}</React.Fragment>
-          )}
-        </p>
-      )}
-      {flagInformation != null && navAidTypeDescription != null && (
+      {flagInformation != null &&
+        (objectType === TypeOfObject.Ship ||
+          objectType === TypeOfObject.CraftAssociatedWithParentShip) && (
+          <p className="subtitle ship-object-popup-table-title-container">
+            {flagInformation && (
+              <img className="flag-img" src={flagInformation.img} />
+            )}
+            {shipTypeDescription != null && (
+              <React.Fragment>{shipTypeDescription}</React.Fragment>
+            )}
+            {shipTypeDescription == null && (
+              <React.Fragment>Unknown</React.Fragment>
+            )}
+          </p>
+        )}
+      {flagInformation != null && objectType === TypeOfObject.AidsToNavigation && (
         <p className="subtitle ship-object-popup-table-title-container">
           {flagInformation && (
             <img className="flag-img" src={flagInformation.img} />
