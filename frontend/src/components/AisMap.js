@@ -153,7 +153,6 @@ function AisMap() {
 
         setData(newData);
 
-        // todo: maybe collect stuff for X seconds and then filter instead of filtering on every receive
         if (
           previousDto &&
           (previousDto.latitude != dto.latitude ||
