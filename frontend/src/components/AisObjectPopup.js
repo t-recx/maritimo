@@ -6,9 +6,10 @@ import {
   getCountryDescription,
   getFlagInformation,
   getTypeOfObject,
+  getTypeOfObjectDescription,
   TypeOfObject,
 } from "../mmsi";
-import { getShipStatusDescription } from "../shipStatus";
+import { getShipStatusDescription, ShipStatus } from "../shipStatus";
 import React, { useEffect, useState } from "react";
 import TimeAgo from "timeago-react";
 
@@ -19,14 +20,11 @@ function AisObjectPopup({ data }) {
   const [flagInformation, setFlagInformation] = useState(null);
   const [navAidTypeDescription, setNavAidTypeDescription] = useState(null);
   const [objectType, setObjectType] = useState(null);
+  const [objectTypeDescription, setObjectTypeDescription] = useState(null);
 
   useEffect(() => {
     setNavAidTypeDescription(getNavAidTypeDescription(data.aid_type));
   }, [data.aid_type]);
-
-  useEffect(() => {
-    setObjectType(getTypeOfObject(data.mmsi));
-  }, [data.mmsi]);
 
   useEffect(() => {
     setShipTypeDescription(getShipTypeDescription(data.ship_type));
@@ -35,41 +33,69 @@ function AisObjectPopup({ data }) {
   useEffect(() => {
     setShipCountryDescription(getCountryDescription(data.mmsi));
     setFlagInformation(getFlagInformation(data.mmsi));
+    setObjectType(getTypeOfObject(data.mmsi));
+    setObjectTypeDescription(getTypeOfObjectDescription(data.mmsi));
   }, [data.mmsi]);
 
   useEffect(() => {
     setShipStatusDescription(getShipStatusDescription(data.navigation_status));
   }, [data.navigation_status]);
 
-  // todo: add more sections for each type of object
   return (
     <Popup className="ship-object-popup">
-      <h1 className="title ">{data.name}</h1>
+      {data.name != null && data.name.length > 0 && (
+        <h1 className="title ">{data.name}</h1>
+      )}
+      {(data.name == null || data.name.length == 0) &&
+        objectTypeDescription && (
+          <h1 className="title ">{objectTypeDescription}</h1>
+        )}
       {flagInformation != null &&
         (objectType === TypeOfObject.Ship ||
           objectType === TypeOfObject.CraftAssociatedWithParentShip) && (
           <p className="subtitle ship-object-popup-table-title-container">
             {flagInformation && (
-              <img className="flag-img" src={flagInformation.img} />
+              <img
+                className="flag-img hide-text"
+                src={flagInformation.img}
+                alt={flagInformation.alt}
+                title={shipCountryDescription}
+              />
             )}
             {shipTypeDescription != null && (
               <React.Fragment>{shipTypeDescription}</React.Fragment>
-            )}
-            {shipTypeDescription == null && (
-              <React.Fragment>Unknown</React.Fragment>
             )}
           </p>
         )}
       {flagInformation != null && objectType === TypeOfObject.AidsToNavigation && (
         <p className="subtitle ship-object-popup-table-title-container">
           {flagInformation && (
-            <img className="flag-img" src={flagInformation.img} />
+            <img
+              className="flag-img hide-text"
+              src={flagInformation.img}
+              alt={flagInformation.alt}
+              title={shipCountryDescription}
+            />
           )}
           {navAidTypeDescription != null && (
             <React.Fragment>{navAidTypeDescription}</React.Fragment>
           )}
         </p>
       )}
+      {flagInformation != null &&
+        objectType === TypeOfObject.SearchAndRescueAircraft && (
+          <p className="subtitle ship-object-popup-table-title-container">
+            {flagInformation && (
+              <img
+                className="flag-img hide-text"
+                src={flagInformation.img}
+                alt={flagInformation.alt}
+                title={shipCountryDescription}
+              />
+            )}
+            Aircraft
+          </p>
+        )}
       <table className="table is-fullwidth is-striped is-bordered">
         <tbody>
           {data.mmsi != null && data.mmsi > 0 && (
@@ -90,24 +116,18 @@ function AisObjectPopup({ data }) {
               </td>
             </tr>
           )}
-          {data.call_sign != null && (
-            <tr>
-              <td className="ship-object-popup-table-cell has-text-weight-bold">
-                Call Sign
-              </td>
-              <td className="ship-object-popup-table-cell">{data.call_sign}</td>
-            </tr>
-          )}
-          {shipStatusDescription != null && shipStatusDescription > 0 && (
-            <tr>
-              <td className="ship-object-popup-table-cell has-text-weight-bold">
-                Status
-              </td>
-              <td className="ship-object-popup-table-cell">
-                {shipStatusDescription}
-              </td>
-            </tr>
-          )}
+          {data.call_sign != null &&
+            data.call_sign.length > 0 &&
+            data.call_sign != "0" && (
+              <tr>
+                <td className="ship-object-popup-table-cell has-text-weight-bold">
+                  Call Sign
+                </td>
+                <td className="ship-object-popup-table-cell">
+                  {data.call_sign}
+                </td>
+              </tr>
+            )}
           {data.destination != null && data.destination.trim().length > 0 && (
             <tr>
               <td className="ship-object-popup-table-cell has-text-weight-bold">
@@ -118,6 +138,17 @@ function AisObjectPopup({ data }) {
               </td>
             </tr>
           )}
+          {shipStatusDescription != null &&
+            data.navigation_status < ShipStatus.Notdefined && (
+              <tr>
+                <td className="ship-object-popup-table-cell has-text-weight-bold">
+                  Status
+                </td>
+                <td className="ship-object-popup-table-cell">
+                  {shipStatusDescription}
+                </td>
+              </tr>
+            )}
         </tbody>
       </table>
       {data.speed_over_ground != null &&
@@ -159,7 +190,7 @@ function AisObjectPopup({ data }) {
           </table>
         )}
       {data.updated != null && (
-        <div className="has-text-centered">
+        <div className="has-text-centered source-information">
           Received{" "}
           <TimeAgo className="has-text-weight-bold" datetime={data.updated} />
           &nbsp;
