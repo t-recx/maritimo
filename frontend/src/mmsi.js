@@ -1009,6 +1009,20 @@ const TypeOfObject = {
     "EmergencyPositionIndicatingRadioBeacons",
 };
 
+const TypeOfObjectDescription = {
+  [TypeOfObject.Ship]: "Ship",
+  [TypeOfObject.GroupsOfShips]: "Groups of ships",
+  [TypeOfObject.BaseStations]: "Base station",
+  [TypeOfObject.SearchAndRescueAircraft]: "Search and rescue aircraft",
+  [TypeOfObject.AidsToNavigation]: "Aid to navigation",
+  [TypeOfObject.CraftAssociatedWithParentShip]:
+    "Craft associated with parent ship",
+  [TypeOfObject.SearchAndRescueTransmitter]: "Search and rescue transmitter",
+  [TypeOfObject.ManOverboard]: "Man overboard",
+  [TypeOfObject.EmergencyPositionIndicatingRadioBeacons]:
+    "Emergency position indicating radio beacon",
+};
+
 const MidStartPositionByObjectType = {
   [TypeOfObject.Ship]: 0,
   [TypeOfObject.GroupsOfShips]: 1,
@@ -1068,9 +1082,14 @@ function getFlagInformation(mmsi) {
   return FlagsByMid[getMMSIMid(mmsi)];
 }
 
+function getTypeOfObjectDescription(mmsi) {
+  return TypeOfObjectDescription[getTypeOfObject(mmsi)];
+}
+
 export {
   getCountryDescription,
   getFlagInformation,
   getTypeOfObject,
   TypeOfObject,
+  getTypeOfObjectDescription,
 };
