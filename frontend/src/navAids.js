@@ -34,7 +34,17 @@ const NavAidTypeDescriptions = {
 };
 
 function getNavAidTypeDescription(navAidType) {
-  return NavAidTypeDescriptions[navAidType];
+  if (navAidType == null) {
+    return "Unknown type";
+  }
+
+  const description = NavAidTypeDescriptions[navAidType];
+
+  if (description == null) {
+    return "Unknown type";
+  }
+
+  return description;
 }
 
 export { getNavAidTypeDescription };
