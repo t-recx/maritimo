@@ -4,9 +4,7 @@ import { Polygon, Circle, Marker } from "react-leaflet";
 import L from "leaflet";
 import { getShipColorScheme } from "../shipColorSchemes";
 import AisObjectPopup from "./AisObjectPopup";
-
-// todo: change ship svg when ship is stopped
-// todo: change (and only use) svg when it's not a ship (example: weather station/ais station)
+import { ShipStatus } from "../shipStatus";
 
 function AisObject({ data, zoom }) {
   const [objectPolygon, setObjectPolygon] = useState(null);
@@ -32,7 +30,10 @@ function AisObject({ data, zoom }) {
 
   useEffect(() => {
     if (colorScheme) {
-      if (data.true_heading) {
+      if (
+        data.true_heading &&
+        shipIsMoving(data.navigation_status, data.speed_over_ground)
+      ) {
         const angle = data.true_heading;
         const i = new L.DivIcon({
           html:
@@ -60,7 +61,12 @@ function AisObject({ data, zoom }) {
     } else {
       setIcon(null);
     }
-  }, [data.true_heading, colorScheme]);
+  }, [
+    data.true_heading,
+    colorScheme,
+    data.navigation_status,
+    data.speed_over_ground,
+  ]);
 
   useEffect(() => {
     if (canBePolygon(data)) {
@@ -136,6 +142,20 @@ function AisObject({ data, zoom }) {
     }
   }, [data, objectPolygon]);
 
+  function shipIsMoving(navigation_status, speed_over_ground) {
+    if (
+      navigation_status == ShipStatus.Atanchor ||
+      navigation_status == ShipStatus.Moored ||
+      ((navigation_status == ShipStatus.Notdefined ||
+        navigation_status == null) &&
+        speed_over_ground == 0)
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
   function canBePolygon(d) {
     return (
       d &&
@@ -170,7 +190,7 @@ function AisObject({ data, zoom }) {
           <Circle
             center={[data.latitude, data.longitude]}
             pathOptions={pathOptions}
-            radius={0.1}
+            radius={5}
           >
             <AisObjectPopup data={data} />
           </Circle>
