@@ -1,0 +1,22 @@
+.ship-object-popup {
+  min-width: 300px;
+}
+
+.ship-object-popup-table-cell {
+  white-space: nowrap;
+}
+
+.flag-img {
+  height: 24px;
+  aspect-ratio: 4 / 3;
+}
+
+.ship-object-popup-table-title-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.source-information {
+  white-space: nowrap;
+}

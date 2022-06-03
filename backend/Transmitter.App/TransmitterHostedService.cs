@@ -21,7 +21,11 @@ public class TransmitterHostedService : IHostedService
 
     async void HandleReceivedEvent(object? sender, DecodedMessage decodedMessage)
     {
-        await aisHubContext.Clients.All.Receive(mapper.Map<DTOObjectData>(decodedMessage));
+        var dto = mapper.Map<DTOObjectData>(decodedMessage);
+
+        dto.updated = DateTime.UtcNow;
+
+        await aisHubContext.Clients.All.Receive(dto);
     }
 
     public Task StartAsync(CancellationToken stoppingToken)

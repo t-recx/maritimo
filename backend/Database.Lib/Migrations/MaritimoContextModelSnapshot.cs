@@ -48,9 +48,6 @@ namespace Database.Lib.Migrations
                     b.Property<float?>("course_over_ground")
                         .HasColumnType("real");
 
-                    b.Property<DateTime>("created")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<bool?>("cs_unit")
                         .HasColumnType("boolean");
 
@@ -105,6 +102,9 @@ namespace Database.Lib.Migrations
                     b.Property<float?>("longitude")
                         .HasColumnType("real");
 
+                    b.Property<float?>("magnetic_declination")
+                        .HasColumnType("real");
+
                     b.Property<byte?>("manuever_indicator")
                         .HasColumnType("smallint");
 
@@ -147,14 +147,20 @@ namespace Database.Lib.Migrations
                     b.Property<byte?>("ship_type")
                         .HasColumnType("smallint");
 
+                    b.Property<string>("source_id")
+                        .HasColumnType("text");
+
                     b.Property<float?>("speed_over_ground")
                         .HasColumnType("real");
 
                     b.Property<byte?>("timestamp")
                         .HasColumnType("smallint");
 
-                    b.Property<byte?>("true_heading")
-                        .HasColumnType("smallint");
+                    b.Property<int?>("true_heading")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("updated")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<byte?>("utc_day")
                         .HasColumnType("smallint");
@@ -211,9 +217,6 @@ namespace Database.Lib.Migrations
                     b.Property<float?>("course_over_ground")
                         .HasColumnType("real");
 
-                    b.Property<DateTime>("created")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<bool?>("cs_unit")
                         .HasColumnType("boolean");
 
@@ -268,6 +271,9 @@ namespace Database.Lib.Migrations
                     b.Property<float?>("longitude")
                         .HasColumnType("real");
 
+                    b.Property<float?>("magnetic_declination")
+                        .HasColumnType("real");
+
                     b.Property<byte?>("manuever_indicator")
                         .HasColumnType("smallint");
 
@@ -301,16 +307,19 @@ namespace Database.Lib.Migrations
                     b.Property<byte?>("ship_type")
                         .HasColumnType("smallint");
 
+                    b.Property<string>("source_id")
+                        .HasColumnType("text");
+
                     b.Property<float?>("speed_over_ground")
                         .HasColumnType("real");
 
                     b.Property<byte?>("timestamp")
                         .HasColumnType("smallint");
 
-                    b.Property<byte?>("true_heading")
-                        .HasColumnType("smallint");
+                    b.Property<int?>("true_heading")
+                        .HasColumnType("integer");
 
-                    b.Property<DateTime?>("updated")
+                    b.Property<DateTime>("updated")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<byte?>("utc_day")

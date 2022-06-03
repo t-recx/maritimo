@@ -1,0 +1,7 @@
+@charset "utf-8";
+@import url("https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;700&display=swap");
+
+$family-sans-serif: "Fira Sans", sans-serif;
+
+@import "../node_modules/bulma/bulma.sass";
+@import "./leaflet.scss";

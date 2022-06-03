@@ -67,7 +67,7 @@ public class DatabaseServiceTests
     }
 
     [Test]
-    public void Insert_ShouldInsertMessageWithCreatedDataFieldFilled()
+    public void Insert_ShouldInsertMessageWithUpdatedDataFieldFilled()
     {
         var before = DateTime.UtcNow;
 
@@ -75,8 +75,8 @@ public class DatabaseServiceTests
 
         var after = DateTime.UtcNow;
         var message = contextFactory.Get().Messages.First();
-        Assert.GreaterOrEqual(message.created, before);
-        Assert.GreaterOrEqual(after, message.created);
+        Assert.GreaterOrEqual(message.updated, before);
+        Assert.GreaterOrEqual(after, message.updated);
     }
 
     [Test]
@@ -104,7 +104,7 @@ public class DatabaseServiceTests
     }
 
     [Test]
-    public void Save_ShouldInsertItemWithCreatedDataFieldFilled()
+    public void Save_ShouldInsertItemWithUpdatedDataFieldFilled()
     {
         var before = DateTime.UtcNow;
 
@@ -112,9 +112,8 @@ public class DatabaseServiceTests
 
         var after = DateTime.UtcNow;
         var objectData = contextFactory.Get().Objects.First();
-        Assert.GreaterOrEqual(objectData.created, before);
-        Assert.GreaterOrEqual(after, objectData.created);
-        Assert.IsNull(objectData.updated);
+        Assert.GreaterOrEqual(objectData.updated, before);
+        Assert.GreaterOrEqual(after, objectData.updated);
     }
 
     [Test]
