@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   db:
@@ -11,6 +11,9 @@ services:
   broker:
     image: rabbitmq:3.10-alpine
     restart: always
+  redis:
+    image: redis:7-alpine
+    restart: always
   station:
     build:
       context: ./station/
@@ -22,16 +25,17 @@ services:
       - broker
     restart: always
   decoder:
-    build: 
+    build:
       context: ./decoder/
       dockerfile: ../docker/decoder/Dockerfile
-    command: sh -c 'wait-for-it -q broker:5672 -- decoder'
+    command: sh -c 'wait-for-it -q broker:5672 -- wait-for-it -q redis:6379 -- decoder'
     env_file:
       - ./.env
     depends_on:
       - broker
+      - redis
     restart: always
-  persister: 
+  persister:
     build:
       context: ./backend/
       dockerfile: ../docker/dotnet/Dockerfile
@@ -44,7 +48,7 @@ services:
       - broker
       - db
     restart: always
-  transmitter: 
+  transmitter:
     build:
       context: ./backend/
       dockerfile: ../docker/aspnet/Dockerfile
@@ -56,7 +60,7 @@ services:
     depends_on:
       - broker
     restart: always
-  webapi: 
+  webapi:
     build:
       context: ./backend/
       dockerfile: ../docker/aspnet/Dockerfile
@@ -68,6 +72,15 @@ services:
     depends_on:
       - db
     restart: always
+  frontend:
+    build:
+      context: ./frontend/
+      dockerfile: ../docker/frontend/Dockerfile
+    env_file:
+      - ./.env
+    volumes:
+      - frontend_data:/usr/src/app/www/
 
 volumes:
   postgres_data:
+  frontend_data:
