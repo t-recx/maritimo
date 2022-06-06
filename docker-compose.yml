@@ -76,10 +76,21 @@ services:
     build:
       context: ./frontend/
       dockerfile: ../docker/frontend/Dockerfile
-    env_file:
-      - ./.env
     volumes:
       - frontend_data:/usr/src/app/www/
+  webserver:
+    build: ./docker/nginx
+    volumes:
+      - frontend_data:/usr/src/app/www/
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - frontend
+      - webapi
+      - transmitter
+    restart: always
+    command: '/bin/sh -c ''while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g "daemon off;"'''
 
 volumes:
   postgres_data:
