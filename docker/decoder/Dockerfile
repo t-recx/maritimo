@@ -1,4 +1,8 @@
 FROM rust:1.61 as builder
+
+LABEL maintainer="hi@joaobruno.xyz"
+ENV REFRESHED_AT 2022-06-07
+
 WORKDIR /usr/src/decoder
 COPY . .
 RUN cargo install --path .
