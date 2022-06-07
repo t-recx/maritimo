@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Transmitter.App;
 
-public class TransmitterHostedService : IHostedService
+public class TransmitterHostedService : BackgroundService
 {
     readonly ILogger<TransmitterHostedService> logger;
     readonly IHubContext<AisHub, IAisHub> aisHubContext;
@@ -28,19 +28,10 @@ public class TransmitterHostedService : IHostedService
         await aisHubContext.Clients.All.Receive(dto);
     }
 
-    public Task StartAsync(CancellationToken stoppingToken)
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
         receiver.Received += HandleReceivedEvent;
 
-        Task.Run(() => receiver.Run(stoppingToken));
-
-        return Task.CompletedTask;
-    }
-
-    public Task StopAsync(CancellationToken stoppingToken)
-    {
-        receiver.Received -= HandleReceivedEvent;
-
-        return Task.CompletedTask;
+        return Task.Run(() => receiver.Run(stoppingToken));
     }
 }

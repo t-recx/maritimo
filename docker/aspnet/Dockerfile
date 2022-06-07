@@ -1,4 +1,8 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+
+LABEL maintainer="hi@joaobruno.xyz"
+ENV REFRESHED_AT 2022-06-07
+
 WORKDIR /source
 ARG PROJECT_NAME
 
