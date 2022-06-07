@@ -353,7 +353,7 @@ function AisMap() {
   return (
     <React.Fragment>
       {Object.keys(objectsInView)
-        .filter((key) => data[key].latitude && data[key].longitude)
+        .filter((key) => data[key] && data[key].latitude && data[key].longitude)
         .map((key) => (
           <AisObject key={key} data={data[key]} zoom={zoom} />
         ))}
