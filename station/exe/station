@@ -5,11 +5,13 @@ require "station"
 
 env_var_station_hostname = "MARITIMO_STATION_HOSTNAME"
 env_var_station_port = "MARITIMO_STATION_PORT"
+env_var_station_read_timeout_seconds = "MARITIMO_STATION_READ_TIMEOUT_SECONDS"
 env_var_broker_uri = "MARITIMO_RABBITMQ_URI"
 env_var_queue_name = "MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME"
 
 station_hostname = ENV[env_var_station_hostname]
 station_port = ENV[env_var_station_port]
+station_read_timeout_seconds = ENV[env_var_station_read_timeout_seconds]
 broker_uri = ENV[env_var_broker_uri]
 queue_name = ENV[env_var_queue_name]
 
@@ -21,6 +23,12 @@ end
 
 unless station_port
   warn "No station port configured. Set #{env_var_station_port} environment variable"
+
+  return
+end
+
+unless station_read_timeout_seconds
+  warn "No station read timeout value configured. Set #{env_var_station_read_timeout_seconds} environment variable"
 
   return
 end
@@ -37,4 +45,4 @@ unless queue_name
   return
 end
 
-Station.application.run station_hostname, station_port, broker_uri, queue_name
+Station.application.run station_hostname, station_port, broker_uri, queue_name, station_read_timeout_seconds.to_i
