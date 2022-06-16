@@ -1,13 +1,13 @@
 require "test_helper"
 require "station"
 
-describe Application do
-  include Station
+include Station
 
+describe Application do
   let(:tcp_data_sent) { [] }
   let(:tcp_socket_factory) do
-    lambda { |h, p|
-      @tcp_socket ||= FakeTcpSocket.new h, p
+    lambda { |h, port|
+      @tcp_socket ||= FakeTcpSocket.new h, port
 
       @tcp_socket.sent = tcp_data_sent
 
@@ -21,6 +21,7 @@ describe Application do
   let(:port) { 3500 }
   let(:broker_uri) { "amqp://test.org:5043" }
   let(:queue_name) { "station_queue" }
+  let(:read_timeout_seconds) { 5 }
 
   subject { Application.new tcp_socket_factory, connection_factory, kernel }
 
@@ -30,6 +31,12 @@ describe Application do
 
       _(@tcp_socket.host).must_equal host
       _(@tcp_socket.port).must_equal port
+    end
+
+    it "should wait the specified time for socket to be readable before timing out" do
+      exercise_run
+
+      _(@tcp_socket.wait_readable_seconds).must_equal read_timeout_seconds
     end
 
     it "should create a connection with appropriate parameters" do
@@ -65,26 +72,27 @@ describe Application do
     end
 
     describe "when socket returns values" do
-      let(:tcp_data_sent) { %w[1 2] }
+      let(:tcp_data_sent) { ["ONE\nTWO\nTH", "REE\nUNFINISHED"] }
 
       it "should be received and published" do
         exercise_run
 
         _(@connection.channel.fake_queue.published).must_equal [
-          ["1", {persistent: true}],
-          ["2", {persistent: true}]
+          ["ONE", {persistent: true}],
+          ["TWO", {persistent: true}],
+          ["THREE", {persistent: true}]
         ]
       end
     end
   end
 
   def exercise_run
-    subject.run host, port, broker_uri, queue_name
+    subject.run host, port, broker_uri, queue_name, read_timeout_seconds
   end
 end
 
 class FakeTcpSocket
-  attr_accessor :host, :port, :sent, :sent_index, :closed_called
+  attr_accessor :host, :port, :sent, :sent_index, :closed_called, :wait_readable_seconds
 
   def initialize(host, port)
     @host = host
@@ -92,14 +100,22 @@ class FakeTcpSocket
     @sent = []
     @sent_index = 0
     @closed_called = false
+    @wait_readable_seconds = 0
   end
 
-  def gets
+  def read_nonblock bytes
     return_value = @sent[@sent_index]
 
     @sent_index += 1
 
+    raise Errno::EAGAIN unless return_value
+
     return_value
+  end
+
+  def wait_readable seconds
+    @wait_readable_seconds = seconds
+    false
   end
 
   def close
