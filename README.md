@@ -4,7 +4,7 @@ Maritimo is a set of applications used to decode, persist and display AIS data. 
 
 AIS (Automatic Identification System) is an automatic tracking system. AIS transmitters are equipped in vessels, navigation markers, and shore stations. These transmitters emit data related to the vessel or object they're fitted on including position, heading, speed, course and more. This information is then used by other vessels to avoid collision or by ports and maritime authorities in their traffic monitoring systems.
 
-## Applications included
+## Applications
 
 | Name                                    | Description                                                   |
 | --------------------------------------- | ------------------------------------------------------------- |
@@ -14,8 +14,6 @@ AIS (Automatic Identification System) is an automatic tracking system. AIS trans
 | [Transmitter](backend/Transmitter.App/) | Transmits decoded data over a Signal-R hub                    |
 | [WebApi](backend/WebApi.App/)           | REST API application to query the database                    |
 | [Frontend](frontend/)                   | Web application to display the information                    |
-
-If you prefer to run an application individually please refer to documentation for specific requirements, configuration and installation instructions in their specific folder.
 
 ## Requirements
 
@@ -44,6 +42,8 @@ To configure the entire system create a .env file in the main project directory 
 
 Check an example configuration file in [.env.development](.env.development).
 
+### Frontend configuration
+
 An additional configuration .env file is also expected on the [frontend/](frontend/) directory, with the following variables set:
 
 | Name                                   | Description                                                  |
@@ -68,4 +68,4 @@ Open [http://localhost](http://localhost) to access the application.
 
 ## Special thanks
 
-This project wouldn't be possible without the open access [Norwegian Coastal Administration](https://www.kystverket.no/en/) offers to its AIS data and Eric S. Raymond's documentation on [AIVDM/AIVDO protocol decoding](https://gpsd.gitlab.io/gpsd/AIVDM.html).
+This project wouldn't be possible without the open access that the [Norwegian Coastal Administration](https://www.kystverket.no/en/) offers to its AIS data and Eric S. Raymond's documentation on [AIVDM/AIVDO protocol decoding](https://gpsd.gitlab.io/gpsd/AIVDM.html).
