@@ -40,11 +40,19 @@ Inside the decoder directory, run:
 
 ## Tests
 
+### Configuration
+
+Test configuration is done via environment variables.
+
+| Name                                             | Description                               |
+| ------------------------------------------------ | ----------------------------------------- |
+| MARITIMO_TEST_REDIS_URI                          | URI for the Redis instance used in tests  |
+
+### Running
+
 To run the tests execute the following command from the root of the decoder application directory:
 
     $ cargo test -- --test-threads=1
-
-A Redis instance must be running on the URI configured on the MARITIMO_TEST_REDIS_URI environment variable.
 
 ## Formating code
 
