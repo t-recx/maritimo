@@ -1,13 +1,13 @@
 # [Maritimo](https://maritimo.digital/) &middot; Persister
 
-Persister is a dotnet application that is used to store decoded AIS messages. It works by subscribing to a RabbitMQ exchange where the messages are streamed into and storing them on a **Messages** table and keeping coallesced and up to date AIS object information on an **Objects** table, using the [MMSI](https://en.wikipedia.org/wiki/Maritime_Mobile_Service_Identity) as its primary key.
+Persister is a dotnet application that is used to store decoded AIS messages. It works by subscribing to a RabbitMQ exchange where the messages are streamed into and storing them on a relational database as they arrive.
 
 ## Database structure
 
-|  Table   |  PK  | PK type |                    Data                     |
-| :------: | :--: | :-----: | :-----------------------------------------: |
-| Messages |  id  |  long   |    [Message](../Database.Lib/Message.cs)    |
-| Objects  | mmsi |  uint   | [ObjectData](../Database.Lib/ObjectData.cs) |
+|  Table   |                                   PK                                   | PK type |                    Data                     | Notes                                                                            |
+| :------: | :--------------------------------------------------------------------: | :-----: | :-----------------------------------------: | -------------------------------------------------------------------------------- |
+| Messages |                                   id                                   |  long   |    [Message](../Database.Lib/Message.cs)    | Unaltered message content                                                        |
+| Objects  | [mmsi](https://en.wikipedia.org/wiki/Maritime_Mobile_Service_Identity) |  uint   | [ObjectData](../Database.Lib/ObjectData.cs) | Message data is coalesced into this table to get an up-to-date view of an object |
 
 ## Requirements
 
