@@ -2,7 +2,7 @@
 
 Transmitter is a dotnet application that is used to transmit newly decoded AIS messages through a Signal-R hub. It works by subscribing to a RabbitMQ exchange where the decoded messages are streamed into and passing them along to web clients that are connected to the hub.
 
-## API
+## Signal-R API
 
 | Endpoint | Method  |               Data                |
 | :------: | ------- | :-------------------------------: |
