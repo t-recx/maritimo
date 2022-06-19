@@ -2,6 +2,13 @@
 
 Persister is a dotnet application that is used to store decoded AIS messages. It works by subscribing to a RabbitMQ exchange where the messages are streamed into and storing them on a **Messages** table and keeping coallesced and up to date AIS object information on an **Objects** table, using the [MMSI](https://en.wikipedia.org/wiki/Maritime_Mobile_Service_Identity) as its primary key.
 
+## Database structure
+
+|  Table   |  PK  | PK type |                    Data                     |
+| :------: | :--: | :-----: | :-----------------------------------------: |
+| Messages |  id  |  long   |    [Message](../Database.Lib/Message.cs)    |
+| Objects  | mmsi |  uint   | [ObjectData](../Database.Lib/ObjectData.cs) |
+
 ## Requirements
 
 - Dotnet
