@@ -230,6 +230,7 @@ const FlagsByMid = {
   201: { img: al, country: "Albania", alt: "Flag of Albania" },
   202: { img: ad, country: "Andorra", alt: "Flag of Andorra" },
   203: { img: at, country: "Austria", alt: "Flag of Austria" },
+  204: { img: pt, country: "Portugal", alt: "Flag of Portugal" },
   205: { img: be, country: "Belgium", alt: "Flag of Belgium" },
   206: { img: by, country: "Belarus", alt: "Flag of Belarus" },
   207: { img: bg, country: "Bulgaria", alt: "Flag of Bulgaria" },
