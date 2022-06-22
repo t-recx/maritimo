@@ -11,7 +11,7 @@ module Station
 
         def run(port, broker_uri, queue_name)
             @kernel.puts "Creating UDP socket"
-            socket = UDPSocket.new
+            socket = @udp_socket_factory.call
 
             @kernel.puts "Binding socket to #{port}"
             socket.bind("0.0.0.0", port)
