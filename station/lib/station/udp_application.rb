@@ -22,7 +22,7 @@ module Station
 
             begin
                 loop do
-                    text, sender = socket.recv_from(1024 * 16)
+                    text, sender = socket.recvfrom(1024 * 16)
 
                     while text.include? "\n"
                         tokens = text.split("\n", 2)
