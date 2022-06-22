@@ -1,6 +1,6 @@
 # [Maritimo](https://maritimo.digital/) &middot; Station
 
-Station is a ruby application used to fetch data from one or more AIS stations over a tcp connection and send them over a RabbitMQ queue for processing.
+Station is a ruby application used to fetch or receive data from one or more AIS stations over a tcp or udp connection and send them over a RabbitMQ queue for processing.
 
 ## Requirements
 
