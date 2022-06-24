@@ -3,32 +3,54 @@
 
 require "station"
 
+env_var_station_connection_protocol = "MARITIMO_STATION_CONNECTION_PROTOCOL"
+env_var_station_connection_listen_port = "MARITIMO_STATION_CONNECTION_LISTEN_PORT"
 env_var_station_hostname = "MARITIMO_STATION_HOSTNAME"
 env_var_station_port = "MARITIMO_STATION_PORT"
 env_var_station_read_timeout_seconds = "MARITIMO_STATION_READ_TIMEOUT_SECONDS"
 env_var_broker_uri = "MARITIMO_RABBITMQ_URI"
 env_var_queue_name = "MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME"
 
+station_connection_protocol = ENV[env_var_station_connection_protocol]
+station_connection_listen_port = ENV[env_var_station_connection_listen_port]
 station_hostname = ENV[env_var_station_hostname]
 station_port = ENV[env_var_station_port]
 station_read_timeout_seconds = ENV[env_var_station_read_timeout_seconds]
 broker_uri = ENV[env_var_broker_uri]
 queue_name = ENV[env_var_queue_name]
 
-unless station_hostname
-  warn "No station hostname configured. Set #{env_var_station_hostname} environment variable"
+unless station_connection_protocol
+  warn "No station connection protocol configured. Set #{env_var_station_connection_protocol} environment variable"
 
   return
 end
 
-unless station_port
-  warn "No station port configured. Set #{env_var_station_port} environment variable"
+if station_connection_protocol == "TCP"
+  unless station_hostname
+    warn "No station hostname configured. Set #{env_var_station_hostname} environment variable"
 
-  return
-end
+    return
+  end
 
-unless station_read_timeout_seconds
-  warn "No station read timeout value configured. Set #{env_var_station_read_timeout_seconds} environment variable"
+  unless station_port
+    warn "No station port configured. Set #{env_var_station_port} environment variable"
+
+    return
+  end
+
+  unless station_read_timeout_seconds
+    warn "No station read timeout value configured. Set #{env_var_station_read_timeout_seconds} environment variable"
+
+    return
+  end
+elsif station_connection_protocol == "UDP"
+  unless station_connection_listen_port
+    warn "No connection listen port configured. Set #{env_var_station_connection_listen_port} environment variable"
+
+    return
+  end
+else
+  warn "Unsupported connection protocol: #{station_connection_protocol}"
 
   return
 end
@@ -45,4 +67,8 @@ unless queue_name
   return
 end
 
-Station.application.run station_hostname, station_port, broker_uri, queue_name, station_read_timeout_seconds.to_i
+if station_connection_protocol == "TCP"
+  Station.application.run station_hostname, station_port, broker_uri, queue_name, station_read_timeout_seconds.to_i
+elsif station_connection_protocol == "UDP"
+  Station.udp_application.run station_connection_listen_port, broker_uri, queue_name
+end

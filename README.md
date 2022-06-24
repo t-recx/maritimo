@@ -30,9 +30,11 @@ To configure the entire system create a .env file in the main project directory 
 | POSTGRES_USER                                    | PostgreSQL database user name             |
 | POSTGRES_DB                                      | PostgreSQL database name                  |
 | POSTGRES_PASSWORD                                | PostgreSQL database password              |
-| MARITIMO_STATION_HOSTNAME                        | Station host name                         |
-| MARITIMO_STATION_PORT                            | Station connection port                   |
-| MARITIMO_STATION_READ_TIMEOUT_SECONDS            | Station read timeout                      |
+| MARITIMO_STATION_CONNECTION_PROTOCOL             | Protocol to use (TCP/UDP)                 |
+| MARITIMO_STATION_CONNECTION_LISTEN_PORT          | Listen port (UDP)                         |
+| MARITIMO_STATION_HOSTNAME                        | Station host name (TCP)                   |
+| MARITIMO_STATION_PORT                            | Station connection port (TCP)             |
+| MARITIMO_STATION_READ_TIMEOUT_SECONDS            | Station read timeout (TCP)                |
 | MARITIMO_DB_CONNECTION_STRING                    | Database connection string                |
 | MARITIMO_RABBITMQ_URI                            | URI for the RabbitMQ broker instance      |
 | MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME    | Broker queue name for encoded messages    |
@@ -65,6 +67,13 @@ Inside the project directory run:
     $ docker compose up
 
 Open [http://localhost](http://localhost) to access the application.
+
+## Data Contributions
+
+| Source                                 | Location      |
+| -------------------------------------- | ------------- |
+| [NCA](https://www.kystverket.no/en/)   | Norway        |
+| [Sydney Sisco](https://www.sydsis.co/) | Vancouver, BC |
 
 ## Special thanks
 

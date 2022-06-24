@@ -1,42 +1,41 @@
 require "test_helper"
 require "station"
+require "fakes"
 
 include Station
 
-describe Application do
-  let(:tcp_data_sent) { [] }
-  let(:tcp_socket_factory) do
-    lambda { |h, port|
-      @tcp_socket ||= FakeTcpSocket.new h, port
+describe UDPApplication do
+  let(:udp_data_received) { [] }
+  let(:udp_socket_factory) do
+    lambda {
+      @udp_socket ||= FakeUdpSocket.new
 
-      @tcp_socket.sent = tcp_data_sent
+      @udp_socket.received = udp_data_received
 
-      @tcp_socket
+      @udp_socket
     }
   end
   let(:connection_factory) { ->(bu) { @connection ||= FakeBunny.new bu } }
   let(:kernel) { FakeKernel.new }
 
-  let(:host) { "203.23.12.3" }
   let(:port) { 3500 }
   let(:broker_uri) { "amqp://test.org:5043" }
   let(:queue_name) { "station_queue" }
-  let(:read_timeout_seconds) { 5 }
 
-  subject { Application.new tcp_socket_factory, connection_factory, kernel }
+  subject { UDPApplication.new udp_socket_factory, connection_factory, kernel }
 
   describe :run do
-    it "should create a socket with appropriate parameters" do
+    it "should create a socket" do
       exercise_run
 
-      _(@tcp_socket.host).must_equal host
-      _(@tcp_socket.port).must_equal port
+      _(@udp_socket).wont_be_nil
     end
 
-    it "should wait the specified time for socket to be readable before timing out" do
+    it "should bind socket to port" do
       exercise_run
 
-      _(@tcp_socket.wait_readable_seconds).must_equal read_timeout_seconds
+      _(@udp_socket.binded_host).must_equal "0.0.0.0"
+      _(@udp_socket.binded_port).must_equal port
     end
 
     it "should create a connection with appropriate parameters" do
@@ -68,11 +67,11 @@ describe Application do
     it "should close socket" do
       exercise_run
 
-      _(@tcp_socket.closed_called).must_equal true
+      _(@udp_socket.closed_called).must_equal true
     end
 
     describe "when socket returns values" do
-      let(:tcp_data_sent) { ["ONE\nTWO\nTH", "REE\nUNFINISHED"] }
+      let(:udp_data_received) { ["ONE\nTWO\n", "A\nB\n"] }
 
       it "should be received and published" do
         exercise_run
@@ -80,13 +79,14 @@ describe Application do
         _(@connection.channel.fake_queue.published).must_equal [
           ["ONE", {persistent: true}],
           ["TWO", {persistent: true}],
-          ["THREE", {persistent: true}]
+          ["A", {persistent: true}],
+          ["B", {persistent: true}]
         ]
       end
     end
   end
 
   def exercise_run
-    subject.run host, port, broker_uri, queue_name, read_timeout_seconds
+    subject.run port, broker_uri, queue_name
   end
 end
