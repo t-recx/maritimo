@@ -6,14 +6,14 @@ AIS (Automatic Identification System) is an automatic tracking system. AIS trans
 
 ## Applications
 
-| Name                                    | Description                                                   |
-| --------------------------------------- | ------------------------------------------------------------- |
-| [Station](station/)                     | Reads data from AIS station(s) using the IEC 62320-1 standard |
-| [Decoder](decoder/)                     | NMEA/AIVDM decoder                                            |
-| [Persister](backend/Persister.App/)     | Records data received in a database                           |
-| [Transmitter](backend/Transmitter.App/) | Transmits decoded data over a Signal-R hub                    |
-| [WebApi](backend/WebApi.App/)           | REST API application to query the database                    |
-| [Frontend](frontend/)                   | Web application to display the information                    |
+| Name                                    | Description                                               |
+| --------------------------------------- | --------------------------------------------------------- |
+| [Station](station/)                     | Fetches or receives data from AIS stations via TCP or UDP |
+| [Decoder](decoder/)                     | Decodes NMEA VDM/VDO messages                             |
+| [Persister](backend/Persister.App/)     | Records decoded data in a database                        |
+| [Transmitter](backend/Transmitter.App/) | Transmits decoded data over a Signal-R hub                |
+| [WebApi](backend/WebApi.App/)           | Queries the database via REST                             |
+| [Frontend](frontend/)                   | Displays the information using a web frontend             |
 
 ## Requirements
 
