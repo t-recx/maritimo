@@ -25,7 +25,7 @@ unless station_connection_protocol
   return
 end
 
-if station_connection_protocol == 'TCP'
+if station_connection_protocol == "TCP"
   unless station_hostname
     warn "No station hostname configured. Set #{env_var_station_hostname} environment variable"
 
@@ -43,7 +43,7 @@ if station_connection_protocol == 'TCP'
 
     return
   end
-elsif station_connection_protocol == 'UDP'
+elsif station_connection_protocol == "UDP"
   unless station_connection_listen_port
     warn "No connection listen port configured. Set #{env_var_station_connection_listen_port} environment variable"
 
@@ -67,8 +67,8 @@ unless queue_name
   return
 end
 
-if station_connection_protocol == 'TCP'
+if station_connection_protocol == "TCP"
   Station.application.run station_hostname, station_port, broker_uri, queue_name, station_read_timeout_seconds.to_i
-elsif station_connection_protocol == 'UDP'
+elsif station_connection_protocol == "UDP"
   Station.udp_application.run station_connection_listen_port, broker_uri, queue_name
 end
