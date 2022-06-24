@@ -68,6 +68,13 @@ Inside the project directory run:
 
 Open [http://localhost](http://localhost) to access the application.
 
+## Data Contributions
+
+| Source                                 | Location      |
+| -------------------------------------- | ------------- |
+| [NCA](https://www.kystverket.no/en/)   | Norway        |
+| [Sydney Sisco](https://www.sydsis.co/) | Vancouver, BC |
+
 ## Special thanks
 
 This project wouldn't be possible without the open access that the [Norwegian Coastal Administration](https://www.kystverket.no/en/) offers to its AIS data and Eric S. Raymond's documentation on [AIVDM/AIVDO protocol decoding](https://gpsd.gitlab.io/gpsd/AIVDM.html).
