@@ -55,6 +55,7 @@ public class ObjectData
     public bool? gnss_position_status { get; set; }
     public float? magnetic_declination { get; set; }
     public string? source_id { get; set; }
+    public string? source_ip_address { get; set; }
 
     public DateTime updated { get; set; }
 }
