@@ -160,6 +160,7 @@ pub struct Message {
     pub repeat_indicator: u8,
     pub mmsi: u32,
     pub source_id: Option<String>,
+    pub source_ip_address: Option<String>,
     #[serde(flatten)]
     pub data: MessageData,
 }
@@ -167,11 +168,33 @@ pub struct Message {
 pub fn decode(
     input: &str,
     redis_connection: &mut Connection,
-    hash_key_when_no_source_id: &str,
+    stream_id: &str,
 ) -> Result<Option<Message>, NMEADecoderError> {
+    let source_id;
+    let mut source_ip_address = None;
+
+    if !input.contains('!') {
+        return Err(NMEADecoderError {
+            error_type: NMEADecoderErrorType::IncorrectMessageFormat,
+        });
+    }
+
     let tokens = input.split('!').collect::<Vec<&str>>();
 
-    let source_id = get_source_id(tokens[0]);
+    if tokens[0].starts_with('[') && tokens[0].contains(']') {
+        let tokens_ip = tokens[0][1..].splitn(2, ']').collect::<Vec<&str>>();
+
+        let ip_address = tokens_ip[0].to_string();
+
+        if ip_address.len() > 0 {
+            source_ip_address = Some(ip_address);
+        }
+
+        source_id = get_source_id(tokens_ip[1]);
+    } else {
+        source_id = get_source_id(tokens[0]);
+    }
+
     let ais_sentence = format!("!{}", tokens[1]);
 
     match nmea::decode_nmea(&ais_sentence) {
@@ -179,10 +202,7 @@ pub fn decode(
             let mut data_payload: Option<String> = None;
 
             if nmea_message.fragment_count > 1 {
-                let hash_key = match &source_id {
-                    Some(v) => v.to_string(),
-                    None => hash_key_when_no_source_id.to_string(),
-                };
+                let hash_key = get_hash_key(stream_id, &source_ip_address, &source_id);
 
                 match nmea_message.message_id {
                     Some(id) => {
@@ -312,6 +332,7 @@ pub fn decode(
                     mmsi,
                     data,
                     source_id,
+                    source_ip_address,
                 }));
             }
         }
@@ -330,4 +351,30 @@ fn get_source_id(input: &str) -> Option<String> {
         Some(v) => v.get(1).map_or(None, |m| Some(m.as_str().to_string())),
         None => None,
     }
+}
+
+fn get_hash_key(
+    stream_id: &str,
+    source_ip_address: &Option<String>,
+    source_id: &Option<String>,
+) -> String {
+    let mut hash_key = stream_id.to_string();
+
+    if let Some(ip_address) = source_ip_address {
+        if hash_key.len() > 0 {
+            hash_key += "::";
+        }
+
+        hash_key += &ip_address
+    }
+
+    if let Some(id) = source_id {
+        if hash_key.len() > 0 {
+            hash_key += "::";
+        }
+
+        hash_key += &id;
+    }
+
+    return hash_key;
 }

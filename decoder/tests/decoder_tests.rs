@@ -139,6 +139,52 @@ fn decode_should_decode_basic_message_info() {
     assert_eq!(message.repeat_indicator, 0);
     assert_eq!(message.mmsi, 477553000);
     assert_eq!(message.source_id, None);
+    assert_eq!(message.source_ip_address, None);
+}
+
+#[test]
+fn decode_should_extract_source_ip_address_when_present_testcase1() {
+    let message = decoder::decode(
+        "[2001:0db8:85a3:0000:0000:8a2e:0370:7334]!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C",
+        &mut get_redis_connection(),
+        "",
+    )
+    .unwrap()
+    .unwrap();
+
+    assert_eq!(message.source_id, None);
+    assert_eq!(
+        message.source_ip_address.unwrap(),
+        "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+    );
+}
+
+#[test]
+fn decode_should_extract_source_ip_address_when_present_testcase2() {
+    let message = decoder::decode(
+        "[90.20.1.44]\\s:2573315,c:1653148247*05\\!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C",
+        &mut get_redis_connection(),
+        "",
+    )
+    .unwrap()
+    .unwrap();
+
+    assert_eq!(message.source_id.unwrap(), "2573315");
+    assert_eq!(message.source_ip_address.unwrap(), "90.20.1.44");
+}
+
+#[test]
+fn decode_should_extract_source_ip_address_when_present_testcase3() {
+    let message = decoder::decode(
+        "[]\\s:2573315,c:1653148247*05\\!AIVDM,1,1,,B,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C",
+        &mut get_redis_connection(),
+        "",
+    )
+    .unwrap()
+    .unwrap();
+
+    assert_eq!(message.source_id.unwrap(), "2573315");
+    assert_eq!(message.source_ip_address, None);
 }
 
 #[test]
@@ -178,6 +224,60 @@ fn decode_should_extract_source_id_when_present_testcase3() {
     .unwrap();
 
     assert_eq!(message.source_id.unwrap(), "S43209c");
+}
+
+#[test]
+fn decode_should_store_fragments_correctly() {
+    let connection = &mut get_redis_connection();
+
+    decoder::decode(
+        "!AIVDM,3,1,3,B,FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        connection,
+        "",
+    )
+    .unwrap();
+    assert_eq!(
+        get_from_redis("", 3, connection),
+        "FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+
+    decoder::decode(
+        "!AIVDM,3,2,3,B,SECOND<PDhh00000000143984329,0*3E",
+        connection,
+        "",
+    )
+    .unwrap();
+    assert_eq!(
+        get_from_redis("", 3, connection),
+        "FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53SECOND<PDhh00000000143984329"
+    );
+}
+
+#[test]
+fn decode_when_stream_id_present_should_store_fragments_correctly() {
+    let connection = &mut get_redis_connection();
+
+    decoder::decode(
+        "!AIVDM,3,1,3,B,FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        connection,
+        "test_stream",
+    )
+    .unwrap();
+    assert_eq!(
+        get_from_redis("test_stream", 3, connection),
+        "FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+
+    decoder::decode(
+        "!AIVDM,3,2,3,B,SECOND<PDhh00000000143984329,0*3E",
+        connection,
+        "test_stream",
+    )
+    .unwrap();
+    assert_eq!(
+        get_from_redis("test_stream", 3, connection),
+        "FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53SECOND<PDhh00000000143984329"
+    );
 }
 
 #[test]
@@ -234,6 +334,133 @@ fn decode_when_source_id_present_should_store_fragments_correctly() {
         "ANOTHERVIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
     );
     assert_eq!(get_from_redis("STATIONTWO", 3, connection), "SECOND01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53MORESECONDaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53");
+}
+
+#[test]
+fn decode_when_source_id_present_and_when_stream_id_present_should_store_fragments_correctly() {
+    let connection = &mut get_redis_connection();
+    let stream_id = "test_stream";
+
+    decoder::decode(
+        "\\s:STATIONONE*05\\!AIVDM,3,1,3,B,FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        connection,
+        stream_id,
+    )
+    .unwrap();
+    assert_eq!(
+        get_from_redis("test_stream::STATIONONE", 3, connection),
+        "FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    decoder::decode(
+        "\\c:439843,s:STATIONTWO,y:34984398\\!AIVDM,3,1,3,B,SECOND01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        connection,
+        stream_id,
+    )
+    .unwrap();
+    assert_eq!(
+        get_from_redis("test_stream::STATIONONE", 3, connection),
+        "FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    assert_eq!(
+        get_from_redis("test_stream::STATIONTWO", 3, connection),
+        "SECOND01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    decoder::decode(
+        "\\c:439843,s:STATIONTWO,y:34984398\\!AIVDM,3,2,3,B,MORESECONDaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        connection,
+        stream_id,
+    )
+    .unwrap();
+    assert_eq!(
+        get_from_redis("test_stream::STATIONONE", 3, connection),
+        "FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    assert_eq!(get_from_redis("test_stream::STATIONTWO", 3, connection), "SECOND01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53MORESECONDaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53");
+    decoder::decode(
+        "\\s:STATIONONE*05\\!AIVDM,3,1,4,B,ANOTHERVIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        connection,
+        stream_id,
+    )
+    .unwrap();
+    assert_eq!(
+        get_from_redis("test_stream::STATIONONE", 3, connection),
+        "FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    assert_eq!(
+        get_from_redis("test_stream::STATIONONE", 4, connection),
+        "ANOTHERVIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    assert_eq!(get_from_redis("test_stream::STATIONTWO", 3, connection), "SECOND01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53MORESECONDaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53");
+}
+
+#[test]
+fn decode_when_source_id_present_and_when_stream_id_present_and_when_source_ip_address_present_should_store_fragments_correctly(
+) {
+    let connection = &mut get_redis_connection();
+    let stream_id = "test_stream";
+
+    decoder::decode(
+        "[140.2.44.1]\\s:STATIONONE*05\\!AIVDM,3,1,3,B,FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        connection,
+        stream_id,
+    )
+    .unwrap();
+    assert_eq!(
+        get_from_redis("test_stream::140.2.44.1::STATIONONE", 3, connection),
+        "FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    decoder::decode(
+        "[140.2.44.1]\\c:439843,s:STATIONTWO,y:34984398\\!AIVDM,3,1,3,B,SECOND01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        connection,
+        stream_id,
+    )
+    .unwrap();
+    assert_eq!(
+        get_from_redis("test_stream::140.2.44.1::STATIONONE", 3, connection),
+        "FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    assert_eq!(
+        get_from_redis("test_stream::140.2.44.1::STATIONTWO", 3, connection),
+        "SECOND01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    decoder::decode(
+        "[140.2.44.1]\\c:439843,s:STATIONTWO,y:34984398\\!AIVDM,3,2,3,B,MORESECONDaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        connection,
+        stream_id,
+    )
+    .unwrap();
+    assert_eq!(
+        get_from_redis("test_stream::140.2.44.1::STATIONONE", 3, connection),
+        "FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    assert_eq!(get_from_redis("test_stream::140.2.44.1::STATIONTWO", 3, connection), "SECOND01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53MORESECONDaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53");
+    decoder::decode(
+        "[140.2.44.1]\\s:STATIONONE*05\\!AIVDM,3,1,4,B,ANOTHERVIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        connection,
+        stream_id,
+    )
+    .unwrap();
+    assert_eq!(
+        get_from_redis("test_stream::140.2.44.1::STATIONONE", 3, connection),
+        "FIRSTL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    assert_eq!(
+        get_from_redis("test_stream::140.2.44.1::STATIONONE", 4, connection),
+        "ANOTHERVIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53"
+    );
+    assert_eq!(get_from_redis("test_stream::140.2.44.1::STATIONTWO", 3, connection), "SECOND01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53MORESECONDaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53");
+}
+
+#[test]
+fn decode_when_message_is_in_an_incorrect_format_should_return_error() {
+    let err = decoder::decode(
+        "VDM,2,2,3,B,55P5TL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
+        &mut get_redis_connection(),
+        "",
+    )
+    .unwrap_err();
+
+    assert_eq!(err.error_type, NMEADecoderErrorType::IncorrectMessageFormat);
 }
 
 fn assert_decode_when_field_is_of_incorrect_type_should_return_error(input: &str) {
