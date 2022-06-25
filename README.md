@@ -71,10 +71,11 @@ Open [http://localhost](http://localhost) to access the application.
 
 ## Data Contributions
 
-| Source                                 | Location      |
-| -------------------------------------- | ------------- |
-| [NCA](https://www.kystverket.no/en/)   | Norway        |
-| [Sydney Sisco](https://www.sydsis.co/) | Vancouver, BC |
+| Source                                  | Location              |
+| --------------------------------------- | --------------------- |
+| [NCA](https://www.kystverket.no/en/)    | Norway                |
+| [Sydney Sisco](https://www.sydsis.co/)  | Vancouver, BC         |
+| [Joeri van Dooren](https://rf.guru/sdr) | Lombardsijde, Belgium |
 
 ## Special thanks
 
