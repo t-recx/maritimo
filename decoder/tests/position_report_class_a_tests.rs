@@ -200,4 +200,3 @@ fn decode_should_decode_position_report_class_a4() {
         _ => panic!(),
     };
 }
-

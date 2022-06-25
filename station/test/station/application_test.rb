@@ -22,6 +22,7 @@ describe Application do
   let(:broker_uri) { "amqp://test.org:5043" }
   let(:queue_name) { "station_queue" }
   let(:read_timeout_seconds) { 5 }
+  let(:include_ip_address) { false }
 
   subject { Application.new tcp_socket_factory, connection_factory, kernel }
 
@@ -74,6 +75,20 @@ describe Application do
     describe "when socket returns values" do
       let(:tcp_data_sent) { ["ONE\nTWO\nTH", "REE\nUNFINISHED"] }
 
+      describe "and when configured to include ip address" do
+        let(:include_ip_address) { true }
+
+        it "should be received and published with the source's ip address" do
+          exercise_run
+
+          _(@connection.channel.fake_queue.published).must_equal [
+            ["[#{host}]ONE", {persistent: true}],
+            ["[#{host}]TWO", {persistent: true}],
+            ["[#{host}]THREE", {persistent: true}]
+          ]
+        end
+      end
+
       it "should be received and published" do
         exercise_run
 
@@ -87,6 +102,6 @@ describe Application do
   end
 
   def exercise_run
-    subject.run host, port, broker_uri, queue_name, read_timeout_seconds
+    subject.run host, port, broker_uri, queue_name, read_timeout_seconds, include_ip_address
   end
 end

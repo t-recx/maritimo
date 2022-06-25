@@ -21,6 +21,7 @@ describe UDPApplication do
   let(:port) { 3500 }
   let(:broker_uri) { "amqp://test.org:5043" }
   let(:queue_name) { "station_queue" }
+  let(:include_ip_address) { false }
 
   subject { UDPApplication.new udp_socket_factory, connection_factory, kernel }
 
@@ -71,7 +72,22 @@ describe UDPApplication do
     end
 
     describe "when socket returns values" do
-      let(:udp_data_received) { ["ONE\nTWO\n", "A\nB\n"] }
+      let(:udp_data_received) { [["ONE\nTWO\n", [nil, nil, nil, "230.49.12.3"]], ["A\nB\n", [nil, nil, nil, "174.2.44.1"]]] }
+
+      describe "and when configured to include ip address" do
+        let(:include_ip_address) { true }
+
+        it "should be received and published with the source's ip address" do
+          exercise_run
+
+          _(@connection.channel.fake_queue.published).must_equal [
+            ["[230.49.12.3]ONE", {persistent: true}],
+            ["[230.49.12.3]TWO", {persistent: true}],
+            ["[174.2.44.1]A", {persistent: true}],
+            ["[174.2.44.1]B", {persistent: true}]
+          ]
+        end
+      end
 
       it "should be received and published" do
         exercise_run
@@ -87,6 +103,6 @@ describe UDPApplication do
   end
 
   def exercise_run
-    subject.run port, broker_uri, queue_name
+    subject.run port, broker_uri, queue_name, include_ip_address
   end
 end

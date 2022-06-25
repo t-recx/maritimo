@@ -10,7 +10,7 @@ module Station
       @kernel = kernel || Kernel
     end
 
-    def run(host, port, broker_uri, queue_name, read_timeout_seconds)
+    def run(host, port, broker_uri, queue_name, read_timeout_seconds, include_ip_address)
       @kernel.puts "Connecting to socket at #{host}:#{port}"
       socket = @tcp_socket_factory.call host, port
 
@@ -33,7 +33,9 @@ module Station
             message = tokens.first
             acc = tokens.last
 
-            @kernel.puts "Received #{message}"
+            @kernel.puts "Received message from #{host}: #{message}"
+
+            message = "[#{host}]#{message}" if include_ip_address
 
             queue.publish(message, persistent: true)
           end

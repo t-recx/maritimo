@@ -1,6 +1,5 @@
 require "socket"
 require "bunny"
-require "fakes"
 
 module Station
   class UDPApplication
@@ -10,7 +9,7 @@ module Station
       @kernel = kernel || Kernel
     end
 
-    def run(port, broker_uri, queue_name)
+    def run(port, broker_uri, queue_name, include_ip_address)
       @kernel.puts "Creating UDP socket"
       socket = @udp_socket_factory.call
 
@@ -26,7 +25,7 @@ module Station
         queue = connection.create_channel.queue(queue_name, durable: true)
 
         loop do
-          text, _ = socket.recvfrom(1024 * 16)
+          text, sender = socket.recvfrom(1024 * 16)
 
           while text.include? "\n"
             tokens = text.split("\n", 2)
@@ -34,7 +33,9 @@ module Station
             message = tokens.first
             text = tokens.last
 
-            @kernel.puts "Received #{message}"
+            @kernel.puts "Received message from #{sender[3]}: #{message}"
+
+            message = "[#{sender[3]}]#{message}" if include_ip_address
 
             queue.publish(message, persistent: true)
           end

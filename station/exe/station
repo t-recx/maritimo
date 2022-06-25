@@ -10,6 +10,7 @@ env_var_station_port = "MARITIMO_STATION_PORT"
 env_var_station_read_timeout_seconds = "MARITIMO_STATION_READ_TIMEOUT_SECONDS"
 env_var_broker_uri = "MARITIMO_RABBITMQ_URI"
 env_var_queue_name = "MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME"
+env_var_include_sender_ip = "MARITIMO_STATION_INCLUDE_SENDER_IP_ADDRESS"
 
 station_connection_protocol = ENV[env_var_station_connection_protocol]
 station_connection_listen_port = ENV[env_var_station_connection_listen_port]
@@ -18,6 +19,7 @@ station_port = ENV[env_var_station_port]
 station_read_timeout_seconds = ENV[env_var_station_read_timeout_seconds]
 broker_uri = ENV[env_var_broker_uri]
 queue_name = ENV[env_var_queue_name]
+include_sender_ip = ENV[env_var_include_sender_ip]
 
 unless station_connection_protocol
   warn "No station connection protocol configured. Set #{env_var_station_connection_protocol} environment variable"
@@ -67,8 +69,17 @@ unless queue_name
   return
 end
 
+unless include_sender_ip
+  warn "Inclusion of sender's ip address is not configured. Set #{env_var_include_sender_ip} environment variable"
+
+  return
+end
+
+include_sender_ip = include_sender_ip.downcase
+include_sender_ip = include_sender_ip == "true" || include_sender_ip == "t" || include_sender_ip == "1"
+
 if station_connection_protocol == "TCP"
-  Station.application.run station_hostname, station_port, broker_uri, queue_name, station_read_timeout_seconds.to_i
+  Station.application.run station_hostname, station_port, broker_uri, queue_name, station_read_timeout_seconds.to_i, include_sender_ip
 elsif station_connection_protocol == "UDP"
-  Station.udp_application.run station_connection_listen_port, broker_uri, queue_name
+  Station.udp_application.run station_connection_listen_port, broker_uri, queue_name, include_sender_ip
 end
