@@ -11,6 +11,7 @@ env_var_station_read_timeout_seconds = "MARITIMO_STATION_READ_TIMEOUT_SECONDS"
 env_var_broker_uri = "MARITIMO_RABBITMQ_URI"
 env_var_queue_name = "MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME"
 env_var_include_sender_ip = "MARITIMO_STATION_INCLUDE_SENDER_IP_ADDRESS"
+env_var_station_filename = "MARITIMO_STATION_FILENAME"
 
 station_connection_protocol = ENV[env_var_station_connection_protocol]
 station_connection_listen_port = ENV[env_var_station_connection_listen_port]
@@ -20,6 +21,7 @@ station_read_timeout_seconds = ENV[env_var_station_read_timeout_seconds]
 broker_uri = ENV[env_var_broker_uri]
 queue_name = ENV[env_var_queue_name]
 include_sender_ip = ENV[env_var_include_sender_ip]
+station_filename = ENV[env_var_station_filename]
 
 unless station_connection_protocol
   warn "No station connection protocol configured. Set #{env_var_station_connection_protocol} environment variable"
@@ -48,6 +50,12 @@ if station_connection_protocol == "TCP"
 elsif station_connection_protocol == "UDP"
   unless station_connection_listen_port
     warn "No connection listen port configured. Set #{env_var_station_connection_listen_port} environment variable"
+
+    return
+  end
+elsif station_connection_protocol == "FILE"
+  unless station_filename
+    warn "No filename configured. Set #{env_var_station_filename} environment variable"
 
     return
   end
@@ -82,4 +90,6 @@ if station_connection_protocol == "TCP"
   Station.application.run station_hostname, station_port, broker_uri, queue_name, station_read_timeout_seconds.to_i, include_sender_ip
 elsif station_connection_protocol == "UDP"
   Station.udp_application.run station_connection_listen_port, broker_uri, queue_name, include_sender_ip
+elsif station_connection_protocol == "FILE"
+  Station.file_application.run station_filename, broker_uri, queue_name
 end
