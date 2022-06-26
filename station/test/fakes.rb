@@ -1,3 +1,19 @@
+class FakeFile
+  attr_accessor :input, :filename
+
+  def initialize
+    @input = ""
+  end
+
+  def foreach(filename)
+    @filename = filename
+
+    @input.lines.each do |line|
+      yield line
+    end
+  end
+end
+
 class FakeTcpSocket
   attr_accessor :host, :port, :sent, :sent_index, :closed_called, :wait_readable_seconds
 

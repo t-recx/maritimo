@@ -13,11 +13,12 @@ Configuration is done via environment variables.
 
 | Name                                          | Description                                             | Applicable to |
 | --------------------------------------------- | ------------------------------------------------------- | :-----------: |
-| MARITIMO_STATION_CONNECTION_PROTOCOL          | Protocol to use (TCP/UDP)                               |               |
+| MARITIMO_STATION_CONNECTION_PROTOCOL          | Protocol to use (TCP/UDP/FILE)                          |               |
 | MARITIMO_STATION_CONNECTION_LISTEN_PORT       | Listen port                                             |      UDP      |
 | MARITIMO_STATION_HOSTNAME                     | Station host name                                       |      TCP      |
 | MARITIMO_STATION_PORT                         | Station connection port                                 |      TCP      |
 | MARITIMO_STATION_READ_TIMEOUT_SECONDS         | Station read timeout                                    |      TCP      |
+| MARITIMO_STATION_FILENAME                     | Filename with VDM/VDO sentences                         |     FILE      |
 | MARITIMO_STATION_INCLUDE_SENDER_IP_ADDRESS    | Includes the source's ip address on the encoded message |               |
 | MARITIMO_RABBITMQ_URI                         | URI for the RabbitMQ broker instance                    |               |
 | MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME | Broker queue name for encoded messages                  |               |
