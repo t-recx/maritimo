@@ -1,14 +1,11 @@
+use std::collections::HashMap;
 extern crate decoder;
 use decoder::error::NMEADecoderErrorType;
 use decoder::MessageData;
 
-use crate::support::*;
-
-pub mod support;
-
 #[test]
 fn decode_when_message_size_incorrect_should_return_error() {
-    let connection = &mut get_redis_connection();
+    let connection = &mut HashMap::new();
 
     decoder::decode(
         "!AIVDM,2,1,0,A,58wt8Ui`g??r21`7S=:22058<v05Htp000000015>8OA;0sk,0*7B",
@@ -27,7 +24,7 @@ fn decode_when_message_size_incorrect_should_return_error() {
 
 #[test]
 fn decode_should_decode_static_and_voyage_data() {
-    let connection = &mut get_redis_connection();
+    let connection = &mut HashMap::new();
 
     decoder::decode(
         "!AIVDM,2,1,0,A,58wt8Ui`g??r21`7S=:22058<v05Htp000000015>8OA;0sk,0*7B",
@@ -91,7 +88,7 @@ fn decode_should_decode_static_and_voyage_data() {
 
 #[test]
 fn decode_should_decode_static_and_voyage_data2() {
-    let connection = &mut get_redis_connection();
+    let connection = &mut HashMap::new();
 
     decoder::decode(
         "!AIVDM,2,1,3,B,55P5TL01VIaAL@7WKO@mBplU@<PDhh000000001S;AJ::4A80?4i@E53,0*3E",
@@ -151,7 +148,7 @@ fn decode_should_decode_static_and_voyage_data2() {
 
 #[test]
 fn decode_when_message_is_slightly_truncated_should_still_decode_gracefully() {
-    let connection = &mut get_redis_connection();
+    let connection = &mut HashMap::new();
 
     decoder::decode(
         "!AIVDM,2,1,0,A,58wt8Ui`g??r21`7S=:22058<v05Htp000000015>8OA;0sk,0*7B",

@@ -17,13 +17,15 @@ describe UDPApplication do
   end
   let(:connection_factory) { ->(bu) { @connection ||= FakeBunny.new bu } }
   let(:kernel) { FakeKernel.new }
+  let(:accumulator) { FakeAccumulator.new }
 
   let(:port) { 3500 }
   let(:broker_uri) { "amqp://test.org:5043" }
   let(:queue_name) { "station_queue" }
   let(:include_ip_address) { false }
+  let(:queue) { @connection.channel.fake_queue }
 
-  subject { UDPApplication.new udp_socket_factory, connection_factory, kernel }
+  subject { UDPApplication.new udp_socket_factory, connection_factory, kernel, accumulator }
 
   describe :run do
     it "should create a socket" do
@@ -80,11 +82,11 @@ describe UDPApplication do
         it "should be received and published with the source's ip address" do
           exercise_run
 
-          _(@connection.channel.fake_queue.published).must_equal [
-            ["[230.49.12.3]ONE", {persistent: true}],
-            ["[230.49.12.3]TWO", {persistent: true}],
-            ["[174.2.44.1]A", {persistent: true}],
-            ["[174.2.44.1]B", {persistent: true}]
+          _(accumulator.published).must_equal [
+            {message: "[230.49.12.3]ONE", queue: queue},
+            {message: "[230.49.12.3]TWO", queue: queue},
+            {message: "[174.2.44.1]A", queue: queue},
+            {message: "[174.2.44.1]B", queue: queue}
           ]
         end
       end
@@ -92,11 +94,11 @@ describe UDPApplication do
       it "should be received and published" do
         exercise_run
 
-        _(@connection.channel.fake_queue.published).must_equal [
-          ["ONE", {persistent: true}],
-          ["TWO", {persistent: true}],
-          ["A", {persistent: true}],
-          ["B", {persistent: true}]
+        _(accumulator.published).must_equal [
+          {message: "ONE", queue: queue},
+          {message: "TWO", queue: queue},
+          {message: "A", queue: queue},
+          {message: "B", queue: queue}
         ]
       end
     end

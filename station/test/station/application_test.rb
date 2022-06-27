@@ -16,6 +16,7 @@ describe Application do
   end
   let(:connection_factory) { ->(bu) { @connection ||= FakeBunny.new bu } }
   let(:kernel) { FakeKernel.new }
+  let(:accumulator) { FakeAccumulator.new }
 
   let(:host) { "203.23.12.3" }
   let(:port) { 3500 }
@@ -23,8 +24,9 @@ describe Application do
   let(:queue_name) { "station_queue" }
   let(:read_timeout_seconds) { 5 }
   let(:include_ip_address) { false }
+  let(:queue) { @connection.channel.fake_queue }
 
-  subject { Application.new tcp_socket_factory, connection_factory, kernel }
+  subject { Application.new tcp_socket_factory, connection_factory, kernel, accumulator }
 
   describe :run do
     it "should create a socket with appropriate parameters" do
@@ -81,10 +83,10 @@ describe Application do
         it "should be received and published with the source's ip address" do
           exercise_run
 
-          _(@connection.channel.fake_queue.published).must_equal [
-            ["[#{host}]ONE", {persistent: true}],
-            ["[#{host}]TWO", {persistent: true}],
-            ["[#{host}]THREE", {persistent: true}]
+          _(accumulator.published).must_equal [
+            {message: "[#{host}]ONE", queue: queue},
+            {message: "[#{host}]TWO", queue: queue},
+            {message: "[#{host}]THREE", queue: queue}
           ]
         end
       end
@@ -92,10 +94,10 @@ describe Application do
       it "should be received and published" do
         exercise_run
 
-        _(@connection.channel.fake_queue.published).must_equal [
-          ["ONE", {persistent: true}],
-          ["TWO", {persistent: true}],
-          ["THREE", {persistent: true}]
+        _(accumulator.published).must_equal [
+          {message: "ONE", queue: queue},
+          {message: "TWO", queue: queue},
+          {message: "THREE", queue: queue}
         ]
       end
     end

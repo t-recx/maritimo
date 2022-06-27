@@ -1,3 +1,15 @@
+class FakeAccumulator
+  attr_accessor :published
+
+  def initialize
+    @published = []
+  end
+
+  def publish queue, message
+    @published.push({queue: queue, message: message})
+  end
+end
+
 class FakeFile
   attr_accessor :input, :filename
 

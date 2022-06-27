@@ -4,10 +4,11 @@ require "timeout"
 
 module Station
   class Application
-    def initialize(tcp_socket_factory = nil, connection_factory = nil, kernel = nil)
+    def initialize(tcp_socket_factory = nil, connection_factory = nil, kernel = nil, accumulator = nil)
       @tcp_socket_factory = tcp_socket_factory || (->(h, port) { TCPSocket.new h, port })
       @connection_factory = connection_factory || (->(bu) { Bunny.new bu })
       @kernel = kernel || Kernel
+      @accumulator = accumulator || Accumulator.new
     end
 
     def run(host, port, broker_uri, queue_name, read_timeout_seconds, include_ip_address)
@@ -37,7 +38,7 @@ module Station
 
             message = "[#{host}]#{message}" if include_ip_address
 
-            queue.publish(message, persistent: true)
+            @accumulator.publish(queue, message)
           end
         rescue Errno::EAGAIN
           if socket.wait_readable(read_timeout_seconds)

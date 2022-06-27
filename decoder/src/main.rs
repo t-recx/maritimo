@@ -3,7 +3,7 @@ use amiquip::{
     QueueDeclareOptions, Result,
 };
 use decoder::error::MissingEnvironmentVariableError;
-use redis::Client;
+use std::collections::HashMap;
 use std::env;
 use std::error::Error;
 
@@ -11,12 +11,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
 
     let rabbitmq_uri_env_var_name = "MARITIMO_RABBITMQ_URI";
-    let redis_uri_env_var_name = "MARITIMO_REDIS_URI";
     let incoming_queue_env_var_name = "MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME";
     let outgoing_exchange_env_var_name = "MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME";
 
     let rabbitmq_uri;
-    let redis_uri;
     let incoming_queue;
     let outgoing_exchange;
 
@@ -27,20 +25,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                 message: format!(
                     "No broker URI configured. Set {} environment variable",
                     rabbitmq_uri_env_var_name
-                )
-                .to_string(),
-            }
-            .into());
-        }
-    }
-
-    match env::var(redis_uri_env_var_name) {
-        Ok(value) => redis_uri = value,
-        Err(_) => {
-            return Err(MissingEnvironmentVariableError {
-                message: format!(
-                    "No redis URI configured. Set {} environment variable",
-                    redis_uri_env_var_name
                 )
                 .to_string(),
             }
@@ -102,29 +86,37 @@ fn main() -> Result<(), Box<dyn Error>> {
         ExchangeDeclareOptions::default(),
     )?;
 
-    let redis_client = Client::open(redis_uri)?;
-    let mut redis_connection = redis_client.get_connection()?;
+    let mut acc = HashMap::new();
 
     println!("Connected to {}", rabbitmq_uri);
 
-    for (i, message) in consumer.receiver().iter().enumerate() {
+    for (_, message) in consumer.receiver().iter().enumerate() {
         match message {
             ConsumerMessage::Delivery(delivery) => {
-                let ais_sentence = String::from_utf8_lossy(&delivery.body);
-                println!("({:>3}) {}", i, ais_sentence);
+                let body_string = String::from_utf8_lossy(&delivery.body);
+                let sentences = body_string.split('\n').collect::<Vec<&str>>();
 
-                match decoder::decode(&ais_sentence, &mut redis_connection, &incoming_queue) {
-                    Ok(opt) => match opt {
-                        Some(value) => match serde_json::to_string(&value) {
-                            Ok(json) => {
-                                outgoing_exchange.publish(Publish::new(json.as_bytes(), ""))?;
-                                println!("Sent {:?}", json);
-                            }
-                            Err(e) => println!("{:?}", e),
+                for (_, sentence) in sentences
+                    .iter()
+                    .map(|x| x.trim())
+                    .filter(|x| x.len() > 0)
+                    .enumerate()
+                {
+                    println!("{}", sentence);
+
+                    match decoder::decode(&sentence, &mut acc, &incoming_queue) {
+                        Ok(opt) => match opt {
+                            Some(value) => match serde_json::to_string(&value) {
+                                Ok(json) => {
+                                    outgoing_exchange.publish(Publish::new(json.as_bytes(), ""))?;
+                                    println!("Sent {:?}", json);
+                                }
+                                Err(e) => println!("{:?}", e),
+                            },
+                            _ => (),
                         },
-                        _ => (),
-                    },
-                    Err(e) => println!("{:?}", e),
+                        Err(e) => println!("{:?}", e),
+                    }
                 }
 
                 consumer.ack(delivery)?;

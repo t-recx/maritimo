@@ -15,12 +15,14 @@ describe FileApplication do
   end
   let(:connection_factory) { ->(bu) { @connection ||= FakeBunny.new bu } }
   let(:kernel) { FakeKernel.new }
+  let(:accumulator) { FakeAccumulator.new }
 
   let(:broker_uri) { "amqp://test.org:5043" }
   let(:queue_name) { "station_queue" }
   let(:filename) { "dump.txt" }
+  let(:queue) { @connection.channel.fake_queue }
 
-  subject { FileApplication.new connection_factory, kernel, file }
+  subject { FileApplication.new connection_factory, kernel, file, accumulator }
 
   describe :run do
     it "should create a connection with appropriate parameters" do
@@ -55,11 +57,11 @@ describe FileApplication do
       it "should be read and published" do
         exercise_run
 
-        _(@connection.channel.fake_queue.published).must_equal [
-          ["ONE", {persistent: true}],
-          ["TWO", {persistent: true}],
-          ["A", {persistent: true}],
-          ["B", {persistent: true}]
+        _(accumulator.published).must_equal [
+          {message: "ONE", queue: queue},
+          {message: "TWO", queue: queue},
+          {message: "A", queue: queue},
+          {message: "B", queue: queue}
         ]
         _(@file_instance.filename).must_equal filename
       end

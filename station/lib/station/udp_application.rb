@@ -3,10 +3,11 @@ require "bunny"
 
 module Station
   class UDPApplication
-    def initialize(udp_socket_factory = nil, connection_factory = nil, kernel = nil)
+    def initialize(udp_socket_factory = nil, connection_factory = nil, kernel = nil, accumulator = nil)
       @udp_socket_factory = udp_socket_factory || (-> { UDPSocket.new })
       @connection_factory = connection_factory || (->(bu) { Bunny.new bu })
       @kernel = kernel || Kernel
+      @accumulator = accumulator || Accumulator.new
     end
 
     def run(port, broker_uri, queue_name, include_ip_address)
@@ -37,7 +38,7 @@ module Station
 
             message = "[#{sender[3]}]#{message}" if include_ip_address
 
-            queue.publish(message, persistent: true)
+            @accumulator.publish(queue, message)
           end
         end
       rescue => e

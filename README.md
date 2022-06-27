@@ -41,7 +41,6 @@ To configure the entire system create a .env file in the main project directory 
 | MARITIMO_RABBITMQ_URI                            | URI for the RabbitMQ broker instance                    |
 | MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME    | Broker queue name for encoded messages                  |
 | MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME | Broker exchange name for decoded messages               |
-| MARITIMO_REDIS_URI                               | URI for the Redis instance                              |
 | MARITIMO_CORS_ORIGIN_WHITELIST                   | CORS origin whitelist                                   |
 
 Check an example configuration file in [.env.development](.env.development).
