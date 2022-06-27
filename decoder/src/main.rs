@@ -110,21 +110,30 @@ fn main() -> Result<(), Box<dyn Error>> {
     for (i, message) in consumer.receiver().iter().enumerate() {
         match message {
             ConsumerMessage::Delivery(delivery) => {
-                let ais_sentence = String::from_utf8_lossy(&delivery.body);
-                println!("({:>3}) {}", i, ais_sentence);
+                let body_string = String::from_utf8_lossy(&delivery.body);
+                let sentences = body_string.split('\n').collect::<Vec<&str>>();
 
-                match decoder::decode(&ais_sentence, &mut redis_connection, &incoming_queue) {
-                    Ok(opt) => match opt {
-                        Some(value) => match serde_json::to_string(&value) {
-                            Ok(json) => {
-                                outgoing_exchange.publish(Publish::new(json.as_bytes(), ""))?;
-                                println!("Sent {:?}", json);
-                            }
-                            Err(e) => println!("{:?}", e),
+                for (n, sentence) in sentences
+                    .iter()
+                    .map(|x| x.trim())
+                    .filter(|x| x.len() > 0)
+                    .enumerate()
+                {
+                    println!("({:>3}) [{:>3}] {}", i, n, sentence);
+
+                    match decoder::decode(&sentence, &mut redis_connection, &incoming_queue) {
+                        Ok(opt) => match opt {
+                            Some(value) => match serde_json::to_string(&value) {
+                                Ok(json) => {
+                                    outgoing_exchange.publish(Publish::new(json.as_bytes(), ""))?;
+                                    println!("Sent {:?}", json);
+                                }
+                                Err(e) => println!("{:?}", e),
+                            },
+                            _ => (),
                         },
-                        _ => (),
-                    },
-                    Err(e) => println!("{:?}", e),
+                        Err(e) => println!("{:?}", e),
+                    }
                 }
 
                 consumer.ack(delivery)?;
