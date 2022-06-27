@@ -1,12 +1,9 @@
 #[macro_use]
 extern crate lazy_static;
 
-extern crate redis;
-
 use regex::Regex;
 use serde::Serialize;
-
-use redis::Connection;
+use std::collections::HashMap;
 
 mod conversions;
 mod decoders;
@@ -167,7 +164,7 @@ pub struct Message {
 
 pub fn decode(
     input: &str,
-    redis_connection: &mut Connection,
+    sources_messages_acc: &mut HashMap<String, HashMap<u8, String>>,
     stream_id: &str,
 ) -> Result<Option<Message>, NMEADecoderError> {
     let source_id;
@@ -202,56 +199,33 @@ pub fn decode(
             let mut data_payload: Option<String> = None;
 
             if nmea_message.fragment_count > 1 {
-                let hash_key = get_hash_key(stream_id, &source_ip_address, &source_id);
-
                 match nmea_message.message_id {
                     Some(id) => {
-                        let payload = redis::cmd("HGET")
-                            .arg(&hash_key)
-                            .arg(&id)
-                            .query::<Option<String>>(redis_connection)
-                            .unwrap()
-                            .unwrap_or("".to_string());
+                        let hash_key = get_hash_key(stream_id, &source_ip_address, &source_id, id);
 
-                        if nmea_message.fragment_number > 1 && payload.len() == 0 {
+                        let hash_entry_for_message_id = sources_messages_acc
+                            .entry(hash_key)
+                            .or_insert(HashMap::new());
+
+                        if nmea_message.fragment_number > 1 && hash_entry_for_message_id.len() == 0
+                        {
                             return Err(NMEADecoderError {
                                 error_type:
                                     NMEADecoderErrorType::PreviousFragmentsNotPresentForMessageId,
                             });
                         }
 
-                        let payload = format!("{}{}", payload, nmea_message.data_payload);
+                        hash_entry_for_message_id
+                            .entry(nmea_message.fragment_number)
+                            .or_insert(nmea_message.data_payload);
 
-                        redis::cmd("HSET")
-                            .arg(&hash_key)
-                            .arg(&id)
-                            .arg(&payload)
-                            .execute(redis_connection);
+                        let current_recorded_fragment_number = hash_entry_for_message_id.len();
 
-                        let fragment_number_hash_key = format!("{}#FN", id);
-
-                        let current_recorded_fragment_number = redis::cmd("HINCRBY")
-                            .arg(&hash_key)
-                            .arg(&fragment_number_hash_key)
-                            .arg::<u8>(1)
-                            .query::<u8>(redis_connection)
-                            .unwrap();
-
-                        if current_recorded_fragment_number != nmea_message.fragment_number
-                            || nmea_message.fragment_count == nmea_message.fragment_number
+                        if current_recorded_fragment_number
+                            != (nmea_message.fragment_number as usize)
                         {
-                            redis::cmd("HDEL")
-                                .arg(&hash_key)
-                                .arg(&id)
-                                .execute(redis_connection);
+                            hash_entry_for_message_id.clear();
 
-                            redis::cmd("HDEL")
-                                .arg(&hash_key)
-                                .arg(&fragment_number_hash_key)
-                                .execute(redis_connection);
-                        }
-
-                        if current_recorded_fragment_number != nmea_message.fragment_number {
                             return Err(NMEADecoderError {
                                 error_type:
                                     NMEADecoderErrorType::NumberOfRecordedFragmentsDoesNotMatchMessageFragmentCount,
@@ -259,7 +233,9 @@ pub fn decode(
                         }
 
                         if nmea_message.fragment_count == nmea_message.fragment_number {
-                            data_payload = Some(payload);
+                            data_payload = Some(get_payload(&hash_entry_for_message_id));
+
+                            hash_entry_for_message_id.clear();
                         }
                     }
                     None => {
@@ -353,10 +329,23 @@ fn get_source_id(input: &str) -> Option<String> {
     }
 }
 
+fn get_payload(hmap: &HashMap<u8, String>) -> String {
+    let mut v = hmap.keys().cloned().collect::<Vec<u8>>();
+
+    v.sort();
+
+    return v
+        .iter()
+        .map(|x| hmap.get(&x).unwrap().to_string())
+        .collect::<Vec<String>>()
+        .join("");
+}
+
 fn get_hash_key(
     stream_id: &str,
     source_ip_address: &Option<String>,
     source_id: &Option<String>,
+    message_id: u8,
 ) -> String {
     let mut hash_key = stream_id.to_string();
 
@@ -375,6 +364,12 @@ fn get_hash_key(
 
         hash_key += &id;
     }
+
+    if hash_key.len() > 0 {
+        hash_key += "::";
+    }
+
+    hash_key += &message_id.to_string();
 
     return hash_key;
 }

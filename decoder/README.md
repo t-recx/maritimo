@@ -2,8 +2,6 @@
 
 Decoder is a rust application that is used to decode NMEA/AIS sentences. It works by picking up encoded messages from a RabbitMQ worker queue and outputting the decoded messages in json format to a RabbitMQ publish/subscribe exchange.
 
-Since the same AIS message can be spread in multiple sentences and to allow for multiple decoder instances to pick up work from the same station source, some state is also kept in a Redis datastore.
-
 ## Supported message types
 
 | Number  | Type                             | Description                                                                                                                                     |
@@ -27,7 +25,6 @@ Configuration is done via environment variables.
 
 | Name                                             | Description                               |
 | ------------------------------------------------ | ----------------------------------------- |
-| MARITIMO_REDIS_URI                               | URI for the Redis instance                |
 | MARITIMO_RABBITMQ_URI                            | URI for the RabbitMQ broker instance      |
 | MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME    | Broker queue name for encoded messages    |
 | MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME | Broker exchange name for decoded messages |
@@ -40,19 +37,9 @@ Inside the decoder directory, run:
 
 ## Tests
 
-### Configuration
-
-Test configuration is done via environment variables.
-
-| Name                                             | Description                               |
-| ------------------------------------------------ | ----------------------------------------- |
-| MARITIMO_TEST_REDIS_URI                          | URI for the Redis instance used in tests  |
-
-### Running
-
 To run the tests execute the following command from the root of the decoder application directory:
 
-    $ cargo test -- --test-threads=1
+    $ cargo test
 
 ## Formating code
 

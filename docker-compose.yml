@@ -11,9 +11,6 @@ services:
   broker:
     image: rabbitmq:3.10-alpine
     restart: always
-  redis:
-    image: redis:7-alpine
-    restart: always
   station:
     build:
       context: ./station/
@@ -28,12 +25,11 @@ services:
     build:
       context: ./decoder/
       dockerfile: ../docker/decoder/Dockerfile
-    command: sh -c 'wait-for-it -q broker:5672 -- wait-for-it -q redis:6379 -- decoder'
+    command: sh -c 'wait-for-it -q broker:5672 -- decoder'
     env_file:
       - ./.env
     depends_on:
       - broker
-      - redis
     restart: always
   persister:
     build:
