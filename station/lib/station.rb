@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "station/version"
+require_relative "station/accumulator"
 require_relative "station/application"
 require_relative "station/udp_application"
 require_relative "station/file_application"

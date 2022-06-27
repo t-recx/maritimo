@@ -2,10 +2,11 @@ require "bunny"
 
 module Station
   class FileApplication
-    def initialize(connection_factory = nil, kernel = nil, file = nil)
+    def initialize(connection_factory = nil, kernel = nil, file = nil, accumulator = nil)
       @connection_factory = connection_factory || (->(bu) { Bunny.new bu })
       @kernel = kernel || Kernel
       @file = file || File
+      @accumulator = accumulator || Accumulator.new
     end
 
     def run(filename, broker_uri, queue_name)
@@ -22,7 +23,7 @@ module Station
 
           @kernel.puts "Read message: #{message}"
 
-          queue.publish(message.strip, persistent: true)
+          @accumulator.publish(queue, message.strip)
         end
       rescue => e
         @kernel.puts "Caught exception: #{e}"
