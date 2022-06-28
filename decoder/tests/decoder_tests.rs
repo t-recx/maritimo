@@ -19,6 +19,13 @@ fn decode_when_no_checksum_present_should_return_error() {
 }
 
 #[test]
+fn decode_when_no_payload_present_should_return_error() {
+    let err = decoder::decode("!AIVDM,1,1,,A,,0*26", &mut HashMap::new(), "").unwrap_err();
+
+    assert_eq!(err.error_type, NMEADecoderErrorType::MissingFields);
+}
+
+#[test]
 fn decode_when_fields_are_missing_should_return_error() {
     let err = decoder::decode(
         "!AIVDM,1,177KQJ5000G?tO`K>RA1wUbN0TKH,0*5C",
@@ -26,6 +33,13 @@ fn decode_when_fields_are_missing_should_return_error() {
         "",
     )
     .unwrap_err();
+
+    assert_eq!(err.error_type, NMEADecoderErrorType::MissingFields);
+}
+
+#[test]
+fn decode_when_fields_are_missing_should_return_error_testcase2() {
+    let err = decoder::decode("!AIVDM,1,1,,,,0*26", &mut HashMap::new(), "").unwrap_err();
 
     assert_eq!(err.error_type, NMEADecoderErrorType::MissingFields);
 }
@@ -463,6 +477,14 @@ fn decode_when_message_is_in_an_incorrect_format_should_return_error() {
         "",
     )
     .unwrap_err();
+
+    assert_eq!(err.error_type, NMEADecoderErrorType::IncorrectMessageFormat);
+}
+
+#[test]
+fn decode_when_message_is_in_an_incorrect_format_should_return_error_testcase2() {
+    let err =
+        decoder::decode("$AITXT,01,01,91,FREQ,2087,2088*57", &mut HashMap::new(), "").unwrap_err();
 
     assert_eq!(err.error_type, NMEADecoderErrorType::IncorrectMessageFormat);
 }

@@ -91,13 +91,21 @@ pub fn decode_nmea(input: &str) -> Result<NMEAMessage, NMEADecoderError> {
         }
     };
 
+    let data_payload = tokens[5].to_string();
+
+    if data_payload.len() == 0 {
+        return Err(NMEADecoderError {
+            error_type: NMEADecoderErrorType::MissingFields,
+        });
+    }
+
     return Ok(NMEAMessage {
         packet_type,
         fragment_count,
         fragment_number,
         message_id,
         radio_channel,
-        data_payload: tokens[5].to_string(),
+        data_payload,
         fill_bits,
         checksum,
     });
