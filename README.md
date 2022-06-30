@@ -71,13 +71,14 @@ Open [http://localhost](http://localhost) to access the application.
 
 ## Data Contributions
 
-| Source                                  | Location              |
-| --------------------------------------- | --------------------- |
-| [NCA](https://www.kystverket.no/en/)    | Norway                |
-| [Sydney Sisco](https://www.sydsis.co/)  | Vancouver, BC         |
-| [Joeri van Dooren](https://rf.guru/sdr) | Lombardsijde, Belgium |
-| [Rab](https://www.qrz.com/db/MM7BVP/)   | Greenock, Scotland    |
-| [LARS](https://www.lars.pt/)            | Sintra, Portugal      | 
+| Source                                          | Location              |
+| ----------------------------------------------- | --------------------- |
+| [NCA](https://www.kystverket.no/en/)            | Norway                |
+| [Sydney Sisco](https://www.sydsis.co/)          | Vancouver, BC         |
+| [Joeri van Dooren](https://rf.guru/sdr)         | Lombardsijde, Belgium |
+| [Rab](https://www.qrz.com/db/MM7BVP/)           | Greenock, Scotland    |
+| [LARS](https://www.lars.pt/)                    | Sintra, Portugal      |
+| [Jose Elias Diaz](https://www.qrz.com/db/EB1AO) | Vigo, Spain           |
 
 ## Special thanks
 
