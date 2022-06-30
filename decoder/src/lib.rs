@@ -251,6 +251,12 @@ pub fn decode(
             if let Some(payload) = data_payload {
                 let bytestring = payload_to_bytestring(&payload);
 
+                if bytestring.len() < 39 {
+                    return Err(NMEADecoderError {
+                        error_type: NMEADecoderErrorType::IncorrectMessageSize,
+                    });
+                }
+
                 let message_type = match get_unsigned_number(&bytestring[0..6]) {
                     Ok(n) => n as u8,
                     Err(e) => return Err(e),

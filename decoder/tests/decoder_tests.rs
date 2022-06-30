@@ -489,6 +489,13 @@ fn decode_when_message_is_in_an_incorrect_format_should_return_error_testcase2()
     assert_eq!(err.error_type, NMEADecoderErrorType::IncorrectMessageFormat);
 }
 
+#[test]
+fn decode_when_message_has_an_incorrect_message_size_should_return_error() {
+    let err = decoder::decode("!AIVDM,1,1,,B,15H8,0*17", &mut HashMap::new(), "").unwrap_err();
+
+    assert_eq!(err.error_type, NMEADecoderErrorType::IncorrectMessageSize);
+}
+
 fn assert_decode_when_field_is_of_incorrect_type_should_return_error(input: &str) {
     let err = decoder::decode(input, &mut HashMap::new(), "").unwrap_err();
 
