@@ -93,8 +93,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     for (_, message) in consumer.receiver().iter().enumerate() {
         match message {
             ConsumerMessage::Delivery(delivery) => {
-                let body_string = String::from_utf8_lossy(&delivery.body);
+                let delivery_body = delivery.body.to_vec();
+                let body_string = String::from_utf8_lossy(&delivery_body);
                 let sentences = body_string.split('\n').collect::<Vec<&str>>();
+
+                consumer.ack(delivery)?;
 
                 for (_, sentence) in sentences
                     .iter()
@@ -118,8 +121,6 @@ fn main() -> Result<(), Box<dyn Error>> {
                         Err(e) => println!("{:?}", e),
                     }
                 }
-
-                consumer.ack(delivery)?;
             }
             other => {
                 println!("Consumer ended: {:?}", other);
