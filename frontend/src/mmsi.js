@@ -1038,7 +1038,7 @@ function getTypeOfObject(mmsi) {
     return null;
   }
 
-  mmsi = mmsi.toString();
+  mmsi = mmsi.toString().padStart(9, "0");
 
   if (mmsi.startsWith("974")) {
     return TypeOfObject.EmergencyPositionIndicatingRadioBeacons;
