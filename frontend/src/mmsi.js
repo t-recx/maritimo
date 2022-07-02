@@ -1038,7 +1038,7 @@ function getTypeOfObject(mmsi) {
     return null;
   }
 
-  mmsi = mmsi.toString();
+  mmsi = mmsi.toString().padStart(9, "0");
 
   if (mmsi.startsWith("974")) {
     return TypeOfObject.EmergencyPositionIndicatingRadioBeacons;
@@ -1066,13 +1066,15 @@ function getMMSIMid(mmsi) {
     return null;
   }
 
+  mmsi = mmsi.toString().padStart(9, "0");
+
   const startPosition = MidStartPositionByObjectType[getTypeOfObject(mmsi)];
 
   if (startPosition == null) {
     return null;
   }
 
-  return mmsi.toString().slice(startPosition, startPosition + 3);
+  return mmsi.slice(startPosition, startPosition + 3);
 }
 
 function getCountryDescription(mmsi) {
