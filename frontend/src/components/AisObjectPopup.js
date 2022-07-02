@@ -96,6 +96,21 @@ function AisObjectPopup({ data }) {
             Aircraft
           </p>
         )}
+      {flagInformation != null && objectType === TypeOfObject.BaseStations && (
+        <p className="subtitle ship-object-popup-table-title-container">
+          {flagInformation && (
+            <img
+              className="flag-img hide-text"
+              src={flagInformation.img}
+              alt={flagInformation.alt}
+              title={shipCountryDescription}
+            />
+          )}
+          {shipCountryDescription != null && (
+            <React.Fragment>{shipCountryDescription}</React.Fragment>
+          )}
+        </p>
+      )}
       <table className="table is-fullwidth is-striped is-bordered">
         <tbody>
           {data.mmsi != null && data.mmsi > 0 && (
