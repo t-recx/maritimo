@@ -106,7 +106,10 @@ function AisObjectPopup({ data }) {
               title={shipCountryDescription}
             />
           )}
-          {shipCountryDescription != null && (
+          {data.name != null && data.name.length > 0 && (
+            <React.Fragment>{objectTypeDescription}</React.Fragment>
+          )}
+          {data.name == null && shipCountryDescription != null && (
             <React.Fragment>{shipCountryDescription}</React.Fragment>
           )}
         </p>
