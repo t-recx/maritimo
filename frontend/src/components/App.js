@@ -11,6 +11,7 @@ function App() {
       <div className="main-container">
         <Navbar />
         <MapContainer
+          preferCanvas={true}
           center={[
             parseFloat(process.env.REACT_APP_MAP_INITIAL_CENTER_LATITUDE),
             parseFloat(process.env.REACT_APP_MAP_INITIAL_CENTER_LONGITUDE),

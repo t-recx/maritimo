@@ -47,21 +47,21 @@ function AisMap() {
   useMapEvents({
     load(e) {
       setZoom(map.getZoom());
-      filterObjectsInView(map, data);
+      filterObjectsInView(map, latestData.current);
       console.log("load end");
     },
     resize(e) {
-      filterObjectsInView(map, data);
+      filterObjectsInView(map, latestData.current);
       console.log("resize end");
     },
     zoomend(e) {
       console.log("zoom end");
-      filterObjectsInView(map, data);
+      filterObjectsInView(map, latestData.current);
       setZoom(map.getZoom());
     },
     moveend(e) {
       console.log("move end");
-      filterObjectsInView(map, data);
+      filterObjectsInView(map, latestData.current);
     },
   });
 
@@ -104,6 +104,7 @@ function AisMap() {
           }
         });
 
+        latestData.current = dict;
         setData(dict);
 
         filterObjectsInView(map, dict);
@@ -139,27 +140,24 @@ function AisMap() {
 
       newConnection.on("Receive", (dto) => {
         const previousDto = latestData.current[dto.mmsi];
+        let newDto = dto;
 
         const newData = { ...latestData.current };
 
         if (previousDto) {
-          newData[dto.mmsi] = {
+          newDto = {
             ...previousDto,
             ...dto,
           };
-        } else {
-          newData[dto.mmsi] = dto;
         }
+
+        newData[dto.mmsi] = newDto;
+
+        latestData.current = newData;
 
         setData(newData);
 
-        if (
-          previousDto &&
-          (previousDto.latitude != dto.latitude ||
-            previousDto.longitude != dto.longitude)
-        ) {
-          filterObjectsInView(map, newData, true);
-        }
+        filterObjectsInView(map, newData, true);
       });
 
       setConnection(newConnection);
@@ -244,7 +242,7 @@ function AisMap() {
     }
   }
 
-  function _filterObjectsInView(m, objs) {
+  function getMapBounds(m) {
     const bounds = m.getBounds();
     const offset = 0.005;
 
@@ -255,7 +253,11 @@ function AisMap() {
     bounds._southWest.lat -= offset;
     bounds._southWest.lng -= offset;
 
-    setObjectsInView(getObjectsInView(objs, bounds));
+    return bounds;
+  }
+
+  function _filterObjectsInView(m, objs) {
+    setObjectsInView(getObjectsInView(objs, getMapBounds(m)));
   }
 
   function objectInView(dto, bounds) {
