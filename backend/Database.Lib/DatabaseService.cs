@@ -50,8 +50,6 @@ public class DatabaseService : IDatabaseService
         {
             var message = mapper.Map<Message>(dto);
 
-            message.updated = DateTime.UtcNow;
-
             context.Messages.Add(message);
             context.SaveChanges();
 
@@ -81,14 +79,11 @@ public class DatabaseService : IDatabaseService
             {
                 objectData = mapper.Map<ObjectData>(dto);
 
-                objectData.updated = DateTime.UtcNow;
-
                 context.Objects.Add(objectData);
             }
             else
             {
                 mapper.Map(dto, objectData);
-                objectData.updated = DateTime.UtcNow;
             }
 
             context.SaveChanges();
