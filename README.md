@@ -25,23 +25,24 @@ AIS (Automatic Identification System) is an automatic tracking system. AIS trans
 Configuration is done via environment variables.
 To configure the entire system create a .env file in the main project directory and set the following variables:
 
-| Name                                             | Description                                             |
-| ------------------------------------------------ | ------------------------------------------------------- |
-| POSTGRES_USER                                    | PostgreSQL database user name                           |
-| POSTGRES_DB                                      | PostgreSQL database name                                |
-| POSTGRES_PASSWORD                                | PostgreSQL database password                            |
-| MARITIMO_STATION_CONNECTION_PROTOCOL             | Protocol to use (TCP/UDP/FILE)                          |
-| MARITIMO_STATION_CONNECTION_LISTEN_PORT          | Listen port (UDP)                                       |
-| MARITIMO_STATION_HOSTNAME                        | Station host name (TCP)                                 |
-| MARITIMO_STATION_PORT                            | Station connection port (TCP)                           |
-| MARITIMO_STATION_READ_TIMEOUT_SECONDS            | Station read timeout (TCP)                              |
-| MARITIMO_STATION_FILENAME                        | Filename with VDM/VDO sentences (FILE)                  |
-| MARITIMO_STATION_INCLUDE_SENDER_IP_ADDRESS       | Includes the source's ip address on the encoded message |
-| MARITIMO_DB_CONNECTION_STRING                    | Database connection string                              |
-| MARITIMO_RABBITMQ_URI                            | URI for the RabbitMQ broker instance                    |
-| MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME    | Broker queue name for encoded messages                  |
-| MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME | Broker exchange name for decoded messages               |
-| MARITIMO_CORS_ORIGIN_WHITELIST                   | CORS origin whitelist                                   |
+| Name                                             | Description                                                              |
+| ------------------------------------------------ | ------------------------------------------------------------------------ |
+| POSTGRES_USER                                    | PostgreSQL database user name                                            |
+| POSTGRES_DB                                      | PostgreSQL database name                                                 |
+| POSTGRES_PASSWORD                                | PostgreSQL database password                                             |
+| MARITIMO_STATION_CONNECTION_PROTOCOL             | Protocol to use (TCP/UDP/FILE)                                           |
+| MARITIMO_STATION_CONNECTION_LISTEN_PORT          | Listen port (UDP)                                                        |
+| MARITIMO_STATION_HOSTNAME                        | Station host name (TCP)                                                  |
+| MARITIMO_STATION_PORT                            | Station connection port (TCP)                                            |
+| MARITIMO_STATION_READ_TIMEOUT_SECONDS            | Station read timeout (TCP)                                               |
+| MARITIMO_STATION_FILENAME                        | Filename with VDM/VDO sentences (FILE)                                   |
+| MARITIMO_STATION_INCLUDE_SENDER_IP_ADDRESS       | Includes the source's ip address on the encoded message                  |
+| MARITIMO_DB_CONNECTION_STRING                    | Database connection string                                               |
+| MARITIMO_RABBITMQ_URI                            | URI for the RabbitMQ broker instance                                     |
+| MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME    | Broker queue name for encoded messages                                   |
+| MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME | Broker exchange name for decoded messages                                |
+| MARITIMO_CORS_ORIGIN_WHITELIST                   | CORS origin whitelist                                                    |
+| MARITIMO_TRANSMITTER_BUFFER_SECONDS              | Seconds to buffer messages before sending them to ReceiveBuffered method |
 
 Check an example configuration file in [.env.development](.env.development).
 

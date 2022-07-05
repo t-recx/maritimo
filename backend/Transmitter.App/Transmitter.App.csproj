@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.1" />
     <PackageReference Include="Ninject" Version="3.3.5" />
+    <PackageReference Include="System.Reactive" Version="5.0.0" />
   </ItemGroup>
 
   <PropertyGroup>
