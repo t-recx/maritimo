@@ -138,20 +138,22 @@ function AisMap() {
         })
         .build();
 
-      newConnection.on("Receive", (dto) => {
-        const previousDto = latestData.current[dto.mmsi];
-        let newDto = dto;
-
+      newConnection.on("ReceiveBuffered", (list) => {
         const newData = { ...latestData.current };
 
-        if (previousDto) {
-          newDto = {
-            ...previousDto,
-            ...dto,
-          };
-        }
+        list.forEach((dto) => {
+          const previousDto = latestData.current[dto.mmsi];
+          let newDto = dto;
 
-        newData[dto.mmsi] = newDto;
+          if (previousDto) {
+            newDto = {
+              ...previousDto,
+              ...dto,
+            };
+          }
+
+          newData[dto.mmsi] = newDto;
+        });
 
         latestData.current = newData;
 
