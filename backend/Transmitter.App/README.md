@@ -4,9 +4,10 @@ Transmitter is a dotnet application that is used to transmit newly decoded AIS m
 
 ## Signal-R API
 
-| Endpoint | Method  |               Data                |
-| :------: | ------- | :-------------------------------: |
-|   /hub   | Receive | [DTOObjectData](DTOObjectData.cs) |
+| Endpoint | Method          |                   Data                    | Notes                                                                                 |
+| :------: | --------------- | :---------------------------------------: | ------------------------------------------------------------------------------------- |
+|   /hub   | Receive         |     [DTOObjectData](DTOObjectData.cs)     |                                                                                       |
+|   /hub   | ReceiveBuffered | [List\<DTOObjectData\>](DTOObjectData.cs) | Collects messages for a configurable number of seconds before sending the entire list |
 
 ## Requirements
 
@@ -16,11 +17,12 @@ Transmitter is a dotnet application that is used to transmit newly decoded AIS m
 
 Configuration is done via environment variables.
 
-| Name                                             | Description                               |
-| ------------------------------------------------ | ----------------------------------------- |
-| MARITIMO_RABBITMQ_URI                            | URI for the RabbitMQ broker instance      |
-| MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME | Broker exchange name for decoded messages |
-| MARITIMO_CORS_ORIGIN_WHITELIST                   | CORS origin whitelist                     |
+| Name                                             | Description                                                              |
+| ------------------------------------------------ | ------------------------------------------------------------------------ |
+| MARITIMO_RABBITMQ_URI                            | URI for the RabbitMQ broker instance                                     |
+| MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME | Broker exchange name for decoded messages                                |
+| MARITIMO_CORS_ORIGIN_WHITELIST                   | CORS origin whitelist                                                    |
+| MARITIMO_TRANSMITTER_BUFFER_SECONDS              | Seconds to buffer messages before sending them to ReceiveBuffered method |
 
 ## Running
 

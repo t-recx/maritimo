@@ -26,6 +26,7 @@ public class TransmitterModule
         kernel.Bind<IMapper>().ToMethod(_ => GetMapper());
 
         kernel.Bind<ILogger<IReceiver>>().ToMethod(x => loggerFactory.CreateLogger<IReceiver>());
+        kernel.Bind<ILogger<TransmitterHostedService>>().ToMethod(x => loggerFactory.CreateLogger<TransmitterHostedService>());
 
         return kernel;
     }
