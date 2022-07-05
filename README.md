@@ -72,17 +72,18 @@ Open [http://localhost](http://localhost) to access the application.
 
 ## Data Contributions
 
-| Source                                            | Location              |
-| ------------------------------------------------- | --------------------- |
-| [NCA](https://www.kystverket.no/en/)              | Norway                |
-| [Sydney Sisco](https://www.sydsis.co/)            | Vancouver, BC         |
-| [Joeri van Dooren](https://rf.guru/sdr)           | Lombardsijde, Belgium |
-| [Rab](https://www.qrz.com/db/MM7BVP/)             | Greenock, Scotland    |
-| [LARS](https://www.lars.pt/)                      | Sintra, Portugal      |
-| [Jose Elias Diaz](https://www.qrz.com/db/EB1AO)   | Vigo, Spain           |
-| [Carmelo Milla](https://www.olaje.com/)           | Malaga, Spain         |
-| [Pablo Costagliola](http://www.cx1rv.com)         | Argentina             |
-| [Gerrit van der Laag](https://amelandermusea.nl/) | Netherlands           |
+| Source                                                               | Location                   |
+| -------------------------------------------------------------------- | -------------------------- |
+| [NCA](https://www.kystverket.no/en/)                                 | Norway                     |
+| [Sydney Sisco](https://www.sydsis.co/)                               | Vancouver, BC              |
+| [Joeri van Dooren](https://rf.guru/sdr)                              | Lombardsijde, Belgium      |
+| [Rab](https://www.qrz.com/db/MM7BVP/)                                | Greenock, Scotland         |
+| [LARS](https://www.lars.pt/)                                         | Sintra, Portugal           |
+| [Jose Elias Diaz](https://www.qrz.com/db/EB1AO)                      | Vigo, Spain                |
+| [Carmelo Milla](https://www.olaje.com/)                              | Malaga, Spain              |
+| [Pablo Costagliola](http://www.cx1rv.com)                            | Argentina                  |
+| [Gerrit van der Laag](https://amelandermusea.nl/)                    | Netherlands                |
+| [John Wiseman](https://www.cantab.net/users/john.wiseman/Documents/) | Lewis and Harris, Scotland |
 
 ## Special thanks
 
