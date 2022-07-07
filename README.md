@@ -84,6 +84,7 @@ Open [http://localhost](http://localhost) to access the application.
 | [Pablo Costagliola](http://www.cx1rv.com)                            | Argentina                  |
 | [Gerrit van der Laag](https://amelandermusea.nl/)                    | Netherlands                |
 | [John Wiseman](https://www.cantab.net/users/john.wiseman/Documents/) | Lewis and Harris, Scotland |
+| [Rene](https://www.discriminator.nl/ais/index-en.html)               | Rotterdam, Netherlands     |
 
 ## Special thanks
 
