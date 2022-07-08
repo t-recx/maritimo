@@ -12,11 +12,6 @@ function App() {
         <Navbar />
         <MapContainer
           preferCanvas={true}
-          center={[
-            parseFloat(process.env.REACT_APP_MAP_INITIAL_CENTER_LATITUDE),
-            parseFloat(process.env.REACT_APP_MAP_INITIAL_CENTER_LONGITUDE),
-          ]}
-          zoom={process.env.REACT_APP_MAP_INITIAL_ZOOM}
           maxZoom={process.env.REACT_APP_MAP_MAX_ZOOM}
         >
           <TileLayer
