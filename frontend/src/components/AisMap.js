@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { HubConnectionBuilder } from "@microsoft/signalr";
 import axios from "axios";
 import AisObject from "./AisObject";
 
+import L from "leaflet";
 import { useMap, useMapEvents } from "react-leaflet";
 import { getTypeOfObject, TypeOfObject } from "../mmsi";
 
@@ -42,28 +44,77 @@ function AisMap() {
   latestStartConnectionTries.current = startConnectionTries;
   latestFetchConnectionTries.current = fetchConnectionTries;
 
+  const [search, setSearch] = useSearchParams();
   const map = useMap();
 
   useMapEvents({
     load(e) {
       setZoom(map.getZoom());
       filterObjectsInView(map, latestData.current);
-      console.log("load end");
     },
     resize(e) {
       filterObjectsInView(map, latestData.current);
-      console.log("resize end");
+      updateSearch();
     },
     zoomend(e) {
-      console.log("zoom end");
       filterObjectsInView(map, latestData.current);
       setZoom(map.getZoom());
+      updateSearch();
     },
     moveend(e) {
-      console.log("move end");
       filterObjectsInView(map, latestData.current);
+      updateSearch();
     },
   });
+
+  function updateSearch() {
+    const mapCenter = map.getCenter();
+    const mapZoom = map.getZoom();
+
+    setSearch(
+      { lat: mapCenter.lat, lng: mapCenter.lng, zoom: mapZoom },
+      { replace: true }
+    );
+
+    if (localStorage) {
+      localStorage.setItem("lat", mapCenter.lat);
+      localStorage.setItem("lng", mapCenter.lng);
+      localStorage.setItem("zoom", mapZoom);
+    }
+  }
+
+  useEffect(() => {
+    let paramZoom = parseInt(search.get("zoom"));
+
+    if (!paramZoom && localStorage) {
+      paramZoom = parseInt(localStorage.getItem("zoom"));
+    }
+
+    if (!paramZoom) {
+      paramZoom = parseInt(process.env.REACT_APP_MAP_INITIAL_ZOOM);
+    }
+
+    if (paramZoom) {
+      map.setZoom(paramZoom);
+    }
+
+    let paramLat = parseFloat(search.get("lat"));
+    let paramLng = parseFloat(search.get("lng"));
+
+    if ((!paramLat || !paramLng) && localStorage) {
+      paramLat = parseFloat(localStorage.getItem("lat"));
+      paramLng = parseFloat(localStorage.getItem("lng"));
+    }
+
+    if (!paramLat || !paramLng) {
+      paramLat = parseFloat(process.env.REACT_APP_MAP_INITIAL_CENTER_LATITUDE);
+      paramLng = parseFloat(process.env.REACT_APP_MAP_INITIAL_CENTER_LONGITUDE);
+    }
+
+    if (paramLat && paramLng) {
+      map.setView(new L.LatLng(paramLat, paramLng), paramZoom || map.getZoom());
+    }
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
