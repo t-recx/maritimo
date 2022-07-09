@@ -11,7 +11,7 @@ function Navbar() {
         <a href="/" className="navbar-item ">
           <img
             className="maritimo-logo"
-            src="logo.png"
+            src="logo.svg"
             width="28"
             height="28"
           ></img>
