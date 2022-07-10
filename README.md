@@ -81,10 +81,11 @@ Open [http://localhost](http://localhost) to access the application.
 | [LARS](https://www.lars.pt/)                                         | Sintra, Portugal           |
 | [Jose Elias Diaz](https://www.qrz.com/db/EB1AO)                      | Vigo, Spain                |
 | [Carmelo Milla](https://www.olaje.com/)                              | Malaga, Spain              |
-| [Pablo Costagliola](http://www.cx1rv.com)                            | Argentina                  |
+| [Pablo Costagliola](http://www.cx1rv.com)                            | Argentina and Uruguay      |
 | [Gerrit van der Laag](https://amelandermusea.nl/)                    | Netherlands                |
 | [John Wiseman](https://www.cantab.net/users/john.wiseman/Documents/) | Lewis and Harris, Scotland |
 | [Rene](https://www.discriminator.nl/ais/index-en.html)               | Rotterdam, Netherlands     |
+| [John Hearne](http://homepage.eircom.net/~johnhearne/index.html)     | Cork, Ireland              |
 
 ## Special thanks
 
