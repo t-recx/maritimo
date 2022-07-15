@@ -11,10 +11,19 @@ public interface IDatabaseService
     Result<DTOObjectData> Save(DTOObjectData dto);
 }
 
+public interface IStationService
+{
+    DTOStationEssentialData? GetStationEssentialData(string? sourceId = null, string? sourceIpAddress = null);
+    Task<DTOStation?> Get(int stationId);
+}
+
 public interface IMaritimoContext : IDisposable
 {
     DbSet<Message> Messages { get; }
     DbSet<ObjectData> Objects { get; }
+    DbSet<Station> Stations { get; }
+    DbSet<StationAddress> StationAddresses { get; }
+    DbSet<StationOperator> StationOperators { get; }
 
     int SaveChanges();
     DatabaseFacade Database { get; }

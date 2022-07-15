@@ -8,5 +8,6 @@ public class WebApiProfile : Profile
     public WebApiProfile()
     {
         CreateMap<DTOObjectData, DTOWebObjectData>();
+        CreateMap<DTOStation, DTOWebStation>();
     }
 }

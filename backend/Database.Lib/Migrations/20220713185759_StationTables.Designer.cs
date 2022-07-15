@@ -3,6 +3,7 @@ using System;
 using Database.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Lib.Migrations
 {
     [DbContext(typeof(MaritimoContext))]
-    partial class MaritimoContextModelSnapshot : ModelSnapshot
+    [Migration("20220713185759_StationTables")]
+    partial class StationTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,12 +160,6 @@ namespace Database.Lib.Migrations
 
                     b.Property<float?>("speed_over_ground")
                         .HasColumnType("real");
-
-                    b.Property<string>("station_name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("station_operator_name")
-                        .HasColumnType("text");
 
                     b.Property<byte?>("timestamp")
                         .HasColumnType("smallint");
@@ -332,12 +328,6 @@ namespace Database.Lib.Migrations
 
                     b.Property<float?>("speed_over_ground")
                         .HasColumnType("real");
-
-                    b.Property<string>("station_name")
-                        .HasColumnType("text");
-
-                    b.Property<string>("station_operator_name")
-                        .HasColumnType("text");
 
                     b.Property<byte?>("timestamp")
                         .HasColumnType("smallint");

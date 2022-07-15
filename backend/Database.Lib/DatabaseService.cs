@@ -11,22 +11,25 @@ public class DatabaseService : IDatabaseService
     private readonly IMaritimoContextFactory contextFactory;
     private readonly IMapper mapper;
     private readonly ILogger logger;
+    private readonly IStationService stationService;
 
     public DatabaseService(
         IMaritimoContextFactory contextFactory,
         IMapper mapper,
-        ILogger<IDatabaseService> logger)
+        ILogger<IDatabaseService> logger,
+        IStationService stationService)
     {
         this.contextFactory = contextFactory;
         this.mapper = mapper;
         this.logger = logger;
+        this.stationService = stationService;
     }
 
     public async Task<List<DTOObjectData>> Get(TimeSpan? timespan = null)
     {
         using (var context = contextFactory.Get())
         {
-            var query = context.Objects.AsQueryable();
+            var query = context.Objects.AsNoTracking().AsQueryable();
 
             if (timespan != null)
             {
@@ -49,6 +52,15 @@ public class DatabaseService : IDatabaseService
         try
         {
             var message = mapper.Map<Message>(dto);
+
+            var stationEssentialData = stationService.GetStationEssentialData(dto.source_id, dto.source_ip_address);
+
+            if (stationEssentialData != null)
+            {
+                message.StationId = stationEssentialData.StationId;
+                message.station_name = stationEssentialData.StationName;
+                message.station_operator_name = stationEssentialData.OperatorName;
+            }
 
             context.Messages.Add(message);
             context.SaveChanges();
@@ -75,15 +87,32 @@ public class DatabaseService : IDatabaseService
         {
             var objectData = context.Objects.SingleOrDefault(x => x.mmsi == dto.mmsi);
 
+            var stationEssentialData = stationService.GetStationEssentialData(dto.source_id, dto.source_ip_address);
+
+
             if (objectData == null)
             {
                 objectData = mapper.Map<ObjectData>(dto);
+
+                if (stationEssentialData != null)
+                {
+                    objectData.StationId = stationEssentialData.StationId;
+                    objectData.station_name = stationEssentialData.StationName;
+                    objectData.station_operator_name = stationEssentialData.OperatorName;
+                }
 
                 context.Objects.Add(objectData);
             }
             else
             {
                 mapper.Map(dto, objectData);
+
+                if (stationEssentialData != null)
+                {
+                    objectData.StationId = stationEssentialData.StationId;
+                    objectData.station_name = stationEssentialData.StationName;
+                    objectData.station_operator_name = stationEssentialData.OperatorName;
+                }
             }
 
             context.SaveChanges();

@@ -5,8 +5,8 @@ namespace Database.Lib;
 public class StationOperator
 {
     [Key]
-    public int station_operator_id { get; set; }
-    public string name { get; set; } = default!;
-    public string? homepage { get; set; }
-    public List<Station> stations { get; set; } = default!;
+    public int StationOperatorId { get; set; }
+    public string Name { get; set; } = default!;
+    public string? Homepage { get; set; }
+    public List<Station> Stations { get; set; } = default!;
 }

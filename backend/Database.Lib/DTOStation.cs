@@ -1,10 +1,7 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Database.Lib;
 
-public class Station
+public class DTOStation
 {
-    [Key]
     public int StationId { get; set; }
     public string Name { get; set; } = default!;
     public string CountryCode { get; set; } = default!;
@@ -13,7 +10,6 @@ public class Station
     public float? Latitude { get; set; }
     public float? Longitude { get; set; }
     public int StationOperatorId { get; set; }
-    public StationOperator StationOperator { get; set; } = default!;
-    public List<StationAddress> StationAddresses { get; set; } = default!;
-
+    public string StationOperatorName { get; set; } = default!;
+    public string? StationOperatorHomepage { get; set; }
 }

@@ -14,5 +14,6 @@ public class DatabaseProfile : Profile
             .ForMember(dest => dest.updated, opt => opt.MapFrom(src => DateTime.UtcNow))
             .ForAllMembers(opts => opts
                 .Condition((src, dest, srcMember) => srcMember != null));
+        CreateMap<Station, DTOStation>();
     }
 }
