@@ -216,7 +216,13 @@ function AisObjectPopup({ data }) {
           {data.station_name != null && (
             <React.Fragment>
               (Source:{" "}
-              <span className="has-text-weight-bold">
+              <span
+                className="has-text-weight-bold"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
                 <Link to={`/station/${data.station_id}`}>
                   {data.station_name}
                 </Link>

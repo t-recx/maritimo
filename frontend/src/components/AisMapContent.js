@@ -7,6 +7,7 @@ import AisObject from "./AisObject";
 import L from "leaflet";
 import { useMap, useMapEvents } from "react-leaflet";
 import { getTypeOfObject, TypeOfObject } from "../mmsi";
+import AisStation from "./AisStation";
 
 const ConnectionStatus = {
   NotBuilt: "NotBuilt",
@@ -17,7 +18,7 @@ const ConnectionStatus = {
   RetryStarting: "RetryStarting",
 };
 
-function AisMapContent({ changeParamsLocation }) {
+function AisMapContent({ changeParamsLocation, stations }) {
   const onlyObjectsFromHoursAgo =
     process.env.REACT_APP_MAP_OBJECT_LIFESPAN_HOURS;
   const objectLifeSpanMilliseconds =
@@ -425,6 +426,12 @@ function AisMapContent({ changeParamsLocation }) {
         .map((key) => (
           <AisObject key={key} data={data[key]} zoom={zoom} />
         ))}
+      {stations != null &&
+        stations
+          .filter((x) => x.latitude && x.longitude)
+          .map((station) => (
+            <AisStation key={station.stationId} data={station} />
+          ))}
     </React.Fragment>
   );
 }

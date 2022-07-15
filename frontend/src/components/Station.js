@@ -1,6 +1,6 @@
 import "./Station.css";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Loading from "./Loading";
 import { useParams } from "react-router-dom";
@@ -71,7 +71,11 @@ function Station() {
                 <span className="has-text-weight-bold">Operator:</span>{" "}
                 {data.stationOperatorHomepage != null && (
                   <span>
-                    <a href={data.stationOperatorHomepage} target="_blank">
+                    <a
+                      href={data.stationOperatorHomepage}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       {data.stationOperatorName}
                     </a>
                   </span>
@@ -100,6 +104,7 @@ function Station() {
                   process.env.REACT_APP_MAP_INITIAL_CENTER_LONGITUDE
                 }
                 zoom={8}
+                stations={[data]}
               />
             </div>
           </section>

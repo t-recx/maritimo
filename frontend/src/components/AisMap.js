@@ -5,7 +5,13 @@ import AisMapContent from "./AisMapContent";
 import Navbar from "./Navbar";
 import React from "react";
 
-function AisMap({ changeParamsLocation = true, latitude, longitude, zoom }) {
+function AisMap({
+  changeParamsLocation = true,
+  latitude,
+  longitude,
+  zoom,
+  stations,
+}) {
   return (
     <React.Fragment>
       <MapContainer
@@ -19,7 +25,10 @@ function AisMap({ changeParamsLocation = true, latitude, longitude, zoom }) {
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         />
 
-        <AisMapContent changeParamsLocation={changeParamsLocation} />
+        <AisMapContent
+          changeParamsLocation={changeParamsLocation}
+          stations={stations}
+        />
       </MapContainer>
     </React.Fragment>
   );
