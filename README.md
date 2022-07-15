@@ -43,6 +43,7 @@ To configure the entire system create a .env file in the main project directory 
 | MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME | Broker exchange name for decoded messages                                |
 | MARITIMO_CORS_ORIGIN_WHITELIST                   | CORS origin whitelist                                                    |
 | MARITIMO_TRANSMITTER_BUFFER_SECONDS              | Seconds to buffer messages before sending them to ReceiveBuffered method |
+| MARITIMO_DB_CACHE_STATION_MINUTES_EXPIRATION     | Minutes that a cache entry for one station data lives                    |
 
 Check an example configuration file in [.env.development](.env.development).
 
