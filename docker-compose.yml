@@ -68,6 +68,12 @@ services:
     depends_on:
       - db
     restart: always
+  frontend:
+    build:
+      context: ./frontend/
+      dockerfile: ../docker/frontend/Dockerfile
+    volumes:
+      - frontend_data:/usr/src/app/www/
   webserver:
     build: ./docker/nginx
     volumes:
@@ -76,6 +82,7 @@ services:
       - 80:80
       - 443:443
     depends_on:
+      - frontend
       - webapi
       - transmitter
     restart: always
