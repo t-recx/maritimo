@@ -1,6 +1,6 @@
 namespace Transmitter.App;
 
-public class DTOObjectData
+public class DTOTransmitterObjectData
 {
     public uint mmsi { get; set; }
 
@@ -52,6 +52,10 @@ public class DTOObjectData
     public bool? gnss_position_status { get; set; }
     public float? magnetic_declination { get; set; }
     public string? source_id { get; set; }
+    public string? source_ip_address { get; set; }
+    public int? station_id { get; set; }
+    public string? station_name { get; set; }
+    public string? station_operator_name { get; set; }
 
     public DateTime updated { get; set; }
 }

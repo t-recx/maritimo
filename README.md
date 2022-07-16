@@ -43,6 +43,7 @@ To configure the entire system create a .env file in the main project directory 
 | MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME | Broker exchange name for decoded messages                                |
 | MARITIMO_CORS_ORIGIN_WHITELIST                   | CORS origin whitelist                                                    |
 | MARITIMO_TRANSMITTER_BUFFER_SECONDS              | Seconds to buffer messages before sending them to ReceiveBuffered method |
+| MARITIMO_DB_CACHE_STATION_MINUTES_EXPIRATION     | Minutes until expiration of a cache entry for a station/object           |
 
 Check an example configuration file in [.env.development](.env.development).
 
@@ -81,10 +82,11 @@ Open [http://localhost](http://localhost) to access the application.
 | [LARS](https://www.lars.pt/)                                         | Sintra, Portugal           |
 | [Jose Elias Diaz](https://www.qrz.com/db/EB1AO)                      | Vigo, Spain                |
 | [Carmelo Milla](https://www.olaje.com/)                              | Malaga, Spain              |
-| [Pablo Costagliola](http://www.cx1rv.com)                            | Argentina                  |
+| [Pablo Costagliola](http://www.cx1rv.com)                            | Argentina and Uruguay      |
 | [Gerrit van der Laag](https://amelandermusea.nl/)                    | Netherlands                |
 | [John Wiseman](https://www.cantab.net/users/john.wiseman/Documents/) | Lewis and Harris, Scotland |
 | [Rene](https://www.discriminator.nl/ais/index-en.html)               | Rotterdam, Netherlands     |
+| [John Hearne](http://homepage.eircom.net/~johnhearne/index.html)     | Cork, Ireland              |
 
 ## Special thanks
 

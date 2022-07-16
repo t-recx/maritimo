@@ -6,9 +6,12 @@ using Ninject;
 
 const string DbConnectionStringEnvVarName = "MARITIMO_DB_CONNECTION_STRING";
 const string CorsOriginWhiteListEnvVarName = "MARITIMO_CORS_ORIGIN_WHITELIST";
+const string MinutesCacheStationExpirationEnvVarName = "MARITIMO_DB_CACHE_STATION_MINUTES_EXPIRATION";
 
 var connectionString = Environment.GetEnvironmentVariable(DbConnectionStringEnvVarName);
 var corsOriginWhiteList = Environment.GetEnvironmentVariable(CorsOriginWhiteListEnvVarName);
+var minutesCacheStationExpirationString = Environment.GetEnvironmentVariable(MinutesCacheStationExpirationEnvVarName);
+int minutesCacheStationExpiration;
 
 if (connectionString == null)
 {
@@ -22,19 +25,33 @@ else if (corsOriginWhiteList == null)
 
     return;
 }
+else if (minutesCacheStationExpirationString == null)
+{
+    Console.Error.WriteLine("No cache station expiration configured. Set {0} environment variable.", MinutesCacheStationExpirationEnvVarName);
+
+    return;
+}
+else if (!Int32.TryParse(minutesCacheStationExpirationString, out minutesCacheStationExpiration))
+{
+    Console.Error.WriteLine("Cache station expiration not a valid number (currently set to '{0}'). Set {1} environment variable to a correct integer value.", minutesCacheStationExpirationString, MinutesCacheStationExpirationEnvVarName);
+
+    return;
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
-var kernel = (new WebApiModule()).GetKernel(connectionString!);
+var kernel = (new WebApiModule()).GetKernel(connectionString!, minutesCacheStationExpiration);
 
 builder.Services.AddCors();
 
 builder.Services.AddScoped<IMapper>(x => kernel.Get<IMapper>());
 builder.Services.AddScoped<IDatabaseService>(x => kernel.Get<IDatabaseService>());
+builder.Services.AddScoped<IStationService>(x => kernel.Get<IStationService>());
 
-builder.Services.AddControllers().AddJsonOptions(options => {
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
     options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-});;
+}); ;
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

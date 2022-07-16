@@ -30,6 +30,9 @@ namespace Database.Lib.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("id"));
 
+                    b.Property<int?>("StationId")
+                        .HasColumnType("integer");
+
                     b.Property<byte?>("aid_type")
                         .HasColumnType("smallint");
 
@@ -156,6 +159,12 @@ namespace Database.Lib.Migrations
                     b.Property<float?>("speed_over_ground")
                         .HasColumnType("real");
 
+                    b.Property<string>("station_name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("station_operator_name")
+                        .HasColumnType("text");
+
                     b.Property<byte?>("timestamp")
                         .HasColumnType("smallint");
 
@@ -191,6 +200,8 @@ namespace Database.Lib.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("StationId");
+
                     b.ToTable("Messages");
                 });
 
@@ -201,6 +212,9 @@ namespace Database.Lib.Migrations
                         .HasColumnType("bigint");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("mmsi"));
+
+                    b.Property<int?>("StationId")
+                        .HasColumnType("integer");
 
                     b.Property<byte?>("aid_type")
                         .HasColumnType("smallint");
@@ -319,6 +333,12 @@ namespace Database.Lib.Migrations
                     b.Property<float?>("speed_over_ground")
                         .HasColumnType("real");
 
+                    b.Property<string>("station_name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("station_operator_name")
+                        .HasColumnType("text");
+
                     b.Property<byte?>("timestamp")
                         .HasColumnType("smallint");
 
@@ -354,7 +374,139 @@ namespace Database.Lib.Migrations
 
                     b.HasKey("mmsi");
 
+                    b.HasIndex("StationId");
+
                     b.ToTable("Objects");
+                });
+
+            modelBuilder.Entity("Database.Lib.Station", b =>
+                {
+                    b.Property<int>("StationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("StationId"));
+
+                    b.Property<string>("CountryCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("EquipmentDescription")
+                        .HasColumnType("text");
+
+                    b.Property<float?>("Latitude")
+                        .HasColumnType("real");
+
+                    b.Property<float?>("Longitude")
+                        .HasColumnType("real");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SourceId")
+                        .HasColumnType("text");
+
+                    b.Property<int>("StationOperatorId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("StationId");
+
+                    b.HasIndex("StationOperatorId");
+
+                    b.ToTable("Stations");
+                });
+
+            modelBuilder.Entity("Database.Lib.StationAddress", b =>
+                {
+                    b.Property<int>("StationAddressId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("StationAddressId"));
+
+                    b.Property<string>("SourceIpAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("StationId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("StationAddressId");
+
+                    b.HasIndex("StationId");
+
+                    b.ToTable("StationAddresses");
+                });
+
+            modelBuilder.Entity("Database.Lib.StationOperator", b =>
+                {
+                    b.Property<int>("StationOperatorId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("StationOperatorId"));
+
+                    b.Property<string>("Homepage")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("StationOperatorId");
+
+                    b.ToTable("StationOperators");
+                });
+
+            modelBuilder.Entity("Database.Lib.Message", b =>
+                {
+                    b.HasOne("Database.Lib.Station", "Station")
+                        .WithMany()
+                        .HasForeignKey("StationId");
+
+                    b.Navigation("Station");
+                });
+
+            modelBuilder.Entity("Database.Lib.ObjectData", b =>
+                {
+                    b.HasOne("Database.Lib.Station", "Station")
+                        .WithMany()
+                        .HasForeignKey("StationId");
+
+                    b.Navigation("Station");
+                });
+
+            modelBuilder.Entity("Database.Lib.Station", b =>
+                {
+                    b.HasOne("Database.Lib.StationOperator", "StationOperator")
+                        .WithMany("Stations")
+                        .HasForeignKey("StationOperatorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("StationOperator");
+                });
+
+            modelBuilder.Entity("Database.Lib.StationAddress", b =>
+                {
+                    b.HasOne("Database.Lib.Station", "Station")
+                        .WithMany("StationAddresses")
+                        .HasForeignKey("StationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Station");
+                });
+
+            modelBuilder.Entity("Database.Lib.Station", b =>
+                {
+                    b.Navigation("StationAddresses");
+                });
+
+            modelBuilder.Entity("Database.Lib.StationOperator", b =>
+                {
+                    b.Navigation("Stations");
                 });
 #pragma warning restore 612, 618
         }

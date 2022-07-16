@@ -11,6 +11,9 @@ public class MaritimoTestContextWithException : IMaritimoContext
 
     public DbSet<Message> Messages { get { throw exception; } }
     public DbSet<ObjectData> Objects { get { throw exception; } }
+    public DbSet<Station> Stations { get { throw exception; } }
+    public DbSet<StationAddress> StationAddresses { get { throw exception; } }
+    public DbSet<StationOperator> StationOperators { get { throw exception; } }
 
     public DatabaseFacade Database => throw exception;
 

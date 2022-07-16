@@ -4,9 +4,10 @@ WebApi is a dotnet application that is used to serve via-REST AIS information th
 
 ## REST API
 
-| Endpoint | Method | Parameters        |                  Data returned                   |  Table  |
-| :------: | :----: | ----------------- | :----------------------------------------------: | :-----: |
-| /api/ais |  GET   | int? fromHoursAgo | Array of [DTOWebObjectData](DTOWebObjectData.cs) | Objects |
+|   Endpoint   | Method | Parameters        |                  Data returned                   |  Table   |
+| :----------: | :----: | ----------------- | :----------------------------------------------: | :------: |
+|   /api/ais   |  GET   | int? fromHoursAgo | Array of [DTOWebObjectData](DTOWebObjectData.cs) | Objects  |
+| /api/station |  GET   | int id            |        [DTOWebStation](DTOWebStation.cs)         | Stations |
 
 ## Requirements
 
@@ -16,10 +17,11 @@ WebApi is a dotnet application that is used to serve via-REST AIS information th
 
 Configuration is done via environment variables.
 
-| Name                           | Description                |
-| ------------------------------ | -------------------------- |
-| MARITIMO_DB_CONNECTION_STRING  | Database connection string |
-| MARITIMO_CORS_ORIGIN_WHITELIST | CORS origin whitelist      |
+| Name                                         | Description                                             |
+| -------------------------------------------- | ------------------------------------------------------- |
+| MARITIMO_DB_CONNECTION_STRING                | Database connection string                              |
+| MARITIMO_CORS_ORIGIN_WHITELIST               | CORS origin whitelist                                   |
+| MARITIMO_DB_CACHE_STATION_MINUTES_EXPIRATION | Minutes until expiration of a cache entry for a station |
 
 ## Running
 

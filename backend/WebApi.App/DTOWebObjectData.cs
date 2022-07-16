@@ -52,6 +52,9 @@ public class DTOWebObjectData
     public bool? gnss_position_status { get; set; }
     public float? magnetic_declination { get; set; }
     public string? source_id { get; set; }
+    public int? station_id { get; set; }
+    public string? station_name { get; set; }
+    public string? station_operator_name { get; set; }
 
     public DateTime updated { get; set; }
 }

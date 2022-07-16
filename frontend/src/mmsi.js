@@ -1078,11 +1078,19 @@ function getMMSIMid(mmsi) {
 }
 
 function getCountryDescription(mmsi) {
-  return CountryDescriptionsByMid[getMMSIMid(mmsi)];
+  return getCountryDescriptionByCountryCode(getMMSIMid(mmsi));
 }
 
 function getFlagInformation(mmsi) {
-  return FlagsByMid[getMMSIMid(mmsi)];
+  return getFlagInformationByCountryCode(getMMSIMid(mmsi));
+}
+
+function getCountryDescriptionByCountryCode(countryCode) {
+  return CountryDescriptionsByMid[countryCode];
+}
+
+function getFlagInformationByCountryCode(countryCode) {
+  return FlagsByMid[countryCode];
 }
 
 function getTypeOfObjectDescription(mmsi) {
@@ -1092,6 +1100,8 @@ function getTypeOfObjectDescription(mmsi) {
 export {
   getCountryDescription,
   getFlagInformation,
+  getCountryDescriptionByCountryCode,
+  getFlagInformationByCountryCode,
   getTypeOfObject,
   TypeOfObject,
   getTypeOfObjectDescription,
