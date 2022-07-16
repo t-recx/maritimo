@@ -6,7 +6,6 @@ Transmitter is a dotnet application that is used to transmit newly decoded AIS m
 
 | Endpoint | Method          |                   Data                    | Notes                                                                                 |
 | :------: | --------------- | :---------------------------------------: | ------------------------------------------------------------------------------------- |
-|   /hub   | Receive         |     [DTOObjectData](DTOObjectData.cs)     |                                                                                       |
 |   /hub   | ReceiveBuffered | [List\<DTOObjectData\>](DTOObjectData.cs) | Collects messages for a configurable number of seconds before sending the entire list |
 
 ## Requirements

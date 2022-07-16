@@ -24,19 +24,8 @@ public class TransmitterHostedService : BackgroundService
         this.collationService = collationService;
     }
 
-    async void HandleReceivedEvent(object? sender, DecodedMessage decodedMessage)
-    {
-        var dto = await collationService.GetCollated(decodedMessage);
-
-        this.logger.LogDebug("Transmitting message from {mmsi}", dto.mmsi);
-
-        await aisHubContext.Clients.All.Receive(dto);
-    }
-
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        receiver.Received += HandleReceivedEvent;
-
         Observable.FromEventPattern<EventHandler<DecodedMessage>, DecodedMessage>(
             h => receiver.Received += h,
             h => receiver.Received -= h

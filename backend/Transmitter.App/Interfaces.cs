@@ -4,7 +4,6 @@ namespace Transmitter.App;
 
 public interface IAisHub
 {
-    Task Receive(DTOTransmitterObjectData objectData);
     Task ReceiveBuffered(List<DTOTransmitterObjectData> objectDataList);
 }
 
