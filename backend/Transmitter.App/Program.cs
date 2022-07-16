@@ -53,8 +53,7 @@ else if (!Int32.TryParse(bufferSecondsString, out bufferSeconds))
 
     return;
 }
-else
-        if (connectionString == null)
+else if (connectionString == null)
 {
     Console.Error.WriteLine("No connection string configured. Set {0} environment variable.", DbConnectionStringEnvVarName);
 
