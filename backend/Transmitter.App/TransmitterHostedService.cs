@@ -12,19 +12,21 @@ public class TransmitterHostedService : BackgroundService
     readonly IReceiver receiver;
     readonly IMapper mapper;
     private readonly int bufferSeconds;
+    private readonly ICollationService collationService;
 
-    public TransmitterHostedService(ILogger<TransmitterHostedService> logger, IHubContext<AisHub, IAisHub> aisHubContext, IReceiver receiver, IMapper mapper, int bufferSeconds)
+    public TransmitterHostedService(ILogger<TransmitterHostedService> logger, IHubContext<AisHub, IAisHub> aisHubContext, IReceiver receiver, IMapper mapper, int bufferSeconds, ICollationService collationService)
     {
         this.logger = logger;
         this.aisHubContext = aisHubContext;
         this.receiver = receiver;
         this.mapper = mapper;
         this.bufferSeconds = bufferSeconds;
+        this.collationService = collationService;
     }
 
     async void HandleReceivedEvent(object? sender, DecodedMessage decodedMessage)
     {
-        var dto = mapper.Map<DTOObjectData>(decodedMessage);
+        var dto = await collationService.GetCollated(decodedMessage);
 
         this.logger.LogDebug("Transmitting message from {mmsi}", dto.mmsi);
 
@@ -42,7 +44,12 @@ public class TransmitterHostedService : BackgroundService
         .Buffer(Observable.Interval(new TimeSpan(0, 0, bufferSeconds)))
         .Subscribe(async list =>
         {
-            var transformedList = list.Select(x => mapper.Map<DTOObjectData>(x.EventArgs)).ToList();
+            var transformedList = new List<DTOTransmitterObjectData>();
+
+            foreach (var item in list)
+            {
+                transformedList.Add(await collationService.GetCollated(item.EventArgs));
+            }
 
             this.logger.LogDebug("Transmitting {n} collected in the last {seconds} seconds", transformedList.Count, bufferSeconds);
             await aisHubContext.Clients.All.ReceiveBuffered(transformedList);

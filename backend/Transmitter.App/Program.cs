@@ -9,6 +9,8 @@ const string DecodedMessagesExchangeNameEnvVarName = "MARITIMO_RABBITMQ_DECODED_
 const string RabbitMqUriEnvVarName = "MARITIMO_RABBITMQ_URI";
 const string CorsOriginWhiteListEnvVarName = "MARITIMO_CORS_ORIGIN_WHITELIST";
 const string BufferSecondsEnvVarName = "MARITIMO_TRANSMITTER_BUFFER_SECONDS";
+const string DbConnectionStringEnvVarName = "MARITIMO_DB_CONNECTION_STRING";
+const string MinutesCacheStationExpirationEnvVarName = "MARITIMO_DB_CACHE_STATION_MINUTES_EXPIRATION";
 
 var exchangeName = Environment.GetEnvironmentVariable(DecodedMessagesExchangeNameEnvVarName);
 var brokerUri = Environment.GetEnvironmentVariable(RabbitMqUriEnvVarName);
@@ -16,6 +18,10 @@ var corsOriginWhiteList = Environment.GetEnvironmentVariable(CorsOriginWhiteList
 var bufferSecondsString = Environment.GetEnvironmentVariable(BufferSecondsEnvVarName);
 
 int bufferSeconds;
+
+var connectionString = Environment.GetEnvironmentVariable(DbConnectionStringEnvVarName);
+var minutesCacheStationExpirationString = Environment.GetEnvironmentVariable(MinutesCacheStationExpirationEnvVarName);
+int minutesCacheStationExpiration;
 
 if (exchangeName == null)
 {
@@ -47,10 +53,29 @@ else if (!Int32.TryParse(bufferSecondsString, out bufferSeconds))
 
     return;
 }
+else
+        if (connectionString == null)
+{
+    Console.Error.WriteLine("No connection string configured. Set {0} environment variable.", DbConnectionStringEnvVarName);
+
+    return;
+}
+else if (minutesCacheStationExpirationString == null)
+{
+    Console.Error.WriteLine("No cache station expiration configured. Set {0} environment variable.", MinutesCacheStationExpirationEnvVarName);
+
+    return;
+}
+else if (!Int32.TryParse(minutesCacheStationExpirationString, out minutesCacheStationExpiration))
+{
+    Console.Error.WriteLine("Cache station expiration not a valid number (currently set to '{0}'). Set {1} environment variable to a correct integer value.", minutesCacheStationExpirationString, MinutesCacheStationExpirationEnvVarName);
+
+    return;
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
-var kernel = (new TransmitterModule()).GetKernel(exchangeName!, brokerUri!);
+var kernel = (new TransmitterModule()).GetKernel(exchangeName!, brokerUri!, connectionString, minutesCacheStationExpiration);
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
@@ -63,6 +88,7 @@ builder.Services.AddCors().AddSignalR().AddJsonProtocol(options =>
 builder.Services.AddSingleton<ILogger<TransmitterHostedService>>(x => kernel.Get<ILogger<TransmitterHostedService>>());
 builder.Services.AddSingleton<IMapper>(x => kernel.Get<IMapper>());
 builder.Services.AddSingleton<IReceiver>(x => kernel.Get<IReceiver>());
+builder.Services.AddSingleton<ICollationService>(x => kernel.Get<ICollationService>());
 
 builder.Services.AddHostedService<TransmitterHostedService>(sp =>
     new TransmitterHostedService(
@@ -70,7 +96,8 @@ builder.Services.AddHostedService<TransmitterHostedService>(sp =>
         sp.GetRequiredService<IHubContext<AisHub, IAisHub>>(),
         sp.GetRequiredService<IReceiver>(),
         sp.GetRequiredService<IMapper>(),
-        bufferSeconds
+        bufferSeconds,
+        sp.GetRequiredService<ICollationService>()
     ));
 
 var app = builder.Build();
