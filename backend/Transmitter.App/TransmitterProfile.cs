@@ -15,5 +15,6 @@ public class TransmitterProfile : Profile
                 .Condition((src, dest, srcMember) => opts.DestinationMember.Name == "source_id" || opts.DestinationMember.Name == "source_ip_address" || srcMember != null));
         CreateMap<DTOObjectData, DTOTransmitterObjectData>()
             .ForMember(dest => dest.updated, opt => opt.MapFrom(src => DateTime.UtcNow));
+        CreateMap<DTOTransmitterObjectData, DTOTransmitterObjectData>();
     }
 }

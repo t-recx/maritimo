@@ -116,13 +116,13 @@ public class CollationService : ICollationService
             }
         }
 
-        var databaseObjectDataList = await databaseService.Get(decodedMessagesWithoutCachedObjectData.Select(x => x.mmsi).Distinct());
+        var databaseObjectDataList = await databaseService.Get(decodedMessagesWithoutCachedObjectData.Select(x => x.mmsi));
 
         databaseObjectDataList.ForEach(x => SetCache(x.mmsi, x));
 
         return databaseObjectDataList
             .Concat(objectDataList)
-            .Select(x => GetCollatedDTO(x, decodedMessagesWithoutCachedObjectData.Where(x => x.mmsi == x.mmsi)))
+            .Select(x => GetCollatedDTO(x, decodedMessagesWithoutCachedObjectData.Where(y => x.mmsi == y.mmsi)))
             .ToList();
     }
 }
