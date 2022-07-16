@@ -160,12 +160,9 @@ function AisMapContent({ changeParamsLocation, stations }) {
 
         // in the event that the transmitter has already started feeding us data
         // but this query to get everything still hasn't executed
-        // we pick the data we currently have that was transmitted and add it to
-        // the data we just received from the webapi
+        // we can ignore the data already in our app
         Object.keys(latestData.current || {}).forEach((mmsi) => {
-          if (dict[mmsi]) {
-            dict[mmsi] = { ...dict[mmsi], ...latestData.current[mmsi] };
-          } else {
+          if (!dict[mmsi]) {
             dict[mmsi] = latestData.current[mmsi];
           }
         });
@@ -208,17 +205,7 @@ function AisMapContent({ changeParamsLocation, stations }) {
         const newData = { ...latestData.current };
 
         list.forEach((dto) => {
-          const previousDto = latestData.current[dto.mmsi];
-          let newDto = dto;
-
-          if (previousDto) {
-            newDto = {
-              ...previousDto,
-              ...dto,
-            };
-          }
-
-          newData[dto.mmsi] = newDto;
+          newData[dto.mmsi] = dto;
         });
 
         latestData.current = newData;
