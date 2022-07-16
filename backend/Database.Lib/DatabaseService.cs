@@ -45,6 +45,19 @@ public class DatabaseService : IDatabaseService
         }
     }
 
+    public async Task<DTOObjectData?> Get(uint mmsi)
+    {
+        using (var context = contextFactory.Get())
+        {
+            var query = context
+                    .Objects
+                    .AsNoTracking()
+                    .Where(x => x.mmsi == mmsi);
+
+            return await mapper.ProjectTo<DTOObjectData>(query).SingleOrDefaultAsync();
+        }
+    }
+
     public Result<DTOMessage> Insert(DTOMessage dto)
     {
         var context = contextFactory.Get();
@@ -89,7 +102,6 @@ public class DatabaseService : IDatabaseService
 
             var stationEssentialData = stationService.GetStationEssentialData(dto.source_id, dto.source_ip_address);
 
-
             if (objectData == null)
             {
                 objectData = mapper.Map<ObjectData>(dto);
@@ -112,6 +124,12 @@ public class DatabaseService : IDatabaseService
                     objectData.StationId = stationEssentialData.StationId;
                     objectData.station_name = stationEssentialData.StationName;
                     objectData.station_operator_name = stationEssentialData.OperatorName;
+                }
+                else
+                {
+                    objectData.StationId = null;
+                    objectData.station_name = null;
+                    objectData.station_operator_name = null;
                 }
             }
 

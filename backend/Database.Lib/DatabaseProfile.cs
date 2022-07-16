@@ -13,7 +13,7 @@ public class DatabaseProfile : Profile
         CreateMap<DTOObjectData, ObjectData>()
             .ForMember(dest => dest.updated, opt => opt.MapFrom(src => DateTime.UtcNow))
             .ForAllMembers(opts => opts
-                .Condition((src, dest, srcMember) => srcMember != null));
+                .Condition((src, dest, srcMember) => opts.DestinationMember.Name == "source_id" || opts.DestinationMember.Name == "source_ip_address" || srcMember != null));
         CreateMap<Station, DTOStation>();
     }
 }

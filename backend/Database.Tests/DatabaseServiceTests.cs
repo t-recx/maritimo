@@ -52,8 +52,8 @@ public class DatabaseServiceTests
 
     void SetupStationService()
     {
-        stationServiceMock.Setup(x => x.GetStationEssentialData("200", It.IsAny<string?>())).Returns(new DTOStationEssentialData() { StationId = 1, StationName = "First", OperatorName = "robot operator" });
-        stationServiceMock.Setup(x => x.GetStationEssentialData(It.IsAny<string?>(), "92.203.11.5")).Returns(new DTOStationEssentialData() { StationId = 2, StationName = "Second", OperatorName = "robot operator" });
+        stationServiceMock.Setup(x => x.GetStationEssentialData("200", null)).Returns(new DTOStationEssentialData() { StationId = 1, StationName = "First", OperatorName = "robot operator" });
+        stationServiceMock.Setup(x => x.GetStationEssentialData(null, "92.203.11.5")).Returns(new DTOStationEssentialData() { StationId = 2, StationName = "Second", OperatorName = "robot operator" });
     }
 
     void SetupStations()
@@ -126,8 +126,8 @@ public class DatabaseServiceTests
         service.Save(new DTOObjectData() { mmsi = 987654321, source_id = "200" });
 
         var objects = contextFactory.Get().Objects.ToList();
-        var first = objects.First();
-        var second = objects.Last();
+        var first = contextFactory.Get().Objects.SingleOrDefault(x => x.mmsi == 123456789);
+        var second = contextFactory.Get().Objects.SingleOrDefault(x => x.mmsi == 987654321);
         Assert.AreEqual(2, objects.Count);
         Assert.AreEqual(123456789, first.mmsi);
         Assert.AreEqual(987654321, second.mmsi);
@@ -137,6 +137,12 @@ public class DatabaseServiceTests
         Assert.AreEqual(1, second.StationId);
         Assert.AreEqual("First", second.station_name);
         Assert.AreEqual("robot operator", second.station_operator_name);
+
+        service.Save(new DTOObjectData() { mmsi = 987654321, source_id = "UNKNOWN SOURCE" });
+        second = contextFactory.Get().Objects.SingleOrDefault(x => x.mmsi == 987654321);
+        Assert.IsNull(second.StationId);
+        Assert.IsNull(second.station_name);
+        Assert.IsNull(second.station_operator_name);
     }
 
     [Test]
@@ -183,6 +189,31 @@ public class DatabaseServiceTests
         var objectData = contextFactory.Get().Objects.First();
         Assert.GreaterOrEqual(objectData.updated, before);
         Assert.GreaterOrEqual(after, objectData.updated);
+    }
+
+    [Test]
+    public void Save_ShouldAlwaysOverwriteSourceIdAndSourceIpAddressEvenIfTheyAreNull()
+    {
+        service.Save(new DTOObjectData() { mmsi = 123456789, source_id = "A", source_ip_address = "100.100.100.100" });
+
+        var objectData = contextFactory.Get().Objects.First();
+
+        Assert.AreEqual("A", objectData.source_id);
+        Assert.AreEqual("100.100.100.100", objectData.source_ip_address);
+
+        service.Save(new DTOObjectData() { mmsi = 123456789, source_id = null, source_ip_address = "100.100.100.100" });
+
+        objectData = contextFactory.Get().Objects.First();
+
+        Assert.IsNull(objectData.source_id);
+        Assert.AreEqual("100.100.100.100", objectData.source_ip_address);
+
+        service.Save(new DTOObjectData() { mmsi = 123456789, source_id = "A", source_ip_address = null });
+
+        objectData = contextFactory.Get().Objects.First();
+
+        Assert.AreEqual("A", objectData.source_id);
+        Assert.IsNull(objectData.source_ip_address);
     }
 
     [Test]
