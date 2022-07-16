@@ -122,7 +122,7 @@ public class CollationService : ICollationService
 
         return databaseObjectDataList
             .Concat(objectDataList)
-            .Select(x => GetCollatedDTO(x, decodedMessagesWithoutCachedObjectData.Where(y => x.mmsi == y.mmsi)))
+            .Select(x => GetCollatedDTO(x, decodedMessages.Where(y => x.mmsi == y.mmsi)))
             .ToList();
     }
 }
