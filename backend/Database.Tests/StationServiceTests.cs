@@ -155,19 +155,19 @@ public class StationServiceTests
         var stationTwo = await service.Get(2);
         var stationThree = await service.Get(3);
 
-        Assert.AreEqual("First", stationOne.Name);
+        Assert.AreEqual("First", stationOne!.Name);
         Assert.AreEqual("205", stationOne.CountryCode);
         Assert.AreEqual("2573237", stationOne.SourceId);
         Assert.AreEqual("www.myrobot.org", stationOne.StationOperatorHomepage);
         Assert.AreEqual("Robot operator", stationOne.StationOperatorName);
 
-        Assert.AreEqual("Second", stationTwo.Name);
+        Assert.AreEqual("Second", stationTwo!.Name);
         Assert.AreEqual("500", stationTwo.CountryCode);
         Assert.AreEqual(null, stationTwo.SourceId);
         Assert.AreEqual("www.myrobot.org", stationTwo.StationOperatorHomepage);
         Assert.AreEqual("Robot operator", stationTwo.StationOperatorName);
 
-        Assert.AreEqual("Third", stationThree.Name);
+        Assert.AreEqual("Third", stationThree!.Name);
         Assert.AreEqual("111", stationThree.CountryCode);
         Assert.AreEqual("2573145", stationThree.SourceId);
         Assert.AreEqual(null, stationThree.StationOperatorHomepage);

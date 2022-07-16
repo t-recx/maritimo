@@ -129,8 +129,8 @@ public class DatabaseServiceTests
         var first = contextFactory.Get().Objects.SingleOrDefault(x => x.mmsi == 123456789);
         var second = contextFactory.Get().Objects.SingleOrDefault(x => x.mmsi == 987654321);
         Assert.AreEqual(2, objects.Count);
-        Assert.AreEqual(123456789, first.mmsi);
-        Assert.AreEqual(987654321, second.mmsi);
+        Assert.AreEqual(123456789, first!.mmsi);
+        Assert.AreEqual(987654321, second!.mmsi);
         Assert.IsNull(first.StationId);
         Assert.IsNull(first.station_name);
         Assert.IsNull(first.station_operator_name);
@@ -140,7 +140,7 @@ public class DatabaseServiceTests
 
         service.Save(new DTOObjectData() { mmsi = 987654321, source_id = "UNKNOWN SOURCE" });
         second = contextFactory.Get().Objects.SingleOrDefault(x => x.mmsi == 987654321);
-        Assert.IsNull(second.StationId);
+        Assert.IsNull(second!.StationId);
         Assert.IsNull(second.station_name);
         Assert.IsNull(second.station_operator_name);
     }
