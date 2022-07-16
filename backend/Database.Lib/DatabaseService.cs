@@ -58,6 +58,19 @@ public class DatabaseService : IDatabaseService
         }
     }
 
+    public async Task<List<DTOObjectData>> Get(IEnumerable<uint> mmsis)
+    {
+        using (var context = contextFactory.Get())
+        {
+            var query = context
+                    .Objects
+                    .AsNoTracking()
+                    .Where(x => mmsis.Contains(x.mmsi));
+
+            return await mapper.ProjectTo<DTOObjectData>(query).ToListAsync();
+        }
+    }
+
     public Result<DTOMessage> Insert(DTOMessage dto)
     {
         var context = contextFactory.Get();

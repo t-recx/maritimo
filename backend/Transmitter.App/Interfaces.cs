@@ -11,4 +11,5 @@ public interface IAisHub
 public interface ICollationService
 {
     Task<DTOTransmitterObjectData> GetCollated(DecodedMessage decodedMessage);
+    Task<List<DTOTransmitterObjectData>> GetCollated(IEnumerable<DecodedMessage> decodedMessages);
 }

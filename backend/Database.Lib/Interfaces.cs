@@ -10,6 +10,7 @@ public interface IDatabaseService
     Result<DTOMessage> Insert(DTOMessage dto);
     Result<DTOObjectData> Save(DTOObjectData dto);
     Task<DTOObjectData?> Get(uint mmsi);
+    Task<List<DTOObjectData>> Get(IEnumerable<uint> mmsis);
 }
 
 public interface IStationService

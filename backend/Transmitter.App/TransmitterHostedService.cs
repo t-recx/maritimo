@@ -44,12 +44,7 @@ public class TransmitterHostedService : BackgroundService
         .Buffer(Observable.Interval(new TimeSpan(0, 0, bufferSeconds)))
         .Subscribe(async list =>
         {
-            var transformedList = new List<DTOTransmitterObjectData>();
-
-            foreach (var item in list)
-            {
-                transformedList.Add(await collationService.GetCollated(item.EventArgs));
-            }
+            var transformedList = await collationService.GetCollated(list.Select(x => x.EventArgs));
 
             this.logger.LogDebug("Transmitting {n} collected in the last {seconds} seconds", transformedList.Count, bufferSeconds);
             await aisHubContext.Clients.All.ReceiveBuffered(transformedList);

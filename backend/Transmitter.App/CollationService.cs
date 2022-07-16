@@ -29,9 +29,19 @@ public class CollationService : ICollationService
         this.memoryCache = new MemoryCache(new MemoryCacheOptions());
     }
 
+    DTOObjectData? GetFromCache(uint mmsi)
+    {
+        return memoryCache.Get<DTOObjectData>(mmsi);
+    }
+
+    void SetCache(uint mmsi, DTOObjectData objectData)
+    {
+        memoryCache.Set<DTOObjectData>(mmsi, objectData, TimeSpan.FromMinutes(minutesCacheEntryExpiration));
+    }
+
     async Task<DTOObjectData> GetObjectData(uint mmsi)
     {
-        DTOObjectData? objectData = memoryCache.Get<DTOObjectData>(mmsi);
+        DTOObjectData? objectData = GetFromCache(mmsi);
 
         if (objectData == null)
         {
@@ -42,7 +52,7 @@ public class CollationService : ICollationService
                 objectData = new DTOObjectData() { mmsi = mmsi };
             }
 
-            memoryCache.Set<DTOObjectData>(mmsi, objectData, TimeSpan.FromMinutes(minutesCacheEntryExpiration));
+            SetCache(mmsi, objectData);
         }
 
         return objectData;
@@ -50,8 +60,11 @@ public class CollationService : ICollationService
 
     public async Task<DTOTransmitterObjectData> GetCollated(DecodedMessage decodedMessage)
     {
-        var dto = await GetObjectData(decodedMessage.mmsi);
+        return GetCollatedDTO(await GetObjectData(decodedMessage.mmsi), decodedMessage);
+    }
 
+    DTOTransmitterObjectData GetCollatedDTO(DTOObjectData dto, DecodedMessage decodedMessage)
+    {
         mapper.Map(decodedMessage, dto);
 
         var stationData = stationService.GetStationEssentialData(dto.source_id, dto.source_ip_address);
@@ -70,5 +83,34 @@ public class CollationService : ICollationService
         }
 
         return mapper.Map<DTOTransmitterObjectData>(dto);
+    }
+
+    public async Task<List<DTOTransmitterObjectData>> GetCollated(IEnumerable<DecodedMessage> decodedMessages)
+    {
+        List<DTOObjectData> objectDataList = new List<DTOObjectData>();
+        List<DecodedMessage> decodedMessagesWithoutCachedObjectData = new List<DecodedMessage>();
+
+        foreach (var item in decodedMessages)
+        {
+            var cached = GetFromCache(item.mmsi);
+
+            if (cached != null)
+            {
+                objectDataList.Add(cached);
+            }
+            else
+            {
+                decodedMessagesWithoutCachedObjectData.Add(item);
+            }
+        }
+
+        var databaseObjectDataList = await databaseService.Get(decodedMessagesWithoutCachedObjectData.Select(x => x.mmsi));
+
+        databaseObjectDataList.ForEach(x => SetCache(x.mmsi, x));
+
+        return databaseObjectDataList
+            .Concat(objectDataList)
+            .Select(x => GetCollatedDTO(x, decodedMessagesWithoutCachedObjectData.Single(x => x.mmsi == x.mmsi)))
+            .ToList();
     }
 }
