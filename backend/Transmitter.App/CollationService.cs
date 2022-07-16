@@ -1,6 +1,5 @@
 using AutoMapper;
 using Receiver.Lib;
-using Microsoft.AspNetCore.SignalR;
 using System.Reactive.Linq;
 using Database.Lib;
 using Microsoft.Extensions.Caching.Memory;
@@ -58,11 +57,6 @@ public class CollationService : ICollationService
         return objectData;
     }
 
-    public async Task<DTOTransmitterObjectData> GetCollated(DecodedMessage decodedMessage)
-    {
-        return GetCollatedDTO(await GetObjectData(decodedMessage.mmsi), decodedMessage);
-    }
-
     DTOTransmitterObjectData GetCollatedDTO(DTOObjectData dto, DecodedMessage decodedMessage)
     {
         mapper.Map(decodedMessage, dto);
@@ -116,12 +110,29 @@ public class CollationService : ICollationService
             }
         }
 
-        var databaseObjectDataList = await databaseService.Get(decodedMessagesWithoutCachedObjectData.Select(x => x.mmsi));
+        if (decodedMessagesWithoutCachedObjectData.Count > 0)
+        {
+            var databaseObjectDataList = await databaseService.Get(decodedMessagesWithoutCachedObjectData.Select(x => x.mmsi));
 
-        databaseObjectDataList.ForEach(x => SetCache(x.mmsi, x));
+            objectDataList.AddRange(databaseObjectDataList);
 
-        return databaseObjectDataList
-            .Concat(objectDataList)
+            var objectDataNotOnDatabase =
+                decodedMessagesWithoutCachedObjectData
+                .Select(x => x.mmsi)
+                .Where(mmsi => !objectDataList.Any(o => o.mmsi == mmsi))
+                .Distinct()
+                .Select(decodedMessageMMSI => new DTOObjectData() { mmsi = decodedMessageMMSI }) // cached items will be mapped when GetCollatedDTO is called
+                .ToList();
+
+            foreach (var item in databaseObjectDataList.Concat(objectDataNotOnDatabase))
+            {
+                SetCache(item.mmsi, item);
+            }
+
+            objectDataList.AddRange(objectDataNotOnDatabase);
+        }
+
+        return objectDataList
             .Select(x => GetCollatedDTO(x, decodedMessages.Where(y => x.mmsi == y.mmsi)))
             .ToList();
     }
