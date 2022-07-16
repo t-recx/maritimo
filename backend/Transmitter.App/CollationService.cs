@@ -85,6 +85,18 @@ public class CollationService : ICollationService
         return mapper.Map<DTOTransmitterObjectData>(dto);
     }
 
+    DTOTransmitterObjectData GetCollatedDTO(DTOObjectData dto, IEnumerable<DecodedMessage> decodedMessages)
+    {
+        var dtoTransmitter = new DTOTransmitterObjectData();
+
+        foreach (var decodedMessage in decodedMessages)
+        {
+            mapper.Map(GetCollatedDTO(dto, decodedMessage), dtoTransmitter);
+        }
+
+        return dtoTransmitter;
+    }
+
     public async Task<List<DTOTransmitterObjectData>> GetCollated(IEnumerable<DecodedMessage> decodedMessages)
     {
         List<DTOObjectData> objectDataList = new List<DTOObjectData>();
@@ -110,7 +122,7 @@ public class CollationService : ICollationService
 
         return databaseObjectDataList
             .Concat(objectDataList)
-            .Select(x => GetCollatedDTO(x, decodedMessagesWithoutCachedObjectData.Single(x => x.mmsi == x.mmsi)))
+            .Select(x => GetCollatedDTO(x, decodedMessagesWithoutCachedObjectData.Where(x => x.mmsi == x.mmsi)))
             .ToList();
     }
 }
