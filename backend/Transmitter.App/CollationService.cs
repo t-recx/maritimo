@@ -104,7 +104,7 @@ public class CollationService : ICollationService
             }
         }
 
-        var databaseObjectDataList = await databaseService.Get(decodedMessagesWithoutCachedObjectData.Select(x => x.mmsi));
+        var databaseObjectDataList = await databaseService.Get(decodedMessagesWithoutCachedObjectData.Select(x => x.mmsi).Distinct());
 
         databaseObjectDataList.ForEach(x => SetCache(x.mmsi, x));
 
