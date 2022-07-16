@@ -1,4 +1,5 @@
 import "./Navbar.css";
+import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
@@ -8,15 +9,15 @@ function Navbar() {
       aria-label="main navigation"
     >
       <div className="navbar-brand">
-        <a href="/" className="navbar-item ">
+        <Link to="/" className="navbar-item">
           <img
             className="maritimo-logo"
-            src="logo.svg"
+            src="/logo.svg"
             width="28"
             height="28"
           ></img>
           <span className="is-size-4 has-text-weight-bold">Maritimo</span>
-        </a>
+        </Link>
       </div>
     </nav>
   );

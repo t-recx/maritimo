@@ -8,9 +8,9 @@ namespace WebApi.App;
 
 public class WebApiModule
 {
-    public IKernel GetKernel(string connectionString)
+    public IKernel GetKernel(string connectionString, int minutesCacheStationExpiration)
     {
-        var receiverModule = new DatabaseModule(connectionString);
+        var receiverModule = new DatabaseModule(connectionString, minutesCacheStationExpiration);
 
         Action<SimpleConsoleFormatterOptions> loggingOptions = options =>
             {
@@ -26,6 +26,7 @@ public class WebApiModule
         kernel.Bind<IMapper>().ToMethod(_ => GetMapper());
 
         kernel.Bind<ILogger<IDatabaseService>>().ToMethod(x => loggerFactory.CreateLogger<IDatabaseService>());
+        kernel.Bind<ILogger<IStationService>>().ToMethod(x => loggerFactory.CreateLogger<StationService>());
 
         return kernel;
     }

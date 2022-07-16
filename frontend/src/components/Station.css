@@ -1,0 +1,10 @@
+.station-map-container {
+    height: 100%;
+}
+
+.station-section {
+    padding: 1.5rem 3rem;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}

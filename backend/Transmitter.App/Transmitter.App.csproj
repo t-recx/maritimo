@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Receiver.Lib\Receiver.Lib.csproj" />
+    <ProjectReference Include="..\Database.Lib\Database.Lib.csproj" />
   </ItemGroup>
 
   <ItemGroup>

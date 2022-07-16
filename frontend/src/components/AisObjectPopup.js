@@ -12,6 +12,7 @@ import {
 import { getShipStatusDescription, ShipStatus } from "../shipStatus";
 import React, { useEffect, useState } from "react";
 import TimeAgo from "timeago-react";
+import { Link } from "react-router-dom";
 
 function AisObjectPopup({ data }) {
   const [shipTypeDescription, setShipTypeDescription] = useState(null);
@@ -53,7 +54,7 @@ function AisObjectPopup({ data }) {
       {flagInformation != null &&
         (objectType === TypeOfObject.Ship ||
           objectType === TypeOfObject.CraftAssociatedWithParentShip) && (
-          <p className="subtitle ship-object-popup-table-title-container">
+          <p className="subtitle ais-object-subtitle-container">
             {flagInformation && (
               <img
                 className="flag-img hide-text"
@@ -68,7 +69,7 @@ function AisObjectPopup({ data }) {
           </p>
         )}
       {flagInformation != null && objectType === TypeOfObject.AidsToNavigation && (
-        <p className="subtitle ship-object-popup-table-title-container">
+        <p className="subtitle ais-object-subtitle-container">
           {flagInformation && (
             <img
               className="flag-img hide-text"
@@ -84,7 +85,7 @@ function AisObjectPopup({ data }) {
       )}
       {flagInformation != null &&
         objectType === TypeOfObject.SearchAndRescueAircraft && (
-          <p className="subtitle ship-object-popup-table-title-container">
+          <p className="subtitle ais-object-subtitle-container">
             {flagInformation && (
               <img
                 className="flag-img hide-text"
@@ -97,7 +98,7 @@ function AisObjectPopup({ data }) {
           </p>
         )}
       {flagInformation != null && objectType === TypeOfObject.BaseStations && (
-        <p className="subtitle ship-object-popup-table-title-container">
+        <p className="subtitle ais-object-subtitle-container">
           {flagInformation && (
             <img
               className="flag-img hide-text"
@@ -212,10 +213,21 @@ function AisObjectPopup({ data }) {
           Received{" "}
           <TimeAgo className="has-text-weight-bold" datetime={data.updated} />
           &nbsp;
-          {data.source_id != null && (
+          {data.station_name != null && (
             <React.Fragment>
               (Source:{" "}
-              <span className="has-text-weight-bold">{data.source_id}</span>)
+              <span
+                className="has-text-weight-bold"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+              >
+                <Link to={`/station/${data.station_id}`}>
+                  {data.station_name}
+                </Link>
+              </span>
+              )
             </React.Fragment>
           )}
         </div>

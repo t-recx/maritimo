@@ -57,5 +57,11 @@ public class ObjectData
     public string? source_id { get; set; }
     public string? source_ip_address { get; set; }
 
+    public string? station_name { get; set; }
+    public string? station_operator_name { get; set; }
+
     public DateTime updated { get; set; }
+
+    public int? StationId { get; set; }
+    public Station Station { get; set; } = default!;
 }

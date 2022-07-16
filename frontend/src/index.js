@@ -1,16 +1,24 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./styles.css";
-import App from "./components/App";
+import AisMap from "./components/AisMap";
+import Navbar from "./components/Navbar";
+import Station from "./components/Station";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<App />}></Route>
-    </Routes>
+    <React.Fragment>
+      <div className="main-container">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<AisMap />}></Route>
+          <Route path="/station/:stationId" element={<Station />}></Route>
+        </Routes>
+      </div>
+    </React.Fragment>
   </BrowserRouter>
 );
 

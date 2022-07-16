@@ -10,9 +10,9 @@ namespace Persister.App;
 
 public class PersisterModule
 {
-    public IKernel GetKernel(string connectionString, string exchangeName, string brokerUri)
+    public IKernel GetKernel(string connectionString, string exchangeName, string brokerUri, int minutesCacheStationExpiration)
     {
-        var databaseModule = new DatabaseModule(connectionString);
+        var databaseModule = new DatabaseModule(connectionString, minutesCacheStationExpiration);
         var receiverModule = new ReceiverModule(exchangeName, brokerUri);
 
         Action<SimpleConsoleFormatterOptions> loggingOptions = options =>
@@ -29,6 +29,7 @@ public class PersisterModule
         kernel.Bind<IMapper>().ToMethod(_ => GetMapper());
 
         kernel.Bind<ILogger<IDatabaseService>>().ToMethod(x => loggerFactory.CreateLogger<IDatabaseService>());
+        kernel.Bind<ILogger<IStationService>>().ToMethod(x => loggerFactory.CreateLogger<StationService>());
         kernel.Bind<ILogger<IReceiver>>().ToMethod(x => loggerFactory.CreateLogger<IReceiver>());
         kernel.Bind<ILogger<Application>>().ToMethod(x => loggerFactory.CreateLogger<Application>());
 

@@ -1,0 +1,18 @@
+.station-object-popup-table {
+  table-layout: fixed;
+}
+
+.station-object-popup {
+  min-width: 300px;
+}
+
+.station-object-popup-table-cell {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.source-information {
+  white-space: nowrap;
+}
+
