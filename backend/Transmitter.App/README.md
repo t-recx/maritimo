@@ -24,7 +24,7 @@ Configuration is done via environment variables.
 | MARITIMO_CORS_ORIGIN_WHITELIST                   | CORS origin whitelist                                                    |
 | MARITIMO_TRANSMITTER_BUFFER_SECONDS              | Seconds to buffer messages before sending them to ReceiveBuffered method |
 | MARITIMO_DB_CONNECTION_STRING                    | Database connection string                                               |
-| MARITIMO_DB_CACHE_STATION_MINUTES_EXPIRATION     | Minutes that a cache entry for one station data lives                    |
+| MARITIMO_DB_CACHE_STATION_MINUTES_EXPIRATION     | Minutes until expiration of a cache entry for a station/object           |
 
 ## Running
 

@@ -17,11 +17,11 @@ WebApi is a dotnet application that is used to serve via-REST AIS information th
 
 Configuration is done via environment variables.
 
-| Name                                         | Description                                           |
-| -------------------------------------------- | ----------------------------------------------------- |
-| MARITIMO_DB_CONNECTION_STRING                | Database connection string                            |
-| MARITIMO_CORS_ORIGIN_WHITELIST               | CORS origin whitelist                                 |
-| MARITIMO_DB_CACHE_STATION_MINUTES_EXPIRATION | Minutes that a cache entry for one station data lives |
+| Name                                         | Description                                             |
+| -------------------------------------------- | ------------------------------------------------------- |
+| MARITIMO_DB_CONNECTION_STRING                | Database connection string                              |
+| MARITIMO_CORS_ORIGIN_WHITELIST               | CORS origin whitelist                                   |
+| MARITIMO_DB_CACHE_STATION_MINUTES_EXPIRATION | Minutes until expiration of a cache entry for a station |
 
 ## Running
 
