@@ -37,7 +37,7 @@ function AisObject({ data, zoom }) {
         const angle = data.true_heading;
         const i = new L.DivIcon({
           html:
-            '<svg><polygon fill="' +
+            '<svg width="16" height="16"><polygon fill="' +
             colorScheme.fillColor +
             '" transform="rotate(' +
             angle +
@@ -48,9 +48,9 @@ function AisObject({ data, zoom }) {
       } else {
         const i = new L.DivIcon({
           html:
-            '<svg><circle fill="' +
+            '<svg width="10" height="8"><circle fill="' +
             colorScheme.fillColor +
-            '" cx="6" cy="6" r="3"/></svg>',
+            '" cx="6" cy="3" r="3"/></svg>',
           className: "",
         });
         setIcon(i);
