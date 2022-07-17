@@ -94,11 +94,11 @@ function AisMapContent({ changeParamsLocation, stations }) {
         paramZoom = parseInt(localStorage.getItem("zoom"));
       }
 
-      if (!paramZoom) {
+      if (paramZoom == null) {
         paramZoom = parseInt(process.env.REACT_APP_MAP_INITIAL_ZOOM);
       }
 
-      if (paramZoom) {
+      if (paramZoom != null) {
         map.setZoom(paramZoom);
       }
 
@@ -282,7 +282,6 @@ function AisMapContent({ changeParamsLocation, stations }) {
 
     if (!delay || !filtering.current) {
       filtering.current = true;
-      console.log("started filtering ", new Date());
       _filterObjectsInView(m, objs);
       if (filteringDelayTimerId.current) {
         clearTimeout(filteringDelayTimerId.current);
@@ -337,19 +336,19 @@ function AisMapContent({ changeParamsLocation, stations }) {
   function getOffsetByZoom(z) {
     switch (z) {
       case 0:
-        return 2;
+        return 4;
       case 1:
-        return 1.5;
+        return 2.5;
       case 2:
-        return 1;
+        return 1.3;
       case 3:
-        return 0.6;
+        return 0.85;
       case 4:
-        return 0.4;
+        return 0.5;
       case 5:
-        return 0.25;
+        return 0.35;
       case 6:
-        return 0.1;
+        return 0.15;
       case 7:
         return 0.05;
       case 8:
@@ -389,7 +388,6 @@ function AisMapContent({ changeParamsLocation, stations }) {
         toDelete.forEach((x) => delete inView[x.mmsi]);
       }
     }
-
     return inView;
   }
 
