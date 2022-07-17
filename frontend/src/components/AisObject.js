@@ -25,6 +25,7 @@ function AisObject({ data, zoom }) {
   const [circlePathOptions, setCirclePathOptions] = useState(null);
   const [svgIcon, setSVGIcon] = useState(null);
   const [showTransmitter, setShowTransmitter] = useState(null);
+  const [transparentPathOptions, setTransparentPathOptions] = useState(null);
 
   useEffect(() => {
     if (zoom >= 14) {
@@ -121,6 +122,10 @@ function AisObject({ data, zoom }) {
     setCirclePathOptions({
       color: colorScheme.color,
       fillColor: colorScheme.color,
+    });
+    setTransparentPathOptions({
+      color: "transparent",
+      fillColor: "transparent",
     });
     setTransmitterPathOptions({
       color: colorScheme.colorTransmitter,
@@ -254,14 +259,24 @@ function AisObject({ data, zoom }) {
         </Marker>
       )}
       {presentationType == PresentationType.Circle && circlePathOptions && (
-        <Circle
-          center={[data.latitude, data.longitude]}
-          pathOptions={circlePathOptions}
-          radius={6}
-          weight={5}
-        >
-          <AisObjectPopup data={data} />
-        </Circle>
+        <React.Fragment>
+          <Circle
+            center={[data.latitude, data.longitude]}
+            pathOptions={transparentPathOptions}
+            radius={6}
+            weight={9}
+          >
+            <AisObjectPopup data={data} />
+          </Circle>
+          <Circle
+            center={[data.latitude, data.longitude]}
+            pathOptions={circlePathOptions}
+            radius={6}
+            weight={5}
+          >
+            <AisObjectPopup data={data} />
+          </Circle>
+        </React.Fragment>
       )}
       {presentationType == PresentationType.Polygon && pathOptions && polygon && (
         <React.Fragment>
