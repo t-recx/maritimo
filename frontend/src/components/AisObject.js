@@ -37,23 +37,20 @@ function AisObject({ data, zoom }) {
         const angle = data.true_heading;
         const i = new L.DivIcon({
           html:
-            '<svg xmlns="http://www.w3.org/2000/svg"  width="32" height="32" transform="translate(-10,-10) scale(0.5)" > <polygon stroke="' +
-            colorScheme.color +
-            '" stroke-width=1  fill="' +
+            '<svg><polygon fill="' +
             colorScheme.fillColor +
             '" transform="rotate(' +
             angle +
-            ' 16, 16)" points=" 12,14 12,28 16,24 20,28, 20,14 16,4" /> </svg>',
+            ' 8, 8)" points="6,7 6,14 8,12 10,14 10,7 8,2"/></svg>',
           className: "",
         });
         setIcon(i);
       } else {
         const i = new L.DivIcon({
           html:
-            '<svg xmlns="http://www.w3.org/2000/svg"  width="8" height="8" transform="translate(3, -3)"> <circle ' +
-            '"  fill="' +
+            '<svg><circle fill="' +
             colorScheme.fillColor +
-            '" cx="4" cy="4" r="3" /> </svg>',
+            '" cx="6" cy="6" r="3"/></svg>',
           className: "",
         });
         setIcon(i);
