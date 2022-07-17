@@ -1,18 +1,114 @@
 import * as turf from "@turf/turf";
 import React, { useState, useEffect } from "react";
-import { Polygon, Circle, Marker } from "react-leaflet";
+import { Polygon, Circle, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import { getShipColorScheme } from "../shipColorSchemes";
 import AisObjectPopup from "./AisObjectPopup";
 import { ShipStatus } from "../shipStatus";
 
 function AisObject({ data, zoom }) {
-  const [objectPolygon, setObjectPolygon] = useState(null);
-  const [icon, setIcon] = useState(null);
-  const [iconLocation, setIconLocation] = useState([]);
+  const PresentationType = {
+    None: 0,
+    SVG: 1,
+    Circle: 2,
+    Polygon: 3,
+  };
+
+  const [presentationType, setPresentationType] = useState(
+    PresentationType.None
+  );
+  const [polygon, setPolygon] = useState(null);
+  const [svgCoordinates, setSVGCoordinates] = useState(null);
   const [colorScheme, setColorScheme] = useState(null);
   const [pathOptions, setPathOptions] = useState(null);
   const [transmitterPathOptions, setTransmitterPathOptions] = useState(null);
+  const [circlePathOptions, setCirclePathOptions] = useState(null);
+  const [svgIcon, setSVGIcon] = useState(null);
+  const [showTransmitter, setShowTransmitter] = useState(null);
+
+  useEffect(() => {
+    if (zoom >= 14) {
+      if (
+        shipHasDimensionsAndDirection(
+          data.dimension_to_bow,
+          data.dimension_to_port,
+          data.dimension_to_starboard,
+          data.dimension_to_stern,
+          data.true_heading
+        )
+      ) {
+        setPresentationType(PresentationType.Polygon);
+      } else {
+        setPresentationType(PresentationType.Circle);
+      }
+    } else {
+      if (
+        shipIsMovingWithDirection(
+          data.true_heading,
+          data.navigation_status,
+          data.speed_over_ground
+        )
+      ) {
+        setPresentationType(PresentationType.SVG);
+      } else {
+        setPresentationType(PresentationType.Circle);
+      }
+    }
+  }, [
+    zoom,
+    data.dimension_to_bow,
+    data.dimension_to_port,
+    data.dimension_to_starboard,
+    data.dimension_to_stern,
+    data.true_heading,
+    data.navigation_status,
+    data.speed_over_ground,
+  ]);
+
+  useEffect(() => {
+    if (
+      shipHasDimensionsAndDirection(
+        data.dimension_to_bow,
+        data.dimension_to_port,
+        data.dimension_to_starboard,
+        data.dimension_to_stern,
+        data.true_heading
+      ) &&
+      (presentationType == PresentationType.SVG ||
+        presentationType == PresentationType.Polygon)
+    ) {
+      setPolygon(
+        getPolygon(
+          data.dimension_to_bow,
+          data.dimension_to_port,
+          data.dimension_to_starboard,
+          data.dimension_to_stern,
+          data.true_heading,
+          data.latitude,
+          data.longitude
+        )
+      );
+    } else {
+      setPolygon(null);
+    }
+  }, [
+    presentationType,
+    data.dimension_to_bow,
+    data.dimension_to_port,
+    data.dimension_to_starboard,
+    data.dimension_to_stern,
+    data.true_heading,
+    data.latitude,
+    data.longitude,
+  ]);
+
+  useEffect(() => {
+    if (polygon != null) {
+      setSVGCoordinates(getPolygonCentroid(polygon));
+    } else {
+      setSVGCoordinates([data.latitude, data.longitude]);
+    }
+  }, [polygon, data.latitude, data.longitude]);
 
   useEffect(() => {
     const colorScheme = getShipColorScheme(data.ship_type);
@@ -22,6 +118,10 @@ function AisObject({ data, zoom }) {
       color: colorScheme.color,
       fillColor: colorScheme.fillColor,
     });
+    setCirclePathOptions({
+      color: colorScheme.color,
+      fillColor: colorScheme.color,
+    });
     setTransmitterPathOptions({
       color: colorScheme.colorTransmitter,
       fillColor: colorScheme.fillColorTransmitter,
@@ -29,117 +129,88 @@ function AisObject({ data, zoom }) {
   }, [data.ship_type]);
 
   useEffect(() => {
-    if (colorScheme) {
-      if (
-        data.true_heading &&
-        shipIsMoving(data.navigation_status, data.speed_over_ground)
-      ) {
-        const angle = data.true_heading;
-        const i = new L.DivIcon({
+    if (presentationType == PresentationType.SVG) {
+      setSVGIcon(
+        new L.DivIcon({
           html:
             '<svg width="16" height="16"><polygon fill="' +
             colorScheme.fillColor +
             '" transform="rotate(' +
-            angle +
+            data.true_heading +
             ' 8, 8)" points="6,7 6,14 8,12 10,14 10,7 8,2"/></svg>',
           className: "",
-        });
-        setIcon(i);
-      } else {
-        const i = new L.DivIcon({
-          html:
-            '<svg width="10" height="8"><circle fill="' +
-            colorScheme.fillColor +
-            '" cx="6" cy="3" r="3"/></svg>',
-          className: "",
-        });
-        setIcon(i);
-      }
+        })
+      );
     } else {
-      setIcon(null);
+      setSVGIcon(null);
     }
-  }, [
-    data.true_heading,
-    colorScheme,
-    data.navigation_status,
-    data.speed_over_ground,
-  ]);
+  }, [presentationType, colorScheme, data.true_heading]);
 
-  useEffect(() => {
-    if (canBePolygon(data)) {
-      const angle = ((data.true_heading + 180) % 360) - 180;
+  function getPolygonCentroid(objectPolygon) {
+    const p = [
+      objectPolygon
+        .map((point) => [point[1], point[0]])
+        .concat([[objectPolygon[0][1], objectPolygon[0][0]]]),
+    ];
+    const centroid = turf.centroid(turf.polygon(p));
 
-      const beakSize = (data.dimension_to_bow + data.dimension_to_stern) / 10;
+    return [centroid.geometry.coordinates[1], centroid.geometry.coordinates[0]];
+  }
 
-      const gpsLocation = turf.point([data.longitude, data.latitude]);
+  function getPolygon(
+    dimension_to_bow,
+    dimension_to_port,
+    dimension_to_starboard,
+    dimension_to_stern,
+    true_heading,
+    latitude,
+    longitude
+  ) {
+    const angle = ((true_heading + 180) % 360) - 180;
 
-      const horizontalAngle = angle + 90;
-      const a = turf.destination(
-        gpsLocation,
-        (data.dimension_to_bow - beakSize) / 1000,
-        angle
-      );
-      const b = turf.destination(
-        gpsLocation,
-        -data.dimension_to_stern / 1000,
-        angle
-      );
-      const c = turf.destination(
-        b,
-        data.dimension_to_starboard / 1000,
-        horizontalAngle
-      );
-      const d = turf.destination(
-        a,
-        data.dimension_to_starboard / 1000,
-        horizontalAngle
-      );
-      const e = turf.destination(
-        b,
-        -data.dimension_to_port / 1000,
-        horizontalAngle
-      );
-      const f = turf.destination(
-        a,
-        -data.dimension_to_port / 1000,
-        horizontalAngle
-      );
-      const midPoint = turf.midpoint(d, f);
-      const spike = turf.destination(midPoint, beakSize / 1000, angle);
-      const newPolygon = [
-        [e.geometry.coordinates[1], e.geometry.coordinates[0]],
-        [c.geometry.coordinates[1], c.geometry.coordinates[0]],
-        [d.geometry.coordinates[1], d.geometry.coordinates[0]],
+    const beakSize = (dimension_to_bow + dimension_to_stern) / 10;
 
-        [spike.geometry.coordinates[1], spike.geometry.coordinates[0]],
+    const gpsLocation = turf.point([longitude, latitude]);
 
-        [f.geometry.coordinates[1], f.geometry.coordinates[0]],
-      ];
+    const horizontalAngle = angle + 90;
+    const a = turf.destination(
+      gpsLocation,
+      (dimension_to_bow - beakSize) / 1000,
+      angle
+    );
+    const b = turf.destination(gpsLocation, -dimension_to_stern / 1000, angle);
+    const c = turf.destination(
+      b,
+      dimension_to_starboard / 1000,
+      horizontalAngle
+    );
+    const d = turf.destination(
+      a,
+      dimension_to_starboard / 1000,
+      horizontalAngle
+    );
+    const e = turf.destination(b, -dimension_to_port / 1000, horizontalAngle);
+    const f = turf.destination(a, -dimension_to_port / 1000, horizontalAngle);
+    const midPoint = turf.midpoint(d, f);
+    const spike = turf.destination(midPoint, beakSize / 1000, angle);
+    const newPolygon = [
+      [e.geometry.coordinates[1], e.geometry.coordinates[0]],
+      [c.geometry.coordinates[1], c.geometry.coordinates[0]],
+      [d.geometry.coordinates[1], d.geometry.coordinates[0]],
 
-      setObjectPolygon(newPolygon);
-    } else {
-      setObjectPolygon(null);
-    }
-  }, [data]);
+      [spike.geometry.coordinates[1], spike.geometry.coordinates[0]],
 
-  useEffect(() => {
-    if (objectPolygon) {
-      const p = [
-        objectPolygon
-          .map((point) => [point[1], point[0]])
-          .concat([[objectPolygon[0][1], objectPolygon[0][0]]]),
-      ];
-      const centroid = turf.centroid(turf.polygon(p));
-      setIconLocation([
-        centroid.geometry.coordinates[1],
-        centroid.geometry.coordinates[0],
-      ]);
-    } else {
-      setIconLocation([data.latitude, data.longitude]);
-    }
-  }, [data, objectPolygon]);
+      [f.geometry.coordinates[1], f.geometry.coordinates[0]],
+    ];
 
-  function shipIsMoving(navigation_status, speed_over_ground) {
+    return newPolygon;
+  }
+
+  function shipIsMovingWithDirection(
+    true_heading,
+    navigation_status,
+    speed_over_ground
+  ) {
     if (
       navigation_status == ShipStatus.Atanchor ||
       navigation_status == ShipStatus.Moored ||
@@ -150,28 +221,54 @@ function AisObject({ data, zoom }) {
       return false;
     }
 
-    return true;
+    return true_heading != null;
   }
 
-  function canBePolygon(d) {
+  function shipHasDimensionsAndDirection(
+    dimension_to_bow,
+    dimension_to_port,
+    dimension_to_starboard,
+    dimension_to_stern,
+    true_heading
+  ) {
     return (
-      d &&
-      d.dimension_to_bow &&
-      d.dimension_to_port &&
-      d.dimension_to_starboard &&
-      d.dimension_to_stern &&
-      d.true_heading
+      dimension_to_bow != null &&
+      dimension_to_port != null &&
+      dimension_to_starboard != null &&
+      dimension_to_stern != null &&
+      true_heading != null
     );
   }
 
+  useEffect(() => {
+    setShowTransmitter(
+      presentationType == PresentationType.Polygon && zoom >= 17
+    );
+  }, [presentationType, zoom]);
+
   return (
     <React.Fragment>
-      {zoom >= 14 && objectPolygon && (
+      {presentationType == PresentationType.SVG && svgCoordinates && svgIcon && (
+        <Marker position={svgCoordinates} icon={svgIcon}>
+          <AisObjectPopup data={data} />
+        </Marker>
+      )}
+      {presentationType == PresentationType.Circle && circlePathOptions && (
+        <Circle
+          center={[data.latitude, data.longitude]}
+          pathOptions={circlePathOptions}
+          radius={6}
+          weight={5}
+        >
+          <AisObjectPopup data={data} />
+        </Circle>
+      )}
+      {presentationType == PresentationType.Polygon && pathOptions && polygon && (
         <React.Fragment>
-          <Polygon pathOptions={pathOptions} positions={objectPolygon}>
+          <Polygon pathOptions={pathOptions} positions={polygon}>
             <AisObjectPopup data={data} />
           </Polygon>
-          {zoom >= 17 && (
+          {showTransmitter && transmitterPathOptions && (
             <Circle
               center={[data.latitude, data.longitude]}
               pathOptions={transmitterPathOptions}
@@ -181,22 +278,6 @@ function AisObject({ data, zoom }) {
             </Circle>
           )}
         </React.Fragment>
-      )}
-      {zoom >= 14 && !objectPolygon && (
-        <React.Fragment>
-          <Circle
-            center={[data.latitude, data.longitude]}
-            pathOptions={pathOptions}
-            radius={5}
-          >
-            <AisObjectPopup data={data} />
-          </Circle>
-        </React.Fragment>
-      )}
-      {zoom < 14 && icon && (
-        <Marker position={iconLocation} icon={icon}>
-          <AisObjectPopup data={data} />
-        </Marker>
       )}
     </React.Fragment>
   );
