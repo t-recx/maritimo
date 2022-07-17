@@ -116,12 +116,12 @@ function AisObject({ data, zoom }) {
 
     setColorScheme(colorScheme);
     setPathOptions({
-      color: colorScheme.color,
+      color: colorScheme.fillColor,
       fillColor: colorScheme.fillColor,
     });
     setCirclePathOptions({
-      color: colorScheme.color,
-      fillColor: colorScheme.color,
+      color: colorScheme.fillColor,
+      fillColor: colorScheme.fillColor,
     });
     setTransparentPathOptions({
       color: "transparent",
