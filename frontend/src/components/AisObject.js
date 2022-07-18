@@ -272,7 +272,7 @@ function AisObject({ data, zoom }) {
             center={[data.latitude, data.longitude]}
             pathOptions={circlePathOptions}
             radius={6}
-            weight={5}
+            weight={3}
           >
             <AisObjectPopup data={data} />
           </Circle>
