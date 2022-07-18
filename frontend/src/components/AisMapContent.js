@@ -94,7 +94,7 @@ function AisMapContent({ changeParamsLocation, stations }) {
         paramZoom = parseInt(localStorage.getItem("zoom"));
       }
 
-      if (paramZoom == null) {
+      if (paramZoom == null || Number.isNaN(paramZoom)) {
         paramZoom = parseInt(process.env.REACT_APP_MAP_INITIAL_ZOOM);
       }
 
