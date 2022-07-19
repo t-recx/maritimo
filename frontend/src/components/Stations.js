@@ -146,9 +146,16 @@ function Stations() {
                             title={item.countryName}
                           />
                         )}
-                        <Link to={"/station/" + item.stationId}>
-                          {item.name}
-                        </Link>
+                        <span
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                        >
+                          <Link to={"/station/" + item.stationId}>
+                            {item.name}
+                          </Link>
+                        </span>
                       </div>
                     </td>
                     <td className="is-hidden-mobile">
