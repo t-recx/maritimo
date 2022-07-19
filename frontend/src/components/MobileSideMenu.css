@@ -1,0 +1,24 @@
+.menu-dropdown {
+    position: fixed;
+    top: 52px;
+    height: 100%;
+    right: 0;
+    background-color: white;
+    z-index: 2000; 
+    box-shadow: 2px 0px 4px 0px rgba(138,154,173,0.5);;
+    overflow: hidden !important;
+    will-change: width, transform;
+    padding: 0.5rem 0;
+  }
+
+  .menu-overlay-opacity {
+    position: fixed;
+    left: 0;
+    top: 52px;
+    width: 120vw;
+    height: 120vh;
+    background: black;
+    opacity: 0%;
+    z-index: 1500;
+    will-change: opacity;
+}

@@ -11,8 +11,17 @@ $family-sans-serif: "Fira Sans", sans-serif;
   aspect-ratio: 4 / 3;
 }
 
+.flag-img-tiny {
+  height: 12px;
+  aspect-ratio: 4 / 3;
+}
+
 .ais-object-subtitle-container {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.section-container {
+  padding: 1.5rem 1.5rem;
 }

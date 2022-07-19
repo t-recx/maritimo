@@ -1,5 +1,6 @@
 using AutoMapper;
 using Database.Lib;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.App.Controllers;
@@ -28,5 +29,13 @@ public class StationController : ControllerBase
         }
 
         return mapper.Map<DTOStation, DTOWebStation>(result!);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<WebPaginatedList<DTOWebStation>>> Get(int? pageNumber = null, int? pageSize = null)
+    {
+        var result = await stationService.GetPaginatedList(pageNumber ?? 1, pageSize ?? 10);
+
+        return WebPaginatedList<DTOWebStation>.CreateFrom<DTOStation>(result, mapper);
     }
 }

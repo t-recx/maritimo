@@ -3,8 +3,36 @@
 }
 
 .station-section {
-    padding: 1.5rem 1.5rem;
     height: 100%;
     display: flex;
     flex-direction: column;
+}
+
+.country-name {
+    margin-left: 4px;
+}
+
+.th-station-id {
+    width: 60px;
+}
+
+.th-station-status {
+    width: 1px;
+}
+
+.td-country {
+    max-width: 200px;
+    width: 200px;
+}
+
+.name-container {
+    gap: 8px;
+    display: flex;
+    align-items: center;
+}
+
+td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
 }

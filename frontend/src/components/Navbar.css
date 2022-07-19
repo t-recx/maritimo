@@ -1,3 +1,11 @@
 .maritimo-logo {
     margin-right: 12px;
 }
+
+.navbar-menu .is-active {
+    position: absolute;
+}
+
+.navbar-burger-left {
+    margin-left: unset !important;
+}

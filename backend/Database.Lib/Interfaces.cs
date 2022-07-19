@@ -17,6 +17,7 @@ public interface IStationService
 {
     DTOStationEssentialData? GetStationEssentialData(string? sourceId = null, string? sourceIpAddress = null);
     Task<DTOStation?> Get(int stationId);
+    Task<PaginatedList<DTOStation>> GetPaginatedList(int pageNumber, int pageSize);
 }
 
 public interface IMaritimoContext : IDisposable

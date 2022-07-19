@@ -86,6 +86,16 @@ public class DatabaseService : IDatabaseService
                 message.StationId = stationEssentialData.StationId;
                 message.station_name = stationEssentialData.StationName;
                 message.station_operator_name = stationEssentialData.OperatorName;
+
+                if (message.StationId != null)
+                {
+                    var station = context.Stations.SingleOrDefault(x => x.StationId == message.StationId);
+
+                    if (station != null)
+                    {
+                        station.LastMessageUpdated = message.updated;
+                    }
+                }
             }
 
             context.Messages.Add(message);
