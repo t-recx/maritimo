@@ -4,6 +4,7 @@ import "./styles.css";
 import AisMap from "./components/AisMap";
 import Navbar from "./components/Navbar";
 import Station from "./components/Station";
+import Stations from "./components/Stations";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -16,6 +17,7 @@ root.render(
         <Routes>
           <Route path="/" element={<AisMap />}></Route>
           <Route path="/station/:stationId" element={<Station />}></Route>
+          <Route path="/stations" element={<Stations />}></Route>
         </Routes>
       </div>
     </React.Fragment>

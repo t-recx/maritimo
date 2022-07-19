@@ -1,0 +1,7 @@
+.navbar-divider-menu-dropdown {
+    display: block;
+    background-color: whitesmoke;
+    border: none;
+    height: 2px;
+    margin: 0.5rem 0;
+}

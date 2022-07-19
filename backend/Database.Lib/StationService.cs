@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Memory;
 using OperationResult;
 using static OperationResult.Helpers;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Database.Lib;
 
@@ -41,6 +42,20 @@ public class StationService : IStationService
                     .Where(x => x.StationId == stationId);
 
             return await mapper.ProjectTo<DTOStation>(query).SingleOrDefaultAsync();
+        }
+    }
+
+    public async Task<PaginatedList<DTOStation>> GetPaginatedList(int pageNumber, int pageSize)
+    {
+        using (var context = contextFactory.Get())
+        {
+            var query = context
+                    .Stations
+                    .Include(x => x.StationOperator)
+                    .AsNoTracking()
+                    .OrderBy(x => x.StationId);
+
+            return await PaginatedList<DTOStation>.CreateAsync(query, pageNumber, pageSize, mapper);
         }
     }
 

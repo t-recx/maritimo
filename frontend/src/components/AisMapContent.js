@@ -68,6 +68,16 @@ function AisMapContent({ changeParamsLocation, stations }) {
     },
   });
 
+  useEffect(() => {
+    return () => {
+      console.log("unmounting...");
+      if (connection) {
+        console.log("stopping connection...");
+        connection.stop();
+      }
+    };
+  }, [connection]);
+
   function updateSearch() {
     if (changeParamsLocation) {
       const mapCenter = map.getCenter();

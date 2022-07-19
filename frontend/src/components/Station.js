@@ -9,6 +9,8 @@ import {
   getFlagInformationByCountryCode,
 } from "../mmsi";
 import AisMap from "./AisMap";
+import { faPowerOff } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function Station() {
   let { stationId } = useParams();
@@ -52,10 +54,10 @@ function Station() {
         <Loading />
       ) : (
         data != null && (
-          <section className="station-section">
+          <section className="section-container station-section">
             <div>
               <h1 className="title">{data.name}</h1>
-              <p className="subtitle ais-object-subtitle-container">
+              <p className="subtitle ais-object-subtitle-container mb-2">
                 {flagInformation && (
                   <img
                     className="flag-img"
@@ -65,32 +67,44 @@ function Station() {
                   />
                 )}
                 <span>Station</span>
-              </p>
-              <hr />
-              <p>
-                <span className="has-text-weight-bold">Operator:</span>{" "}
-                {data.stationOperatorHomepage != null && (
-                  <span>
-                    <a
-                      href={data.stationOperatorHomepage}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {data.stationOperatorName}
-                    </a>
+                <span className="icon-text has-text-weight-bold ml-auto ">
+                  <span
+                    className={
+                      "icon " +
+                      (data.online ? "has-text-success" : "has-text-danger")
+                    }
+                  >
+                    <FontAwesomeIcon icon={faPowerOff} size="sm" />
                   </span>
-                )}
-                {data.stationOperatorHomepage == null && (
-                  <span>{data.stationOperatorName}</span>
-                )}
+                  <span>{data.online ? "Online" : "Offline"}</span>
+                </span>
               </p>
-              {data.equipmentDescription != null && (
+              <hr className="mt-0 mb-2" />
+              <div className="mb-4">
                 <p>
-                  <span className="has-text-weight-bold">Equipment:</span>{" "}
-                  <span>{data.equipmentDescription}</span>
+                  <span className="has-text-weight-bold">Operator:</span>{" "}
+                  {data.stationOperatorHomepage != null && (
+                    <span>
+                      <a
+                        href={data.stationOperatorHomepage}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {data.stationOperatorName}
+                      </a>
+                    </span>
+                  )}
+                  {data.stationOperatorHomepage == null && (
+                    <span>{data.stationOperatorName}</span>
+                  )}
                 </p>
-              )}
-              <hr />
+                {data.equipmentDescription != null && (
+                  <p>
+                    <span className="has-text-weight-bold">Equipment:</span>{" "}
+                    <span>{data.equipmentDescription}</span>
+                  </p>
+                )}
+              </div>
             </div>
             <div className="station-map-container">
               <AisMap
