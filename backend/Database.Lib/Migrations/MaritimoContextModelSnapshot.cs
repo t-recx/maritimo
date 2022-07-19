@@ -394,7 +394,7 @@ namespace Database.Lib.Migrations
                     b.Property<string>("EquipmentDescription")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("LastMessageUpdated")
+                    b.Property<DateTime?>("LastMessageUpdated")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<float?>("Latitude")

@@ -13,8 +13,7 @@ namespace Database.Lib.Migrations
                 name: "LastMessageUpdated",
                 table: "Stations",
                 type: "timestamp with time zone",
-                nullable: false,
-                defaultValue: new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified));
+                nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

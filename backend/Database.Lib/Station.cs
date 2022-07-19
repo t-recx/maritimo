@@ -15,6 +15,6 @@ public class Station
     public int StationOperatorId { get; set; }
     public StationOperator StationOperator { get; set; } = default!;
     public List<StationAddress> StationAddresses { get; set; } = default!;
-    public DateTime LastMessageUpdated { get; set; }
+    public DateTime? LastMessageUpdated { get; set; }
 
 }
