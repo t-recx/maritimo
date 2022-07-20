@@ -11,7 +11,6 @@ namespace Database.Lib;
 public class StationService : IStationService
 {
     private readonly IMaritimoContextFactory contextFactory;
-    private readonly ILogger<IStationService> logger;
     private readonly int minutesCacheEntryExpiration;
     private readonly IMapper mapper;
     private readonly IMemoryCache memoryCacheSourceId;
@@ -19,12 +18,10 @@ public class StationService : IStationService
 
     public StationService(
         IMaritimoContextFactory contextFactory,
-        ILogger<IStationService> logger,
         int minutesCacheEntryExpiration,
         IMapper mapper)
     {
         this.contextFactory = contextFactory;
-        this.logger = logger;
         this.minutesCacheEntryExpiration = minutesCacheEntryExpiration;
         this.mapper = mapper;
         this.memoryCacheSourceId = new MemoryCache(new MemoryCacheOptions());

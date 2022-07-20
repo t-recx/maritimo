@@ -19,6 +19,7 @@ public class DatabaseServiceTests
 
     MaritimoTestContextFactory contextFactory = null!;
     Mock<IStationService> stationServiceMock = null!;
+    Mock<IMMSIService> mmsiServiceMock = null!;
 
     [SetUp]
     public void Setup()
@@ -37,6 +38,9 @@ public class DatabaseServiceTests
         stationServiceMock = new Mock<IStationService>();
         SetupStationService();
 
+        mmsiServiceMock = new Mock<IMMSIService>();
+        SetupMMSIService();
+
         connection = new SqliteConnection("Filename=:memory:");
         connection.Open();
 
@@ -47,7 +51,7 @@ public class DatabaseServiceTests
         contextFactory.Get().Database.EnsureCreated();
         SetupStations();
 
-        service = new DatabaseService(contextFactory, mapper, logger, stationServiceMock.Object);
+        service = new DatabaseService(contextFactory, mapper, logger, stationServiceMock.Object, mmsiServiceMock.Object);
     }
 
     void SetupStationService()
@@ -66,6 +70,12 @@ public class DatabaseServiceTests
 
             context.SaveChanges();
         }
+    }
+
+    void SetupMMSIService()
+    {
+        mmsiServiceMock.Setup(x => x.GetObjectTypeByMMSI(It.IsAny<uint>())).Returns(ObjectType.Ship);
+        mmsiServiceMock.Setup(x => x.GetCountryCodeByMMSI(It.IsAny<uint>())).Returns(203);
     }
 
     [TearDown]

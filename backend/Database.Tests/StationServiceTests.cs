@@ -32,8 +32,6 @@ public class StationServiceTests
             )
         );
 
-        var logger = LoggerFactory.Create(_ => { }).CreateLogger<IStationService>();
-
         connection = new SqliteConnection("Filename=:memory:");
         connection.Open();
 
@@ -43,7 +41,7 @@ public class StationServiceTests
 
         contextFactory.Get().Database.EnsureCreated();
 
-        service = new StationService(contextFactory, logger, minutesCacheEntryExpiration, mapper);
+        service = new StationService(contextFactory, minutesCacheEntryExpiration, mapper);
     }
 
     [TearDown]

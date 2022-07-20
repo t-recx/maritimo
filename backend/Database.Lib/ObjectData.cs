@@ -64,4 +64,6 @@ public class ObjectData
 
     public int? StationId { get; set; }
     public Station Station { get; set; } = default!;
+    public ObjectType? object_type { get; set; }
+    public int? country_code { get; set; }
 }

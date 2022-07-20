@@ -12,17 +12,20 @@ public class DatabaseService : IDatabaseService
     private readonly IMapper mapper;
     private readonly ILogger logger;
     private readonly IStationService stationService;
+    private readonly IMMSIService mmsiService;
 
     public DatabaseService(
         IMaritimoContextFactory contextFactory,
         IMapper mapper,
         ILogger<IDatabaseService> logger,
-        IStationService stationService)
+        IStationService stationService,
+        IMMSIService mmsiService)
     {
         this.contextFactory = contextFactory;
         this.mapper = mapper;
         this.logger = logger;
         this.stationService = stationService;
+        this.mmsiService = mmsiService;
     }
 
     public async Task<List<DTOObjectData>> Get(TimeSpan? timespan = null)
@@ -128,6 +131,8 @@ public class DatabaseService : IDatabaseService
             if (objectData == null)
             {
                 objectData = mapper.Map<ObjectData>(dto);
+                objectData.object_type = mmsiService.GetObjectTypeByMMSI(dto.mmsi);
+                objectData.country_code = mmsiService.GetCountryCodeByMMSI(dto.mmsi);
 
                 if (stationEssentialData != null)
                 {

@@ -1105,4 +1105,5 @@ export {
   getTypeOfObject,
   TypeOfObject,
   getTypeOfObjectDescription,
+  FlagsByMid,
 };

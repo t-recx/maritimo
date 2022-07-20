@@ -58,5 +58,7 @@ public class DTOObjectData
     public string? station_operator_name { get; set; }
 
     public DateTime updated { get; set; }
+    public ObjectType? object_type { get; set; }
+    public int? country_code { get; set; }
 }
 
