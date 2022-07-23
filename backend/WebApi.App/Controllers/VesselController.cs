@@ -32,9 +32,21 @@ public class VesselController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<WebPaginatedList<DTOWebObjectData>>> Get(int? pageNumber = null, int? pageSize = null, int? countryCode = null)
+    public async Task<ActionResult<WebPaginatedList<DTOWebObjectData>>> Get(int? pageNumber = null, int? pageSize = null, string? countryCodes = null, string? shipTypes = null, string? text = null)
     {
-        var result = await vesselService.GetPaginatedList(pageNumber ?? 1, pageSize ?? 10, countryCode);
+        if (countryCodes?.Split(",").Any(x => !int.TryParse(x, out _)) == true)
+        {
+            return BadRequest();
+        }
+        else if (shipTypes?.Split(",").Any(x => !byte.TryParse(x, out _)) == true)
+        {
+            return BadRequest();
+        }
+
+        List<int>? countryCodesFilter = countryCodes?.Split(",").Select(x => int.Parse(x)).ToList();
+        List<byte>? shipTypesFilter = shipTypes?.Split(",").Select(x => byte.Parse(x)).ToList();
+
+        var result = await vesselService.GetPaginatedList(pageNumber ?? 1, pageSize ?? 10, countryCodesFilter, shipTypesFilter, text);
 
         return WebPaginatedList<DTOWebObjectData>.CreateFrom<DTOObjectData>(result, mapper);
     }

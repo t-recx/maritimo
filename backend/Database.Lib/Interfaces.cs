@@ -23,7 +23,7 @@ public interface IStationService
 public interface IVesselService
 {
     Task<DTOObjectData?> Get(uint mmsi);
-    Task<PaginatedList<DTOObjectData>> GetPaginatedList(int pageNumber, int pageSize, int? countryCode = null);
+    Task<PaginatedList<DTOObjectData>> GetPaginatedList(int pageNumber, int pageSize, List<int>? countryCodes = null, List<byte>? shipTypes = null, string? text = null);
 }
 
 public interface IMaritimoContext : IDisposable
