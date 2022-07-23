@@ -5,6 +5,8 @@ import AisMap from "./components/AisMap";
 import Navbar from "./components/Navbar";
 import Station from "./components/Station";
 import Stations from "./components/Stations";
+import Vessel from "./components/Vessel";
+import Vessels from "./components/Vessels";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -18,6 +20,8 @@ root.render(
           <Route path="/" element={<AisMap />}></Route>
           <Route path="/station/:stationId" element={<Station />}></Route>
           <Route path="/stations" element={<Stations />}></Route>
+          {/* <Route path="/vessel/:mmsi" element={<Vessel />}></Route> */}
+          <Route path="/vessels" element={<Vessels />}></Route>
         </Routes>
       </div>
     </React.Fragment>

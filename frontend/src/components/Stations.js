@@ -1,20 +1,23 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {
   getCountryDescriptionByCountryCode,
   getFlagInformationByCountryCode,
 } from "../mmsi";
 import Loading from "./Loading";
+import Pagination from "./Pagination";
 
 function Stations() {
-  const [search, setSearch] = useSearchParams();
+  const [search] = useSearchParams();
   const [stations, setStations] = useState(null);
   const [pageNumber, setPageNumber] = useState(null);
   const [pageSize, setPageSize] = useState(null);
   const [totalPages, setTotalPages] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const location = useLocation();
 
   const navigate = useNavigate();
 
@@ -78,7 +81,6 @@ function Stations() {
           }
           setIsLoading(false);
         }
-        console.log("finished fetching data");
       } catch (error) {
         console.error(error);
       }
@@ -174,98 +176,13 @@ function Stations() {
               </tbody>
             </table>
 
-            {totalPages > 1 && (
-              <nav
-                className="pagination"
-                role="navigation"
-                aria-label="pagination"
-              >
-                <Link
-                  to={"/stations/?pageNumber=" + (pageNumber - 1)}
-                  className={
-                    "pagination-previous " +
-                    (pageNumber <= 1 ? "is-disabled" : "")
-                  }
-                >
-                  Previous
-                </Link>
-                <Link
-                  to={"/stations/?pageNumber=" + (pageNumber + 1)}
-                  className={
-                    "pagination-next " +
-                    (pageNumber >= totalPages ? "is-disabled" : "")
-                  }
-                >
-                  Next page
-                </Link>
-                <ul className="pagination-list">
-                  {pageNumber > 1 && (
-                    <li>
-                      <Link
-                        to="/stations/?pageNumber=1"
-                        className="pagination-link"
-                        aria-label="Goto page 1"
-                      >
-                        1
-                      </Link>
-                    </li>
-                  )}
-                  {pageNumber > 3 && (
-                    <li>
-                      <span className="pagination-ellipsis">&hellip;</span>
-                    </li>
-                  )}
-                  {pageNumber > 2 && (
-                    <li>
-                      <Link
-                        to={"/stations/?pageNumber=" + (pageNumber - 1)}
-                        className="pagination-link"
-                        aria-label={"Goto page " + (pageNumber - 1)}
-                      >
-                        {pageNumber - 1}
-                      </Link>
-                    </li>
-                  )}
-                  <li>
-                    <Link
-                      to={"/stations/?pageNumber=" + pageNumber}
-                      className="pagination-link is-current"
-                      aria-label="{pageNumber}"
-                      aria-current="page"
-                    >
-                      {pageNumber}
-                    </Link>
-                  </li>
-                  {pageNumber < totalPages - 1 && (
-                    <li>
-                      <Link
-                        to={"/stations/?pageNumber=" + (pageNumber + 1)}
-                        className="pagination-link"
-                        aria-label={"Goto page " + (pageNumber + 1)}
-                      >
-                        {pageNumber + 1}
-                      </Link>
-                    </li>
-                  )}
-                  {pageNumber < totalPages - 2 && (
-                    <li>
-                      <span className="pagination-ellipsis">&hellip;</span>
-                    </li>
-                  )}
-                  {pageNumber < totalPages && (
-                    <li>
-                      <Link
-                        to={"/stations/?pageNumber=" + totalPages}
-                        className="pagination-link"
-                        aria-label={"Goto page " + totalPages}
-                      >
-                        {totalPages}
-                      </Link>
-                    </li>
-                  )}
-                </ul>
-              </nav>
-            )}
+            <Pagination
+              location={location}
+              searchParams={search}
+              pageNumberParamName="pageNumber"
+              pageNumber={pageNumber}
+              totalPages={totalPages}
+            />
           </React.Fragment>
         )}
       </section>

@@ -20,6 +20,12 @@ public interface IStationService
     Task<PaginatedList<DTOStation>> GetPaginatedList(int pageNumber, int pageSize);
 }
 
+public interface IVesselService
+{
+    Task<DTOObjectData?> Get(uint mmsi);
+    Task<PaginatedList<DTOObjectData>> GetPaginatedList(int pageNumber, int pageSize, List<int>? countryCodes = null, List<byte>? shipTypes = null, string? text = null);
+}
+
 public interface IMaritimoContext : IDisposable
 {
     DbSet<Message> Messages { get; }
@@ -35,4 +41,10 @@ public interface IMaritimoContext : IDisposable
 public interface IMaritimoContextFactory
 {
     IMaritimoContext Get();
+}
+
+public interface IMMSIService
+{
+    ObjectType GetObjectTypeByMMSI(uint mmsi);
+    int? GetCountryCodeByMMSI(uint mmsi);
 }

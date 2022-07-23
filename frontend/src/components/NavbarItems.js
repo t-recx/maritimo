@@ -28,20 +28,14 @@ function NavbarItems({ linkClicked, isDropdown }) {
             <span>Map</span>
           </span>
         </Link>
-        {false && (
-          <Link
-            to="/vessels"
-            className="navbar-item"
-            onClick={linkClickedEvent}
-          >
-            <span className="icon-text">
-              <span className="icon">
-                <FontAwesomeIcon icon={faShip} size="sm" />
-              </span>
-              <span>Vessels</span>
+        <Link to="/vessels" className="navbar-item" onClick={linkClickedEvent}>
+          <span className="icon-text">
+            <span className="icon">
+              <FontAwesomeIcon icon={faShip} size="sm" />
             </span>
-          </Link>
-        )}
+            <span>Vessels</span>
+          </span>
+        </Link>
         <Link to="/stations" className="navbar-item" onClick={linkClickedEvent}>
           <span className="icon-text">
             <span className="icon">

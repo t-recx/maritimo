@@ -12,6 +12,8 @@ public class DatabaseModule : NinjectModule
         Kernel.Bind<IMaritimoContextFactory>().To<MaritimoContextFactory>().InSingletonScope().WithConstructorArgument("connectionString", connectionString);
         Kernel.Bind<IDatabaseService>().To<DatabaseService>();
         Kernel.Bind<IStationService>().To<StationService>().WithConstructorArgument("minutesCacheEntryExpiration", minutesCacheEntryExpiration);
+        Kernel.Bind<IVesselService>().To<VesselService>();
+        Kernel.Bind<IMMSIService>().To<MMSIService>();
     }
 
     public DatabaseModule(string connectionString, int minutesCacheEntryExpiration)
