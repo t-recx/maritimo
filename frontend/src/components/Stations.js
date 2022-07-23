@@ -81,7 +81,6 @@ function Stations() {
           }
           setIsLoading(false);
         }
-        console.log("finished fetching data");
       } catch (error) {
         console.error(error);
       }
