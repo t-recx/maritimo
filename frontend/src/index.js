@@ -20,7 +20,7 @@ root.render(
           <Route path="/" element={<AisMap />}></Route>
           <Route path="/station/:stationId" element={<Station />}></Route>
           <Route path="/stations" element={<Stations />}></Route>
-          <Route path="/vessel/:mmsi" element={<Vessel />}></Route>
+          {/* <Route path="/vessel/:mmsi" element={<Vessel />}></Route> */}
           <Route path="/vessels" element={<Vessels />}></Route>
         </Routes>
       </div>
