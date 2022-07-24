@@ -330,7 +330,7 @@ function Vessels() {
                     className="button is-link is-light"
                     onClick={resetSearchFilters}
                   >
-                    Reset
+                    Clear
                   </button>
                 </div>
               </div>
