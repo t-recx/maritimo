@@ -18,7 +18,12 @@ const ConnectionStatus = {
   RetryStarting: "RetryStarting",
 };
 
-function AisMapContent({ changeParamsLocation, stations }) {
+function AisMapContent({
+  changeParamsLocation,
+  stations,
+  followMMSI,
+  dataUpdatedCallback,
+}) {
   const onlyObjectsFromHoursAgo =
     process.env.REACT_APP_MAP_OBJECT_LIFESPAN_HOURS;
   const objectLifeSpanMilliseconds =
@@ -180,6 +185,10 @@ function AisMapContent({ changeParamsLocation, stations }) {
         latestData.current = dict;
         setData(dict);
 
+        if (followMMSI && dict[followMMSI]) {
+          followObject(dict[followMMSI]);
+        }
+
         filterObjectsInView(map, dict);
         console.log("finished fetching data");
       } catch (error) {
@@ -222,7 +231,15 @@ function AisMapContent({ changeParamsLocation, stations }) {
 
         setData(newData);
 
+        if (followMMSI && newData[followMMSI]) {
+          followObject(newData[followMMSI]);
+        }
+
         filterObjectsInView(map, newData, true);
+
+        if (dataUpdatedCallback != null) {
+          dataUpdatedCallback(newData);
+        }
       });
 
       setConnection(newConnection);
@@ -323,6 +340,17 @@ function AisMapContent({ changeParamsLocation, stations }) {
     setObjectsInView(getObjectsInView(objs, getMapBounds(m)));
   }
 
+  function followObject(objectData) {
+    if (
+      followMMSI &&
+      objectData &&
+      objectData.latitude &&
+      objectData.longitude
+    ) {
+      map.setView([objectData.latitude, objectData.longitude], map.getZoom());
+    }
+  }
+
   function objectInView(dto, bounds) {
     return (
       dto.latitude &&
@@ -389,6 +417,7 @@ function AisMapContent({ changeParamsLocation, stations }) {
         const toDelete = ents.filter(
           (o) =>
             o.mmsi != key &&
+            (followMMSI == null || o.mmsi != followMMSI) &&
             o.latitude >= objKey.latitude - offset &&
             o.latitude <= objKey.latitude + offset &&
             o.longitude >= objKey.longitude - offset &&
