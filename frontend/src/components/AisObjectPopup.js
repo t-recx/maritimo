@@ -45,12 +45,25 @@ function AisObjectPopup({ data }) {
   return (
     <Popup className="ship-object-popup">
       {data.name != null && data.name.length > 0 && (
-        <h1 className="title ">{data.name}</h1>
+        <h1 className="title ">
+          {objectType == TypeOfObject.Ship && (
+            <Link to={"/vessel/" + data.mmsi}>{data.name}</Link>
+          )}
+          {objectType != TypeOfObject.Ship && (
+            <React.Fragment>{data.name}</React.Fragment>
+          )}
+        </h1>
       )}
-      {(data.name == null || data.name.length == 0) &&
-        objectTypeDescription && (
-          <h1 className="title ">{objectTypeDescription}</h1>
-        )}
+      {(data.name == null || data.name.length == 0) && objectTypeDescription && (
+        <h1 className="title ">
+          {objectType == TypeOfObject.Ship && (
+            <Link to={"/vessel/" + data.mmsi}>{objectTypeDescription}</Link>
+          )}
+          {objectType != TypeOfObject.Ship && (
+            <React.Fragment>{objectTypeDescription}</React.Fragment>
+          )}
+        </h1>
+      )}
       {flagInformation != null &&
         (objectType === TypeOfObject.Ship ||
           objectType === TypeOfObject.CraftAssociatedWithParentShip) && (

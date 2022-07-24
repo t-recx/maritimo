@@ -188,7 +188,7 @@ function Vessels() {
   }
 
   function navigateToVessel(mmsi) {
-    //navigate("/vessel/" + mmsi);
+    navigate("/vessel/" + mmsi);
   }
 
   function handleCountryCodeChange(event) {
@@ -347,7 +347,7 @@ function Vessels() {
               <tbody>
                 {vessels.items.map((item) => (
                   <tr
-                    className=""
+                    className=" is-clickable"
                     key={item.mmsi}
                     onClick={() => navigateToVessel(item.mmsi)}
                   >
@@ -386,7 +386,9 @@ function Vessels() {
                             e.stopPropagation();
                           }}
                         >
-                          {item.name || "Unknown"}
+                          <Link to={"/vessel/" + item.mmsi}>
+                            {item.name || "Unknown"}
+                          </Link>
                         </span>
                       </div>
                     </td>

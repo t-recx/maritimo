@@ -1,0 +1,9 @@
+@media screen and (max-width: 768px) {
+    .map-column {
+        height: 400px;
+    }
+}
+
+.updated-time-ago-cell::first-letter {
+    text-transform: uppercase;
+}

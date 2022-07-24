@@ -11,6 +11,8 @@ function AisMap({
   longitude,
   zoom,
   stations,
+  followMMSI,
+  dataUpdatedCallback,
 }) {
   return (
     <React.Fragment>
@@ -29,6 +31,8 @@ function AisMap({
         <AisMapContent
           changeParamsLocation={changeParamsLocation}
           stations={stations}
+          followMMSI={followMMSI}
+          dataUpdatedCallback={dataUpdatedCallback}
         />
 
         <ZoomControl position="bottomleft" />
