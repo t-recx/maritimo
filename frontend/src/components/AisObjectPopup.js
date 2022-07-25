@@ -45,7 +45,13 @@ function AisObjectPopup({ data }) {
   return (
     <Popup className="ship-object-popup">
       {data.name != null && data.name.length > 0 && (
-        <h1 className="title ">
+        <h1
+          className="title "
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
           {objectType == TypeOfObject.Ship && (
             <Link to={"/vessel/" + data.mmsi}>{data.name}</Link>
           )}
@@ -55,7 +61,13 @@ function AisObjectPopup({ data }) {
         </h1>
       )}
       {(data.name == null || data.name.length == 0) && objectTypeDescription && (
-        <h1 className="title ">
+        <h1
+          className="title "
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+        >
           {objectType == TypeOfObject.Ship && (
             <Link to={"/vessel/" + data.mmsi}>{objectTypeDescription}</Link>
           )}
