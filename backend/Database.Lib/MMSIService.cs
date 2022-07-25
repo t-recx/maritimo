@@ -369,7 +369,7 @@ public class MMSIService : IMMSIService
 
         var countryCode = GetCountryCodeByMMSIAndObjectType(mmsi, ObjectType.Ship);
 
-        if (countryCode != null && ValidCountryCode(countryCode))
+        if (countryCode.HasValue && ValidCountryCode(countryCode.Value))
         {
             return ObjectType.Ship;
         }
