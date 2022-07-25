@@ -7,6 +7,8 @@ import { getShipTypeDescription, ShipTypes } from "../shipTypes";
 import Loading from "./Loading";
 import Pagination from "./Pagination";
 import "./Vessels.css";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function Vessels() {
   const [search, setSearch] = useSearchParams();
@@ -322,7 +324,10 @@ function Vessels() {
               <div className="field is-grouped is-justify-content-end">
                 <div className="control">
                   <button className="button is-link" onClick={searchData}>
-                    Search
+                    <span className="icon">
+                      <FontAwesomeIcon icon={faMagnifyingGlass} size="sm" />
+                    </span>
+                    <span>Search</span>
                   </button>
                 </div>
                 <div className="control">
