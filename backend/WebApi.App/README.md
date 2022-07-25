@@ -4,10 +4,13 @@ WebApi is a dotnet application that is used to serve via-REST AIS information th
 
 ## REST API
 
-|   Endpoint   | Method | Parameters        |                  Data returned                   |  Table   |
-| :----------: | :----: | ----------------- | :----------------------------------------------: | :------: |
-|   /api/ais   |  GET   | int? fromHoursAgo | Array of [DTOWebObjectData](DTOWebObjectData.cs) | Objects  |
-| /api/station |  GET   | int id            |        [DTOWebStation](DTOWebStation.cs)         | Stations |
+|      Endpoint       | Method | Parameters                                                                            |                                  Data returned                                  |  Table   |
+| :-----------------: | :----: | ------------------------------------------------------------------------------------- | :-----------------------------------------------------------------------------: | :------: |
+|      /api/ais       |  GET   | int? fromHoursAgo                                                                     |                Array of [DTOWebObjectData](DTOWebObjectData.cs)                 | Objects  |
+|    /api/station     |  GET   | int? pageNumber, int? pageSize                                                        |    [PaginatedList](WebPaginatedList.cs) of [DTOWebStation](DTOWebStation.cs)    | Stations |
+| /api/station/[:id]  |  GET   | int id                                                                                |                        [DTOWebStation](DTOWebStation.cs)                        | Stations |
+|     /api/vessel     |  GET   | int? pageNumber, int? pageSize, string? countryCodes, string? shipTypes, string? text | [PaginatedList](WebPaginatedList.cs) of [DTOWebObjectData](DTOWebObjectData.cs) | Objects  |
+| /api/vessel/[:mmsi] |  GET   | uint mmsi                                                                             |                     [DTOWebObjectData](DTOWebObjectData.cs)                     | Objects  |
 
 ## Requirements
 
