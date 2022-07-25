@@ -1035,6 +1035,10 @@ const MidStartPositionByObjectType = {
   [TypeOfObject.CraftAssociatedWithParentShip]: 2,
 };
 
+function validCountryCode(countryCode) {
+  return CountryDescriptionsByMid[countryCode] != null;
+}
+
 function getTypeOfObject(mmsi) {
   if (mmsi == null) {
     return null;
@@ -1058,11 +1062,15 @@ function getTypeOfObject(mmsi) {
     return TypeOfObject.BaseStations;
   } else if (mmsi.startsWith("0")) {
     return TypeOfObject.GroupsOfShips;
-  } else if (getMMSIMidByObjectType(mmsi, TypeOfObject.Ship) != null) {
-    return TypeOfObject.Ship;
-  } else {
-    return TypeOfObject.Unknown;
   }
+
+  var countryCode = getMMSIMidByObjectType(mmsi, TypeOfObject.Ship);
+
+  if (countryCode != null && validCountryCode(countryCode)) {
+    return TypeOfObject.Ship;
+  }
+
+  return TypeOfObject.Unknown;
 }
 
 function getMMSIMid(mmsi) {
