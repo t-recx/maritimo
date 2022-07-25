@@ -1008,6 +1008,7 @@ const TypeOfObject = {
   ManOverboard: "ManOverboard",
   EmergencyPositionIndicatingRadioBeacons:
     "EmergencyPositionIndicatingRadioBeacons",
+  Unknown: "Unknown",
 };
 
 const TypeOfObjectDescription = {
@@ -1022,6 +1023,7 @@ const TypeOfObjectDescription = {
   [TypeOfObject.ManOverboard]: "Man overboard",
   [TypeOfObject.EmergencyPositionIndicatingRadioBeacons]:
     "Emergency position indicating radio beacon",
+  [TypeOfObject.Unknown]: "Unknown",
 };
 
 const MidStartPositionByObjectType = {
@@ -1056,19 +1058,25 @@ function getTypeOfObject(mmsi) {
     return TypeOfObject.BaseStations;
   } else if (mmsi.startsWith("0")) {
     return TypeOfObject.GroupsOfShips;
-  } else {
+  } else if (getMMSIMidByObjectType(mmsi, TypeOfObject.Ship) != null) {
     return TypeOfObject.Ship;
+  } else {
+    return TypeOfObject.Unknown;
   }
 }
 
 function getMMSIMid(mmsi) {
+  return getMMSIMidByObjectType(mmsi, getTypeOfObject(mmsi));
+}
+
+function getMMSIMidByObjectType(mmsi, objectType) {
   if (mmsi == null) {
     return null;
   }
 
   mmsi = mmsi.toString().padStart(9, "0");
 
-  const startPosition = MidStartPositionByObjectType[getTypeOfObject(mmsi)];
+  const startPosition = MidStartPositionByObjectType[objectType];
 
   if (startPosition == null) {
     return null;
