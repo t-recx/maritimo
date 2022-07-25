@@ -1,6 +1,6 @@
 .loading-progress {
     border-radius: unset !important;
     height: 6px !important;
-    position:absolute;
+    position:fixed;
     top: 52px;
 }

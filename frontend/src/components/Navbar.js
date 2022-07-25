@@ -18,7 +18,7 @@ function Navbar() {
   return (
     <React.Fragment>
       <nav
-        className="navbar is-info"
+        className="navbar is-info is-fixed-top"
         role="navigation"
         aria-label="main navigation"
       >
@@ -33,17 +33,35 @@ function Navbar() {
             <span className="is-size-4 has-text-weight-bold">Maritimo</span>
           </Link>
 
-          <a
-            role="button"
-            className={"navbar-burger " + (hamburgerActive ? " is-active" : "")}
-            aria-label="menu"
-            aria-expanded="false"
-            onClick={toggleHamburger}
-          >
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-            <span aria-hidden="true"></span>
-          </a>
+          {/* on chrome mobile, the is-active transition was creating a small blue rectangle artifact when toggling the state */}
+          {/* as a temporary fix I'm prevent the transition from occurring by doing the following: */}
+          {hamburgerActive && (
+            <a
+              role="button"
+              className="navbar-burger is-active"
+              aria-label="menu"
+              aria-expanded="false"
+              onClick={toggleHamburger}
+            >
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+            </a>
+          )}
+          {!hamburgerActive && (
+            <a
+              role="button"
+              className="navbar-burger "
+              aria-label="menu"
+              aria-expanded="false"
+              onClick={toggleHamburger}
+            >
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+              <span aria-hidden="true"></span>
+            </a>
+          )}
+          {/* / */}
         </div>
 
         <div id="navBarItems" className="navbar-menu">

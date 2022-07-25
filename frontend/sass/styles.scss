@@ -6,6 +6,10 @@ $family-sans-serif: "Fira Sans", sans-serif;
 @import "../node_modules/bulma/bulma.sass";
 @import "./leaflet.scss";
 
+body {
+  overflow-y: scroll;
+}
+
 .flag-img {
   height: 24px;
   aspect-ratio: 4 / 3;
