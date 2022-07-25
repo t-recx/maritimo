@@ -145,7 +145,7 @@ function Vessel() {
                     longitude={data.longitude}
                     followMMSI={data.mmsi}
                     dataUpdatedCallback={handleDataUpdated}
-                    zoom={10}
+                    zoom={13}
                   />
                 </div>
               )}
