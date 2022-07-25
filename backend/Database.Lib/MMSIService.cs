@@ -14,9 +14,12 @@ public class MMSIService : IMMSIService
 
     public int? GetCountryCodeByMMSI(uint mmsi)
     {
-        string mmsiString = mmsi.ToString().PadLeft(9, '0');
+        return GetCountryCodeByMMSIAndObjectType(mmsi, GetObjectTypeByMMSI(mmsi));
+    }
 
-        var objectType = GetObjectTypeByMMSI(mmsi);
+    int? GetCountryCodeByMMSIAndObjectType(uint mmsi, ObjectType objectType)
+    {
+        string mmsiString = mmsi.ToString().PadLeft(9, '0');
 
         if (MidStartPositionByObjectType.ContainsKey(objectType))
         {
@@ -62,7 +65,11 @@ public class MMSIService : IMMSIService
         {
             return ObjectType.GroupsOfShips;
         }
+        else if (GetCountryCodeByMMSIAndObjectType(mmsi, ObjectType.Ship) != null)
+        {
+            return ObjectType.Ship;
+        }
 
-        return ObjectType.Ship;
+        return ObjectType.Unknown;
     }
 }

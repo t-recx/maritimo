@@ -33,6 +33,7 @@ function AisMap({
           stations={stations}
           followMMSI={followMMSI}
           dataUpdatedCallback={dataUpdatedCallback}
+          initialZoom={zoom}
         />
 
         <ZoomControl position="bottomleft" />

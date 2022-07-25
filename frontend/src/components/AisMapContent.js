@@ -8,6 +8,11 @@ import L from "leaflet";
 import { useMap, useMapEvents } from "react-leaflet";
 import { getTypeOfObject, TypeOfObject } from "../mmsi";
 import AisStation from "./AisStation";
+import {
+  getPolygon,
+  getPolygonCentroid,
+  shipHasDimensionsAndDirection,
+} from "../shipRepresentation";
 
 const ConnectionStatus = {
   NotBuilt: "NotBuilt",
@@ -23,6 +28,7 @@ function AisMapContent({
   stations,
   followMMSI,
   dataUpdatedCallback,
+  initialZoom,
 }) {
   const onlyObjectsFromHoursAgo =
     process.env.REACT_APP_MAP_OBJECT_LIFESPAN_HOURS;
@@ -33,7 +39,7 @@ function AisMapContent({
   const [data, setData] = useState({});
   const [objectsInView, setObjectsInView] = useState({});
   const latestData = useRef(null);
-  const [zoom, setZoom] = useState(4);
+  const [zoom, setZoom] = useState(null);
   const [connectionStatus, setConnectionStatus] = useState(
     ConnectionStatus.NotBuilt
   );
@@ -52,6 +58,14 @@ function AisMapContent({
 
   const [search, setSearch] = useSearchParams();
   const map = useMap();
+
+  useEffect(() => {
+    if (initialZoom == null) {
+      setZoom(4);
+    } else {
+      setZoom(initialZoom);
+    }
+  }, [initialZoom]);
 
   useMapEvents({
     load(e) {
@@ -347,7 +361,30 @@ function AisMapContent({
       objectData.latitude &&
       objectData.longitude
     ) {
-      map.setView([objectData.latitude, objectData.longitude], map.getZoom());
+      if (
+        shipHasDimensionsAndDirection(
+          objectData.dimension_to_bow,
+          objectData.dimension_to_port,
+          objectData.dimension_to_starboard,
+          objectData.dimension_to_stern,
+          objectData.true_heading
+        )
+      ) {
+        const centroid = getPolygonCentroid(
+          getPolygon(
+            objectData.dimension_to_bow,
+            objectData.dimension_to_port,
+            objectData.dimension_to_starboard,
+            objectData.dimension_to_stern,
+            objectData.true_heading,
+            objectData.latitude,
+            objectData.longitude
+          )
+        );
+        map.setView(centroid, map.getZoom());
+      } else {
+        map.setView([objectData.latitude, objectData.longitude], map.getZoom());
+      }
     }
   }
 
