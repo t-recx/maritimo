@@ -10,5 +10,6 @@ public enum ObjectType
     CraftAssociatedWithParentShip = 5,
     SearchAndRescueTransmitter = 6,
     ManOverboard = 7,
-    EmergencyPositionIndicatingRadioBeacons = 8
+    EmergencyPositionIndicatingRadioBeacons = 8,
+    Unknown = 9
 };
