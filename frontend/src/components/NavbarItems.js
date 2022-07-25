@@ -22,38 +22,38 @@ function NavbarItems({ linkClicked, isDropdown }) {
       <div className="navbar-start">
         <Link
           to="/"
-          className="navbar-item is-size-5-mobile"
+          className="navbar-item  navbar-item-mobile"
           onClick={linkClickedEvent}
         >
           <span className="icon-text">
             <span className="icon">
               <FontAwesomeIcon icon={faEarthEurope} />
             </span>
-            <span>Map</span>
+            <span className="is-size-5-mobile">Map</span>
           </span>
         </Link>
         <Link
           to="/vessels"
-          className="navbar-item is-size-5-mobile"
+          className="navbar-item  navbar-item-mobile"
           onClick={linkClickedEvent}
         >
           <span className="icon-text">
             <span className="icon">
               <FontAwesomeIcon icon={faShip} />
             </span>
-            <span>Vessels</span>
+            <span className="is-size-5-mobile">Vessels</span>
           </span>
         </Link>
         <Link
           to="/stations"
-          className="navbar-item is-size-5-mobile"
+          className="navbar-item  navbar-item-mobile"
           onClick={linkClickedEvent}
         >
           <span className="icon-text">
             <span className="icon">
               <FontAwesomeIcon icon={faTowerCell} />
             </span>
-            <span>Stations</span>
+            <span className="is-size-5-mobile">Stations</span>
           </span>
         </Link>
       </div>
@@ -63,27 +63,27 @@ function NavbarItems({ linkClicked, isDropdown }) {
           href="https://github.com/t-recx/maritimo"
           target="_blank"
           rel="noreferrer"
-          className="navbar-item is-size-5-mobile"
+          className="navbar-item  navbar-item-mobile"
           onClick={linkClickedEvent}
         >
           <span className="icon-text">
             <span className="icon">
               <FontAwesomeIcon icon={faGithubAlt} />
             </span>
-            <span>Github</span>
+            <span className="is-size-5-mobile">Github</span>
           </span>
         </a>
         {false && (
           <Link
             to="/about"
-            className="navbar-item is-size-5-mobile"
+            className="navbar-item  navbar-item-mobile"
             onClick={linkClickedEvent}
           >
             <span className="icon-text">
               <span className="icon">
                 <FontAwesomeIcon icon={faCircleInfo} />
               </span>
-              <span>About</span>
+              <span className="is-size-5-mobile">About</span>
             </span>
           </Link>
         )}

@@ -5,3 +5,11 @@
     height: 2px;
     margin: 0.5rem 0;
 }
+
+@media screen and (max-width: 1023px) {
+    .navbar-item-mobile {
+        height: 46px;
+        display: flex;
+        align-items: center;
+    }
+}
