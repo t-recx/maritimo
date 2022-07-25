@@ -20,26 +20,38 @@ function NavbarItems({ linkClicked, isDropdown }) {
   return (
     <React.Fragment>
       <div className="navbar-start">
-        <Link to="/" className="navbar-item" onClick={linkClickedEvent}>
+        <Link
+          to="/"
+          className="navbar-item is-size-5-mobile"
+          onClick={linkClickedEvent}
+        >
           <span className="icon-text">
             <span className="icon">
-              <FontAwesomeIcon icon={faEarthEurope} size="sm" />
+              <FontAwesomeIcon icon={faEarthEurope} />
             </span>
             <span>Map</span>
           </span>
         </Link>
-        <Link to="/vessels" className="navbar-item" onClick={linkClickedEvent}>
+        <Link
+          to="/vessels"
+          className="navbar-item is-size-5-mobile"
+          onClick={linkClickedEvent}
+        >
           <span className="icon-text">
             <span className="icon">
-              <FontAwesomeIcon icon={faShip} size="sm" />
+              <FontAwesomeIcon icon={faShip} />
             </span>
             <span>Vessels</span>
           </span>
         </Link>
-        <Link to="/stations" className="navbar-item" onClick={linkClickedEvent}>
+        <Link
+          to="/stations"
+          className="navbar-item is-size-5-mobile"
+          onClick={linkClickedEvent}
+        >
           <span className="icon-text">
             <span className="icon">
-              <FontAwesomeIcon icon={faTowerCell} size="sm" />
+              <FontAwesomeIcon icon={faTowerCell} />
             </span>
             <span>Stations</span>
           </span>
@@ -51,21 +63,25 @@ function NavbarItems({ linkClicked, isDropdown }) {
           href="https://github.com/t-recx/maritimo"
           target="_blank"
           rel="noreferrer"
-          className="navbar-item"
+          className="navbar-item is-size-5-mobile"
           onClick={linkClickedEvent}
         >
           <span className="icon-text">
             <span className="icon">
-              <FontAwesomeIcon icon={faGithubAlt} size="sm" />
+              <FontAwesomeIcon icon={faGithubAlt} />
             </span>
             <span>Github</span>
           </span>
         </a>
         {false && (
-          <Link to="/about" className="navbar-item" onClick={linkClickedEvent}>
+          <Link
+            to="/about"
+            className="navbar-item is-size-5-mobile"
+            onClick={linkClickedEvent}
+          >
             <span className="icon-text">
               <span className="icon">
-                <FontAwesomeIcon icon={faCircleInfo} size="sm" />
+                <FontAwesomeIcon icon={faCircleInfo} />
               </span>
               <span>About</span>
             </span>
