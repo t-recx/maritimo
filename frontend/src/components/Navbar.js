@@ -18,7 +18,7 @@ function Navbar() {
   return (
     <React.Fragment>
       <nav
-        className="navbar is-info"
+        className="navbar is-info is-fixed-top"
         role="navigation"
         aria-label="main navigation"
       >
