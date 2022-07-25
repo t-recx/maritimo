@@ -3,4 +3,5 @@
     height: 6px !important;
     position:fixed;
     top: 52px;
+    z-index: 1400;
 }
