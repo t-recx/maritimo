@@ -41,3 +41,27 @@ To run the tests execute the following command from the root of the backend appl
 To format code execute the following command from the root of the backend applications directory:
 
     $ dotnet format -v diag Persister.sln
+
+## Migrations
+
+To start, set the connection string environment variable. For example:
+
+    $ export MARITIMO_DB_CONNECTION_STRING="Host=172.18.0.2;Username=user;Password=mysecretpassword;Database=maritimo"
+
+### Add migration
+
+    $ dotnet ef migrations add <MigrationName>
+
+### Remove a migration not yet applied
+
+    $ dotnet ef migrations remove
+
+### Remove a migration after being applied
+
+Start by selecting a previous migration to rollback to:
+
+    $ dotnet ef database update <PreviousMigrationName>
+
+Remove the migration after:
+
+    $ dotnet ef migrations remove
