@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Polygon, Circle, Marker, Popup } from "react-leaflet";
+import { Polygon, Circle, Marker } from "react-leaflet";
 import L from "leaflet";
 import { getShipColorScheme } from "../shipColorSchemes";
 import AisObjectPopup from "./AisObjectPopup";
@@ -10,7 +10,7 @@ import {
   shipHasDimensionsAndDirection,
 } from "../shipRepresentation";
 
-function AisObject({ data, zoom }) {
+function AisObject({ data, zoom, isSelected }) {
   const PresentationType = {
     None: 0,
     SVG: 1,
@@ -30,6 +30,7 @@ function AisObject({ data, zoom }) {
   const [svgIcon, setSVGIcon] = useState(null);
   const [showTransmitter, setShowTransmitter] = useState(null);
   const [transparentPathOptions, setTransparentPathOptions] = useState(null);
+  const [radiusSelected, setRadiusSelected] = useState(null);
 
   useEffect(() => {
     if (zoom >= 14) {
@@ -71,6 +72,28 @@ function AisObject({ data, zoom }) {
   ]);
 
   useEffect(() => {
+    if (zoom >= 16) {
+      setRadiusSelected(12);
+    } else if (zoom >= 15) {
+      setRadiusSelected(15);
+    } else if (zoom >= 14) {
+      setRadiusSelected(30);
+    } else if (zoom >= 13) {
+      setRadiusSelected(60);
+    } else if (zoom >= 12) {
+      setRadiusSelected(100);
+    } else if (zoom >= 11) {
+      setRadiusSelected(200);
+    } else if (zoom >= 10) {
+      setRadiusSelected(350);
+    } else if (zoom >= 9) {
+      setRadiusSelected(700);
+    } else {
+      setRadiusSelected(740 * Math.pow(2, 9 - zoom));
+    }
+  }, [zoom]);
+
+  useEffect(() => {
     if (
       shipHasDimensionsAndDirection(
         data.dimension_to_bow,
@@ -109,7 +132,9 @@ function AisObject({ data, zoom }) {
 
   useEffect(() => {
     if (polygon != null) {
-      setSVGCoordinates(getPolygonCentroid(polygon));
+      const centroid = getPolygonCentroid(polygon);
+
+      setSVGCoordinates(centroid);
     } else {
       setSVGCoordinates([data.latitude, data.longitude]);
     }
@@ -139,21 +164,54 @@ function AisObject({ data, zoom }) {
 
   useEffect(() => {
     if (presentationType == PresentationType.SVG) {
+      let html = "";
+
+      if (isSelected) {
+        html =
+          '<svg width="16" height="16"><line x1=0 y1=0 x2=3 y2=0 stroke="' +
+          colorScheme.fillColor +
+          '"/><line x1=0 y1=0 x2=0 y2=3 stroke="' +
+          colorScheme.fillColor +
+          '"/>' +
+          '<line x1=16 y1=0 x2=13 y2=0 stroke="' +
+          colorScheme.fillColor +
+          '"/><line x1=16 y1=0 x2=16 y2=3 stroke="' +
+          colorScheme.fillColor +
+          '"/>' +
+          '<line x1=16 y1=16 x2=13 y2=16 stroke="' +
+          colorScheme.fillColor +
+          '"/><line x1=16 y1=16 x2=16 y2=13 stroke="' +
+          colorScheme.fillColor +
+          '"/>' +
+          '<line x1=0 y1=16 x2=0 y2=13 stroke="' +
+          colorScheme.fillColor +
+          '"/><line x1=0 y1=16 x2=3 y2=16 stroke="' +
+          colorScheme.fillColor +
+          '"/>' +
+          '<polygon fill="' +
+          colorScheme.fillColor +
+          '" transform="rotate(' +
+          data.true_heading +
+          ' 8, 8)" points="6,7 6,14 8,12 10,14 10,7 8,2"/></svg>';
+      } else {
+        html =
+          '<svg width="16" height="16"><polygon fill="' +
+          colorScheme.fillColor +
+          '" transform="rotate(' +
+          data.true_heading +
+          ' 8, 8)" points="6,7 6,14 8,12 10,14 10,7 8,2"/></svg>';
+      }
+
       setSVGIcon(
         new L.DivIcon({
-          html:
-            '<svg width="16" height="16"><polygon fill="' +
-            colorScheme.fillColor +
-            '" transform="rotate(' +
-            data.true_heading +
-            ' 8, 8)" points="6,7 6,14 8,12 10,14 10,7 8,2"/></svg>',
+          html: html,
           className: "",
         })
       );
     } else {
       setSVGIcon(null);
     }
-  }, [presentationType, colorScheme, data.true_heading]);
+  }, [presentationType, colorScheme, data.true_heading, isSelected]);
 
   function shipIsMovingWithDirection(
     true_heading,
@@ -204,6 +262,16 @@ function AisObject({ data, zoom }) {
           >
             <AisObjectPopup data={data} />
           </Circle>
+          {isSelected && (
+            <Circle
+              center={[data.latitude, data.longitude]}
+              pathOptions={circlePathOptions}
+              radius={radiusSelected}
+              weight={1}
+            >
+              <AisObjectPopup data={data} />
+            </Circle>
+          )}
         </React.Fragment>
       )}
       {presentationType == PresentationType.Polygon && pathOptions && polygon && (
