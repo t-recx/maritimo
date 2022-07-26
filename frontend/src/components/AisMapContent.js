@@ -355,12 +355,7 @@ function AisMapContent({
   }
 
   function followObject(objectData) {
-    if (
-      followMMSI &&
-      objectData &&
-      objectData.latitude &&
-      objectData.longitude
-    ) {
+    if (objectData && objectData.latitude && objectData.longitude) {
       if (
         shipHasDimensionsAndDirection(
           objectData.dimension_to_bow,
@@ -482,11 +477,14 @@ function AisMapContent({
 
   return (
     <React.Fragment>
-      {Object.keys(objectsInView)
-        .filter((key) => data[key] && data[key].latitude && data[key].longitude)
-        .map((key) => (
-          <AisObject key={key} data={data[key]} zoom={zoom} />
-        ))}
+      {Object.keys(objectsInView).map((key) => (
+        <AisObject
+          key={key}
+          data={data[key]}
+          zoom={zoom}
+          isSelected={followMMSI != null && key == followMMSI}
+        />
+      ))}
       {stations != null &&
         stations
           .filter((x) => x.latitude && x.longitude)
