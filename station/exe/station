@@ -90,7 +90,7 @@ include_sender_ip = include_sender_ip.downcase
 include_sender_ip = include_sender_ip == "true" || include_sender_ip == "t" || include_sender_ip == "1"
 
 unless log_level_string
-  warn "Minimum log level is not configured. Set #{env_var_include_sender_ip} environment variable"
+  warn "Minimum log level is not configured. Set #{env_var_log_level} environment variable"
 
   return
 end
