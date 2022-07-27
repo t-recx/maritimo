@@ -14,7 +14,7 @@ describe FileApplication do
     @file_instance
   end
   let(:connection_factory) { ->(bu) { @connection ||= FakeBunny.new bu } }
-  let(:kernel) { FakeKernel.new }
+  let(:logger) { FakeLogger.new }
   let(:accumulator) { FakeAccumulator.new }
 
   let(:broker_uri) { "amqp://test.org:5043" }
@@ -22,7 +22,7 @@ describe FileApplication do
   let(:filename) { "dump.txt" }
   let(:queue) { @connection.channel.fake_queue }
 
-  subject { FileApplication.new connection_factory, kernel, file, accumulator }
+  subject { FileApplication.new connection_factory, file, accumulator }
 
   describe :run do
     it "should create a connection with appropriate parameters" do
@@ -69,6 +69,6 @@ describe FileApplication do
   end
 
   def exercise_run
-    subject.run filename, broker_uri, queue_name
+    subject.run filename, broker_uri, queue_name, logger
   end
 end

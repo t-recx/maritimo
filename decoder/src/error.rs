@@ -36,3 +36,20 @@ impl Error for MissingEnvironmentVariableError {
         &self.message
     }
 }
+
+#[derive(Debug, Clone)]
+pub struct IncorrectEnvironmentVariableValueError {
+    pub message: String,
+}
+
+impl fmt::Display for IncorrectEnvironmentVariableValueError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{}", self.message)
+    }
+}
+
+impl Error for IncorrectEnvironmentVariableValueError {
+    fn description(&self) -> &str {
+        &self.message
+    }
+}

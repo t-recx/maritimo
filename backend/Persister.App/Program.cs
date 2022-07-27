@@ -1,4 +1,5 @@
-﻿using Ninject;
+﻿using Microsoft.Extensions.Logging;
+using Ninject;
 
 namespace Persister.App;
 
@@ -8,6 +9,7 @@ class Program
     const string DecodedMessagesExchangeNameEnvVarName = "MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME";
     const string RabbitMqUriEnvVarName = "MARITIMO_RABBITMQ_URI";
     const string MinutesCacheStationExpirationEnvVarName = "MARITIMO_DB_CACHE_MINUTES_EXPIRATION";
+    const string LogLevelEnvVarName = "MARITIMO_LOG_LEVEL_MINIMUM";
 
     static void Main(string[] args)
     {
@@ -16,6 +18,8 @@ class Program
         var brokerUri = Environment.GetEnvironmentVariable(RabbitMqUriEnvVarName);
         var minutesCacheStationExpirationString = Environment.GetEnvironmentVariable(MinutesCacheStationExpirationEnvVarName);
         int minutesCacheStationExpiration;
+        var logLevelString = Environment.GetEnvironmentVariable(LogLevelEnvVarName);
+        LogLevel logLevel;
 
         if (connectionString == null)
         {
@@ -47,9 +51,21 @@ class Program
 
             return;
         }
+        else if (logLevelString == null)
+        {
+            Console.Error.WriteLine("No minimum log level configured. Set {0} environment variable.", LogLevelEnvVarName);
+
+            return;
+        }
+        else if (!Enum.TryParse<LogLevel>(logLevelString, true, out logLevel))
+        {
+            Console.Error.WriteLine("Minimum log level specified not a valid value (currently set to '{0}'). Set {1} environment variable to one of the following values: {2}.", logLevelString, LogLevelEnvVarName, string.Join(", ", Enum.GetNames(typeof(LogLevel))));
+
+            return;
+        }
 
         (new PersisterModule())
-            .GetKernel(connectionString!, exchangeName!, brokerUri!, minutesCacheStationExpiration)
+            .GetKernel(connectionString!, exchangeName!, brokerUri!, minutesCacheStationExpiration, logLevel)
             .Get<Application>()
             .Run(new CancellationToken());
     }

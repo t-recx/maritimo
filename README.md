@@ -44,6 +44,7 @@ To configure the entire system create a .env file in the main project directory 
 | MARITIMO_CORS_ORIGIN_WHITELIST                   | CORS origin whitelist                                                    |
 | MARITIMO_TRANSMITTER_BUFFER_SECONDS              | Seconds to buffer messages before sending them to ReceiveBuffered method |
 | MARITIMO_DB_CACHE_MINUTES_EXPIRATION             | Minutes until expiration of a cache entry for a station/object           |
+| MARITIMO_LOG_LEVEL_MINIMUM                       | Minimum logging level (TRACE/DEBUG/INFORMATION/WARNING/ERROR/NONE)       |
 
 Check an example configuration file in [.env.development](.env.development).
 

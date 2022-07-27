@@ -2,21 +2,61 @@ use amiquip::{
     Connection, ConsumerMessage, ConsumerOptions, ExchangeDeclareOptions, ExchangeType, Publish,
     QueueDeclareOptions, Result,
 };
+use decoder::error::IncorrectEnvironmentVariableValueError;
 use decoder::error::MissingEnvironmentVariableError;
+use env_logger::Builder;
+use log::{debug, error, info, warn, LevelFilter};
 use std::collections::HashMap;
 use std::env;
 use std::error::Error;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    env_logger::init();
-
     let rabbitmq_uri_env_var_name = "MARITIMO_RABBITMQ_URI";
     let incoming_queue_env_var_name = "MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME";
     let outgoing_exchange_env_var_name = "MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME";
+    let loglevel_env_var_name = "MARITIMO_LOG_LEVEL_MINIMUM";
 
     let rabbitmq_uri;
     let incoming_queue;
     let outgoing_exchange;
+    let loglevel;
+
+    match env::var(loglevel_env_var_name) {
+        Ok(value) => loglevel = value,
+        Err(_) => {
+            return Err(MissingEnvironmentVariableError {
+                message: format!(
+                    "No minimum log level configured. Set {} environment variable",
+                    loglevel_env_var_name
+                )
+                .to_string(),
+            }
+            .into());
+        }
+    }
+
+    let level_filter = match loglevel.to_uppercase().as_str() {
+        "TRACE" => LevelFilter::Trace,
+        "DEBUG" => LevelFilter::Debug,
+        "INFORMATION" => LevelFilter::Info,
+        "WARNING" => LevelFilter::Warn,
+        "ERROR" => LevelFilter::Error,
+        "CRITICAL" => LevelFilter::Error,
+        "NONE" => LevelFilter::Off,
+        _ => {
+            return Err(IncorrectEnvironmentVariableValueError {
+            message: format!(
+                "Minimum log level specified not a valid value (currently set to '{}'). Set {} environment variable to one of the following values: Trace, Debug, Information, Warning, Error, Critical, None.",
+                loglevel,
+                loglevel_env_var_name
+            )
+            .to_string(),
+        }
+        .into());
+        }
+    };
+
+    Builder::new().filter_level(level_filter).init();
 
     match env::var(rabbitmq_uri_env_var_name) {
         Ok(value) => rabbitmq_uri = value,
@@ -88,7 +128,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let mut acc = HashMap::new();
 
-    println!("Connected to {}", rabbitmq_uri);
+    info!("Connected to {}", rabbitmq_uri);
 
     for (_, message) in consumer.receiver().iter().enumerate() {
         match message {
@@ -105,25 +145,25 @@ fn main() -> Result<(), Box<dyn Error>> {
                     .filter(|x| x.len() > 0)
                     .enumerate()
                 {
-                    println!("{}", sentence);
+                    debug!("{}", sentence);
 
                     match decoder::decode(&sentence, &mut acc, &incoming_queue) {
                         Ok(opt) => match opt {
                             Some(value) => match serde_json::to_string(&value) {
                                 Ok(json) => {
                                     outgoing_exchange.publish(Publish::new(json.as_bytes(), ""))?;
-                                    println!("Sent {:?}", json);
+                                    debug!("Sent {:?}", json);
                                 }
-                                Err(e) => println!("{:?}", e),
+                                Err(e) => error!("{:?}", e),
                             },
                             _ => (),
                         },
-                        Err(e) => println!("{:?}", e),
+                        Err(e) => error!("{:?}", e),
                     }
                 }
             }
             other => {
-                println!("Consumer ended: {:?}", other);
+                warn!("Consumer ended: {:?}", other);
                 break;
             }
         }

@@ -11,6 +11,7 @@ const string CorsOriginWhiteListEnvVarName = "MARITIMO_CORS_ORIGIN_WHITELIST";
 const string BufferSecondsEnvVarName = "MARITIMO_TRANSMITTER_BUFFER_SECONDS";
 const string DbConnectionStringEnvVarName = "MARITIMO_DB_CONNECTION_STRING";
 const string MinutesCacheStationExpirationEnvVarName = "MARITIMO_DB_CACHE_MINUTES_EXPIRATION";
+const string LogLevelEnvVarName = "MARITIMO_LOG_LEVEL_MINIMUM";
 
 var exchangeName = Environment.GetEnvironmentVariable(DecodedMessagesExchangeNameEnvVarName);
 var brokerUri = Environment.GetEnvironmentVariable(RabbitMqUriEnvVarName);
@@ -22,6 +23,9 @@ int bufferSeconds;
 var connectionString = Environment.GetEnvironmentVariable(DbConnectionStringEnvVarName);
 var minutesCacheStationExpirationString = Environment.GetEnvironmentVariable(MinutesCacheStationExpirationEnvVarName);
 int minutesCacheStationExpiration;
+
+var logLevelString = Environment.GetEnvironmentVariable(LogLevelEnvVarName);
+LogLevel logLevel;
 
 if (exchangeName == null)
 {
@@ -71,10 +75,22 @@ else if (!Int32.TryParse(minutesCacheStationExpirationString, out minutesCacheSt
 
     return;
 }
+else if (logLevelString == null)
+{
+    Console.Error.WriteLine("No minimum log level configured. Set {0} environment variable.", LogLevelEnvVarName);
+
+    return;
+}
+else if (!Enum.TryParse<LogLevel>(logLevelString, true, out logLevel))
+{
+    Console.Error.WriteLine("Minimum log level specified not a valid value (currently set to '{0}'). Set {1} environment variable to one of the following values: {2}.", logLevelString, LogLevelEnvVarName, string.Join(", ", Enum.GetNames(typeof(LogLevel))));
+
+    return;
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
-var kernel = (new TransmitterModule()).GetKernel(exchangeName!, brokerUri!, connectionString, minutesCacheStationExpiration);
+var kernel = (new TransmitterModule()).GetKernel(exchangeName!, brokerUri!, connectionString, minutesCacheStationExpiration, logLevel);
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();

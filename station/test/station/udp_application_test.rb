@@ -16,7 +16,7 @@ describe UDPApplication do
     }
   end
   let(:connection_factory) { ->(bu) { @connection ||= FakeBunny.new bu } }
-  let(:kernel) { FakeKernel.new }
+  let(:logger) { FakeLogger.new }
   let(:accumulator) { FakeAccumulator.new }
 
   let(:port) { 3500 }
@@ -25,7 +25,7 @@ describe UDPApplication do
   let(:include_ip_address) { false }
   let(:queue) { @connection.channel.fake_queue }
 
-  subject { UDPApplication.new udp_socket_factory, connection_factory, kernel, accumulator }
+  subject { UDPApplication.new udp_socket_factory, connection_factory, accumulator }
 
   describe :run do
     it "should create a socket" do
@@ -58,7 +58,7 @@ describe UDPApplication do
 
       _(@connection.channel.queue_called).must_equal true
       _(@connection.channel.queue_name).must_equal queue_name
-      _(@connection.channel.opts[:durable]).must_equal true
+      _(@connection.channel.opts[:durable]).must_equal false
     end
 
     it "should close connection" do
@@ -105,6 +105,6 @@ describe UDPApplication do
   end
 
   def exercise_run
-    subject.run port, broker_uri, queue_name, include_ip_address
+    subject.run port, broker_uri, queue_name, include_ip_address, logger
   end
 end

@@ -23,11 +23,12 @@ Decoder is a rust application that is used to decode NMEA/AIS sentences. It work
 
 Configuration is done via environment variables.
 
-| Name                                             | Description                               |
-| ------------------------------------------------ | ----------------------------------------- |
-| MARITIMO_RABBITMQ_URI                            | URI for the RabbitMQ broker instance      |
-| MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME    | Broker queue name for encoded messages    |
-| MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME | Broker exchange name for decoded messages |
+| Name                                             | Description                                                        |
+| ------------------------------------------------ | ------------------------------------------------------------------ |
+| MARITIMO_RABBITMQ_URI                            | URI for the RabbitMQ broker instance                               |
+| MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME    | Broker queue name for encoded messages                             |
+| MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME | Broker exchange name for decoded messages                          |
+| MARITIMO_LOG_LEVEL_MINIMUM                       | Minimum logging level (TRACE/DEBUG/INFORMATION/WARNING/ERROR/NONE) |
 
 ## Running
 

@@ -1,28 +1,28 @@
 require "socket"
 require "bunny"
+require "logger"
 
 module Station
   class UDPApplication
-    def initialize(udp_socket_factory = nil, connection_factory = nil, kernel = nil, accumulator = nil)
+    def initialize(udp_socket_factory = nil, connection_factory = nil, accumulator = nil)
       @udp_socket_factory = udp_socket_factory || (-> { UDPSocket.new })
       @connection_factory = connection_factory || (->(bu) { Bunny.new bu })
-      @kernel = kernel || Kernel
       @accumulator = accumulator || Accumulator.new
     end
 
-    def run(port, broker_uri, queue_name, include_ip_address)
-      @kernel.puts "Creating UDP socket"
+    def run(port, broker_uri, queue_name, include_ip_address, logger)
+      logger.info "Creating UDP socket"
       socket = @udp_socket_factory.call
 
-      @kernel.puts "Binding socket to #{port}"
+      logger.info "Binding socket to #{port}"
       socket.bind("0.0.0.0", port)
 
-      @kernel.puts "Connecting to broker at #{broker_uri}"
+      logger.info "Connecting to broker at #{broker_uri}"
       connection = @connection_factory.call broker_uri
       connection.start
 
       begin
-        @kernel.puts "Creating queue #{queue_name}"
+        logger.info "Creating queue #{queue_name}"
         queue = connection.create_channel.queue(queue_name, durable: false)
 
         loop do
@@ -34,21 +34,21 @@ module Station
             message = tokens.first
             text = tokens.last
 
-            @kernel.puts "Received message from #{sender[3]}: #{message}"
+            logger.debug "Received message from #{sender[3]}: #{message}"
 
             message = "[#{sender[3]}]#{message}" if include_ip_address
 
-            @accumulator.publish(queue, message)
+            @accumulator.publish(queue, message, logger)
           end
         end
       rescue => e
-        @kernel.puts "Caught exception: #{e}"
+        logger.error "Caught exception: #{e}"
       ensure
-        @kernel.puts "Closing broker connection"
+        logger.info "Closing broker connection"
 
         connection.close
 
-        @kernel.puts "Closing socket connection"
+        logger.info "Closing socket connection"
 
         socket.close
       end

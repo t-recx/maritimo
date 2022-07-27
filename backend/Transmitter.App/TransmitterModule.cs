@@ -9,7 +9,7 @@ namespace Transmitter.App;
 
 public class TransmitterModule
 {
-    public IKernel GetKernel(string exchangeName, string brokerUri, string connectionString, int minutesCacheEntryExpiration)
+    public IKernel GetKernel(string exchangeName, string brokerUri, string connectionString, int minutesCacheEntryExpiration, LogLevel logLevel)
     {
         var receiverModule = new ReceiverModule(exchangeName, brokerUri);
         var databaseModule = new DatabaseModule(connectionString, minutesCacheEntryExpiration);
@@ -21,7 +21,7 @@ public class TransmitterModule
                 options.TimestampFormat = "hh:mm:ss ";
             };
 
-        var loggerFactory = LoggerFactory.Create(cfg => { cfg.AddSimpleConsole(loggingOptions); cfg.SetMinimumLevel(LogLevel.Debug); });
+        var loggerFactory = LoggerFactory.Create(cfg => { cfg.AddSimpleConsole(loggingOptions); cfg.SetMinimumLevel(logLevel); });
 
         var kernel = new StandardKernel(receiverModule, databaseModule);
 

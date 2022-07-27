@@ -10,7 +10,7 @@ namespace Persister.App;
 
 public class PersisterModule
 {
-    public IKernel GetKernel(string connectionString, string exchangeName, string brokerUri, int minutesCacheStationExpiration)
+    public IKernel GetKernel(string connectionString, string exchangeName, string brokerUri, int minutesCacheStationExpiration, LogLevel logLevel)
     {
         var databaseModule = new DatabaseModule(connectionString, minutesCacheStationExpiration);
         var receiverModule = new ReceiverModule(exchangeName, brokerUri);
@@ -22,7 +22,7 @@ public class PersisterModule
                 options.TimestampFormat = "hh:mm:ss ";
             };
 
-        var loggerFactory = LoggerFactory.Create(cfg => { cfg.AddSimpleConsole(loggingOptions); cfg.SetMinimumLevel(LogLevel.Debug); });
+        var loggerFactory = LoggerFactory.Create(cfg => { cfg.AddSimpleConsole(loggingOptions); cfg.SetMinimumLevel(logLevel); });
 
         var kernel = new StandardKernel(databaseModule, receiverModule);
 
