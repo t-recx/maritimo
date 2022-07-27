@@ -9,6 +9,7 @@ import Vessel from "./components/Vessel";
 import Vessels from "./components/Vessels";
 import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ScrollToTop from "./components/ScrollToTop";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -16,6 +17,7 @@ root.render(
     <React.Fragment>
       <div className="main-container">
         <Navbar />
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<AisMap />}></Route>
           <Route path="/station/:stationId" element={<Station />}></Route>
