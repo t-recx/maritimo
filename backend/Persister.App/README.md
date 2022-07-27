@@ -22,7 +22,7 @@ Configuration is done via environment variables.
 | MARITIMO_DB_CONNECTION_STRING                    | Database connection string                              |
 | MARITIMO_RABBITMQ_URI                            | URI for the RabbitMQ broker instance                    |
 | MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME | Broker exchange name for decoded messages               |
-| MARITIMO_DB_CACHE_STATION_MINUTES_EXPIRATION     | Minutes until expiration of a cache entry for a station |
+| MARITIMO_DB_CACHE_MINUTES_EXPIRATION             | Minutes until expiration of a cache entry for a station |
 
 ## Running
 
