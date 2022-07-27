@@ -7,7 +7,7 @@ class Program
     const string DbConnectionStringEnvVarName = "MARITIMO_DB_CONNECTION_STRING";
     const string DecodedMessagesExchangeNameEnvVarName = "MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME";
     const string RabbitMqUriEnvVarName = "MARITIMO_RABBITMQ_URI";
-    const string MinutesCacheStationExpirationEnvVarName = "MARITIMO_DB_CACHE_STATION_MINUTES_EXPIRATION";
+    const string MinutesCacheStationExpirationEnvVarName = "MARITIMO_DB_CACHE_MINUTES_EXPIRATION";
 
     static void Main(string[] args)
     {

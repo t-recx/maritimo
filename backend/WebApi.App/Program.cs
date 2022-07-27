@@ -6,7 +6,7 @@ using Ninject;
 
 const string DbConnectionStringEnvVarName = "MARITIMO_DB_CONNECTION_STRING";
 const string CorsOriginWhiteListEnvVarName = "MARITIMO_CORS_ORIGIN_WHITELIST";
-const string MinutesCacheStationExpirationEnvVarName = "MARITIMO_DB_CACHE_STATION_MINUTES_EXPIRATION";
+const string MinutesCacheStationExpirationEnvVarName = "MARITIMO_DB_CACHE_MINUTES_EXPIRATION";
 
 var connectionString = Environment.GetEnvironmentVariable(DbConnectionStringEnvVarName);
 var corsOriginWhiteList = Environment.GetEnvironmentVariable(CorsOriginWhiteListEnvVarName);

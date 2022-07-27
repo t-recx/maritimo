@@ -10,7 +10,7 @@ const string RabbitMqUriEnvVarName = "MARITIMO_RABBITMQ_URI";
 const string CorsOriginWhiteListEnvVarName = "MARITIMO_CORS_ORIGIN_WHITELIST";
 const string BufferSecondsEnvVarName = "MARITIMO_TRANSMITTER_BUFFER_SECONDS";
 const string DbConnectionStringEnvVarName = "MARITIMO_DB_CONNECTION_STRING";
-const string MinutesCacheStationExpirationEnvVarName = "MARITIMO_DB_CACHE_STATION_MINUTES_EXPIRATION";
+const string MinutesCacheStationExpirationEnvVarName = "MARITIMO_DB_CACHE_MINUTES_EXPIRATION";
 
 var exchangeName = Environment.GetEnvironmentVariable(DecodedMessagesExchangeNameEnvVarName);
 var brokerUri = Environment.GetEnvironmentVariable(RabbitMqUriEnvVarName);
