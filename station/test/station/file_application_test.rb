@@ -42,7 +42,7 @@ describe FileApplication do
 
       _(@connection.channel.queue_called).must_equal true
       _(@connection.channel.queue_name).must_equal queue_name
-      _(@connection.channel.opts[:durable]).must_equal true
+      _(@connection.channel.opts[:durable]).must_equal false
     end
 
     it "should close connection" do

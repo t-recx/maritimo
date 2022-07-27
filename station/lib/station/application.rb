@@ -21,7 +21,7 @@ module Station
 
       begin
         logger.info "Creating queue #{queue_name}"
-        queue = connection.create_channel.queue(queue_name, durable: true)
+        queue = connection.create_channel.queue(queue_name, durable: false)
 
         acc = ""
 

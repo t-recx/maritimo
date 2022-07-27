@@ -107,7 +107,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let queue = incoming_channel.queue_declare(
         &incoming_queue,
         QueueDeclareOptions {
-            durable: true,
+            durable: false,
             ..QueueDeclareOptions::default()
         },
     )?;
