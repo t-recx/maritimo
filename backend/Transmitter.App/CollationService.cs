@@ -30,31 +30,19 @@ public class CollationService : ICollationService
 
     DTOObjectData? GetFromCache(uint mmsi)
     {
-        return memoryCache.Get<DTOObjectData>(mmsi);
+        DTOObjectData? value;
+
+        if (memoryCache.TryGetValue<DTOObjectData>(mmsi, out value))
+        {
+            return value;
+        }
+
+        return null;
     }
 
     void SetCache(uint mmsi, DTOObjectData objectData)
     {
         memoryCache.Set<DTOObjectData>(mmsi, objectData, TimeSpan.FromMinutes(minutesCacheEntryExpiration));
-    }
-
-    async Task<DTOObjectData> GetObjectData(uint mmsi)
-    {
-        DTOObjectData? objectData = GetFromCache(mmsi);
-
-        if (objectData == null)
-        {
-            objectData = await databaseService.Get(mmsi);
-
-            if (objectData == null)
-            {
-                objectData = new DTOObjectData() { mmsi = mmsi };
-            }
-
-            SetCache(mmsi, objectData);
-        }
-
-        return objectData;
     }
 
     DTOTransmitterObjectData GetCollatedDTO(DTOObjectData dto, DecodedMessage decodedMessage)
