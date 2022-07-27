@@ -35,7 +35,7 @@ public class TransmitterHostedService : BackgroundService
         {
             var transformedList = await collationService.GetCollated(list.Select(x => x.EventArgs));
 
-            this.logger.LogDebug("Transmitting {n} collected in the last {seconds} seconds", transformedList.Count, bufferSeconds);
+            this.logger.LogInformation("Transmitting {n} collected in the last {seconds} seconds", transformedList.Count, bufferSeconds);
             await aisHubContext.Clients.All.ReceiveBuffered(transformedList);
         });
 
