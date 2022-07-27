@@ -2,7 +2,7 @@ using AutoMapper;
 using Receiver.Lib;
 using System.Reactive.Linq;
 using Database.Lib;
-using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Concurrent;
 
 namespace Transmitter.App;
 
@@ -12,7 +12,7 @@ public class CollationService : ICollationService
     private readonly int minutesCacheEntryExpiration;
     private readonly IMapper mapper;
     private readonly IStationService stationService;
-    private readonly IMemoryCache memoryCache;
+    private readonly ConcurrentDictionary<uint, DTOObjectData> memoryCache;
 
     public CollationService(
         IDatabaseService databaseService,
@@ -25,14 +25,14 @@ public class CollationService : ICollationService
         this.minutesCacheEntryExpiration = minutesCacheEntryExpiration;
         this.mapper = mapper;
         this.stationService = stationService;
-        this.memoryCache = new MemoryCache(new MemoryCacheOptions());
+        this.memoryCache = new ConcurrentDictionary<uint, DTOObjectData>();
     }
 
     DTOObjectData? GetFromCache(uint mmsi)
     {
         DTOObjectData? value;
 
-        if (memoryCache.TryGetValue<DTOObjectData>(mmsi, out value))
+        if (memoryCache.TryGetValue(mmsi, out value))
         {
             return value;
         }
@@ -42,38 +42,44 @@ public class CollationService : ICollationService
 
     void SetCache(uint mmsi, DTOObjectData objectData)
     {
-        memoryCache.Set<DTOObjectData>(mmsi, objectData, TimeSpan.FromMinutes(minutesCacheEntryExpiration));
-    }
-
-    DTOTransmitterObjectData GetCollatedDTO(DTOObjectData dto, DecodedMessage decodedMessage)
-    {
-        mapper.Map(decodedMessage, dto);
-
-        var stationData = stationService.GetStationEssentialData(dto.source_id, dto.source_ip_address);
-
-        if (stationData == null)
+        if (!memoryCache.TryAdd(mmsi, objectData))
         {
-            dto.station_id = null;
-            dto.station_name = null;
-            dto.station_operator_name = null;
-        }
-        else
-        {
-            dto.station_id = stationData.StationId;
-            dto.station_name = stationData.StationName;
-            dto.station_operator_name = stationData.OperatorName;
-        }
+            DTOObjectData? existing = GetFromCache(mmsi);
 
-        return mapper.Map<DTOTransmitterObjectData>(dto);
+            if (existing != null)
+            {
+                memoryCache.TryUpdate(mmsi, objectData, existing);
+            }
+        }
     }
 
     DTOTransmitterObjectData GetCollatedDTO(DTOObjectData dto, IEnumerable<DecodedMessage> decodedMessages)
     {
         var dtoTransmitter = new DTOTransmitterObjectData();
 
+        var newDTO = new DTOObjectData();
+        mapper.Map(dto, newDTO);
+
         foreach (var decodedMessage in decodedMessages)
         {
-            mapper.Map(GetCollatedDTO(dto, decodedMessage), dtoTransmitter);
+            mapper.Map(decodedMessage, newDTO);
+
+            var stationData = stationService.GetStationEssentialData(newDTO.source_id, newDTO.source_ip_address);
+
+            if (stationData == null)
+            {
+                newDTO.station_id = null;
+                newDTO.station_name = null;
+                newDTO.station_operator_name = null;
+            }
+            else
+            {
+                newDTO.station_id = stationData.StationId;
+                newDTO.station_name = stationData.StationName;
+                newDTO.station_operator_name = stationData.OperatorName;
+            }
+
+            mapper.Map(newDTO, dtoTransmitter);
         }
 
         return dtoTransmitter;
@@ -109,19 +115,21 @@ public class CollationService : ICollationService
                 .Select(x => x.mmsi)
                 .Where(mmsi => !objectDataList.Any(o => o.mmsi == mmsi))
                 .Distinct()
-                .Select(decodedMessageMMSI => new DTOObjectData() { mmsi = decodedMessageMMSI }) // cached items will be mapped when GetCollatedDTO is called
+                .Select(decodedMessageMMSI => new DTOObjectData() { mmsi = decodedMessageMMSI })
                 .ToList();
-
-            foreach (var item in databaseObjectDataList.Concat(objectDataNotOnDatabase))
-            {
-                SetCache(item.mmsi, item);
-            }
 
             objectDataList.AddRange(objectDataNotOnDatabase);
         }
 
-        return objectDataList
+        var collatedObjects = objectDataList
             .Select(x => GetCollatedDTO(x, decodedMessages.Where(y => x.mmsi == y.mmsi)))
             .ToList();
+
+        foreach (var item in collatedObjects)
+        {
+            SetCache(item.mmsi, mapper.Map<DTOObjectData>(item));
+        }
+
+        return collatedObjects;
     }
 }
