@@ -1,13 +1,14 @@
+require "logger"
+
 module Station
   class Accumulator
     attr_reader :bag
 
-    def initialize kernel = nil
-      @kernel = kernel || Kernel
+    def initialize
       @bag = {}
     end
 
-    def publish(queue, message)
+    def publish(queue, message, logger)
       tokens = message.strip.split("!", 2)
 
       return if tokens.length == 1 # invalid message (no '!' token)
@@ -21,7 +22,7 @@ module Station
       if fragment_count == 1
         queue.publish(message, persistent: true)
 
-        @kernel.puts "Published message: #{message}"
+        logger.debug "Published message: #{message}"
       else
         ip = nil
         source_id = nil
@@ -60,14 +61,14 @@ module Station
 
         if fragment_number > 1
           unless bag[hash_key][fragment_number - 1]
-            @kernel.puts "Rejected sentences: No previous fragments found for message"
+            logger.warn "Rejected sentences: No previous fragments found for message"
 
             bag.delete hash_key
             return
           end
 
           if bag[hash_key][fragment_number]
-            @kernel.puts "Rejected sentences: Two sentences for same fragment id"
+            logger.warn "Rejected sentences: Two sentences for same fragment id"
             bag.delete hash_key
             return
           end
@@ -81,7 +82,7 @@ module Station
 
             queue.publish(composite_message, persistent: true)
 
-            @kernel.puts "Published multi-sentence message: \n#{composite_message}"
+            logger.debug "Published multi-sentence message: \n#{composite_message}"
           end
 
           bag.delete hash_key

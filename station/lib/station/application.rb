@@ -1,26 +1,26 @@
 require "socket"
 require "bunny"
 require "timeout"
+require "logger"
 
 module Station
   class Application
-    def initialize(tcp_socket_factory = nil, connection_factory = nil, kernel = nil, accumulator = nil)
+    def initialize(tcp_socket_factory = nil, connection_factory = nil, accumulator = nil)
       @tcp_socket_factory = tcp_socket_factory || (->(h, port) { TCPSocket.new h, port })
       @connection_factory = connection_factory || (->(bu) { Bunny.new bu })
-      @kernel = kernel || Kernel
       @accumulator = accumulator || Accumulator.new
     end
 
-    def run(host, port, broker_uri, queue_name, read_timeout_seconds, include_ip_address)
-      @kernel.puts "Connecting to socket at #{host}:#{port}"
+    def run(host, port, broker_uri, queue_name, read_timeout_seconds, include_ip_address, logger)
+      logger.info "Connecting to socket at #{host}:#{port}"
       socket = @tcp_socket_factory.call host, port
 
-      @kernel.puts "Connecting to broker at #{broker_uri}"
+      logger.info "Connecting to broker at #{broker_uri}"
       connection = @connection_factory.call broker_uri
       connection.start
 
       begin
-        @kernel.puts "Creating queue #{queue_name}"
+        logger.info "Creating queue #{queue_name}"
         queue = connection.create_channel.queue(queue_name, durable: true)
 
         acc = ""
@@ -34,28 +34,28 @@ module Station
             message = tokens.first
             acc = tokens.last
 
-            @kernel.puts "Received message from #{host}: #{message}"
+            logger.debug "Received message from #{host}: #{message}"
 
             message = "[#{host}]#{message}" if include_ip_address
 
-            @accumulator.publish(queue, message)
+            @accumulator.publish(queue, message, logger)
           end
         rescue Errno::EAGAIN
           if socket.wait_readable(read_timeout_seconds)
             retry
           else
-            @kernel.puts "Connection timed out"
+            logger.error "Connection timed out"
             raise Timeout::Error
           end
         end
       rescue => e
-        @kernel.puts "Caught exception: #{e}"
+        logger.error "Caught exception: #{e}"
       ensure
-        @kernel.puts "Closing broker connection"
+        logger.info "Closing broker connection"
 
         connection.close
 
-        @kernel.puts "Closing socket connection"
+        logger.info "Closing socket connection"
 
         socket.close
       end

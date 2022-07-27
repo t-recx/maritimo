@@ -8,7 +8,7 @@ namespace WebApi.App;
 
 public class WebApiModule
 {
-    public IKernel GetKernel(string connectionString, int minutesCacheStationExpiration)
+    public IKernel GetKernel(string connectionString, int minutesCacheStationExpiration, LogLevel logLevel)
     {
         var receiverModule = new DatabaseModule(connectionString, minutesCacheStationExpiration);
 
@@ -19,7 +19,7 @@ public class WebApiModule
                 options.TimestampFormat = "hh:mm:ss ";
             };
 
-        var loggerFactory = LoggerFactory.Create(cfg => { cfg.AddSimpleConsole(loggingOptions); cfg.SetMinimumLevel(LogLevel.Debug); });
+        var loggerFactory = LoggerFactory.Create(cfg => { cfg.AddSimpleConsole(loggingOptions); cfg.SetMinimumLevel(logLevel); });
 
         var kernel = new StandardKernel(receiverModule);
 

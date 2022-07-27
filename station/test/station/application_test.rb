@@ -1,5 +1,6 @@
 require "test_helper"
 require "station"
+require "logger"
 
 include Station
 
@@ -15,7 +16,7 @@ describe Application do
     }
   end
   let(:connection_factory) { ->(bu) { @connection ||= FakeBunny.new bu } }
-  let(:kernel) { FakeKernel.new }
+  let(:logger) { FakeLogger.new }
   let(:accumulator) { FakeAccumulator.new }
 
   let(:host) { "203.23.12.3" }
@@ -26,7 +27,7 @@ describe Application do
   let(:include_ip_address) { false }
   let(:queue) { @connection.channel.fake_queue }
 
-  subject { Application.new tcp_socket_factory, connection_factory, kernel, accumulator }
+  subject { Application.new tcp_socket_factory, connection_factory, accumulator }
 
   describe :run do
     it "should create a socket with appropriate parameters" do
@@ -104,6 +105,6 @@ describe Application do
   end
 
   def exercise_run
-    subject.run host, port, broker_uri, queue_name, read_timeout_seconds, include_ip_address
+    subject.run host, port, broker_uri, queue_name, read_timeout_seconds, include_ip_address, logger
   end
 end

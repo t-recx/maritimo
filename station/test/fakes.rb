@@ -5,7 +5,7 @@ class FakeAccumulator
     @published = []
   end
 
-  def publish queue, message
+  def publish queue, message, logger
     @published.push({queue: queue, message: message})
   end
 end
@@ -142,7 +142,24 @@ class FakeQueue
   end
 end
 
-class FakeKernel
-  def puts(pstr = "")
+class FakeLogger
+  attr_accessor :level
+
+  def debug(progname = nil, &block)
+  end
+
+  def info(progname = nil, &block)
+  end
+
+  def warn(progname = nil, &block)
+  end
+
+  def error(progname = nil, &block)
+  end
+
+  def fatal(progname = nil, &block)
+  end
+
+  def unknown(progname = nil, &block)
   end
 end

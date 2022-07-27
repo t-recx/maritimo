@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "station"
+require "logger"
 
 env_var_station_connection_protocol = "MARITIMO_STATION_CONNECTION_PROTOCOL"
 env_var_station_connection_listen_port = "MARITIMO_STATION_CONNECTION_LISTEN_PORT"
@@ -12,6 +13,7 @@ env_var_broker_uri = "MARITIMO_RABBITMQ_URI"
 env_var_queue_name = "MARITIMO_RABBITMQ_ENCODED_MESSAGES_QUEUE_NAME"
 env_var_include_sender_ip = "MARITIMO_STATION_INCLUDE_SENDER_IP_ADDRESS"
 env_var_station_filename = "MARITIMO_STATION_FILENAME"
+env_var_log_level = "MARITIMO_LOG_LEVEL_MINIMUM"
 
 station_connection_protocol = ENV[env_var_station_connection_protocol]
 station_connection_listen_port = ENV[env_var_station_connection_listen_port]
@@ -22,6 +24,7 @@ broker_uri = ENV[env_var_broker_uri]
 queue_name = ENV[env_var_queue_name]
 include_sender_ip = ENV[env_var_include_sender_ip]
 station_filename = ENV[env_var_station_filename]
+log_level_string = ENV[env_var_log_level]
 
 unless station_connection_protocol
   warn "No station connection protocol configured. Set #{env_var_station_connection_protocol} environment variable"
@@ -86,10 +89,41 @@ end
 include_sender_ip = include_sender_ip.downcase
 include_sender_ip = include_sender_ip == "true" || include_sender_ip == "t" || include_sender_ip == "1"
 
+unless log_level_string
+  warn "Minimum log level is not configured. Set #{env_var_include_sender_ip} environment variable"
+
+  return
+end
+
+log_level = nil
+
+log_level_string = log_level_string.upcase
+
+if log_level_string == "TRACE" || log_level_string == "DEBUG"
+  log_level = Logger::DEBUG
+elsif log_level_string == "ERROR"
+  log_level = Logger::ERROR
+elsif log_level_string == "INFORMATION"
+  log_level = Logger::INFO
+elsif log_level_string == "WARNING"
+  log_level = Logger::WARN
+elsif log_level_string == "CRITICAL"
+  log_level = Logger::FATAL
+elsif log_level_string == "NONE"
+  log_level = nil
+else
+  warn "Minimum log level specified not a valid value (currently set to '#{log_level_string}'). Set #{env_var_log_level} environment variable to one of the following values: Trace, Debug, Information, Warning, Error, Critical, None."
+  return
+end
+
+$stdout.sync = true
+logger = log_level.nil? ? NilLogger.new : Logger.new($stdout)
+logger.level = log_level
+
 if station_connection_protocol == "TCP"
-  Station.application.run station_hostname, station_port, broker_uri, queue_name, station_read_timeout_seconds.to_i, include_sender_ip
+  Station.application.run station_hostname, station_port, broker_uri, queue_name, station_read_timeout_seconds.to_i, include_sender_ip, logger
 elsif station_connection_protocol == "UDP"
-  Station.udp_application.run station_connection_listen_port, broker_uri, queue_name, include_sender_ip
+  Station.udp_application.run station_connection_listen_port, broker_uri, queue_name, include_sender_ip, logger
 elsif station_connection_protocol == "FILE"
-  Station.file_application.run station_filename, broker_uri, queue_name
+  Station.file_application.run station_filename, broker_uri, queue_name, logger
 end
