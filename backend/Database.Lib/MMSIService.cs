@@ -330,50 +330,65 @@ public class MMSIService : IMMSIService
         return CountryDescriptionsByMid.ContainsKey(countryCode);
     }
 
+    bool HasCountryInMMSI(ObjectType objectType)
+    {
+        ObjectType[] withCountry = new ObjectType[] { ObjectType.Ship, ObjectType.GroupsOfShips, ObjectType.BaseStations, ObjectType.SearchAndRescueAircraft, ObjectType.AidsToNavigation, ObjectType.CraftAssociatedWithParentShip, ObjectType.SearchAndRescueTransmitter };
+
+        return withCountry.Contains(objectType);
+    }
+
     public ObjectType GetObjectTypeByMMSI(uint mmsi)
     {
+        ObjectType objectType;
         string mmsiString = mmsi.ToString().PadLeft(9, '0');
 
         if (mmsiString.StartsWith("974"))
         {
-            return ObjectType.EmergencyPositionIndicatingRadioBeacons;
+            objectType = ObjectType.EmergencyPositionIndicatingRadioBeacons;
         }
         else if (mmsiString.StartsWith("972"))
         {
-            return ObjectType.ManOverboard;
+            objectType = ObjectType.ManOverboard;
         }
         else if (mmsiString.StartsWith("970"))
         {
-            return ObjectType.SearchAndRescueTransmitter;
+            objectType = ObjectType.SearchAndRescueTransmitter;
         }
         else if (mmsiString.StartsWith("111"))
         {
-            return ObjectType.SearchAndRescueAircraft;
+            objectType = ObjectType.SearchAndRescueAircraft;
         }
         else if (mmsiString.StartsWith("98"))
         {
-            return ObjectType.CraftAssociatedWithParentShip;
+            objectType = ObjectType.CraftAssociatedWithParentShip;
         }
         else if (mmsiString.StartsWith("99"))
         {
-            return ObjectType.AidsToNavigation;
+            objectType = ObjectType.AidsToNavigation;
         }
         else if (mmsiString.StartsWith("00"))
         {
-            return ObjectType.BaseStations;
+            objectType = ObjectType.BaseStations;
         }
         else if (mmsiString.StartsWith("0"))
         {
-            return ObjectType.GroupsOfShips;
+            objectType = ObjectType.GroupsOfShips;
         }
-
-        var countryCode = GetCountryCodeByMMSIAndObjectType(mmsi, ObjectType.Ship);
-
-        if (countryCode.HasValue && ValidCountryCode(countryCode.Value))
+        else
         {
-            return ObjectType.Ship;
+            objectType = ObjectType.Ship;
         }
 
-        return ObjectType.Unknown;
+        if (HasCountryInMMSI(objectType))
+        {
+            var countryCode = GetCountryCodeByMMSIAndObjectType(mmsi, objectType);
+
+            if (!countryCode.HasValue || !ValidCountryCode(countryCode.Value))
+            {
+                objectType = ObjectType.Unknown;
+            }
+        }
+
+        return objectType;
     }
 }

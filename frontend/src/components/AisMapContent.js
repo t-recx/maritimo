@@ -172,6 +172,7 @@ function AisMapContent({
             withCredentials: true,
             params: {
               fromHoursAgo: onlyObjectsFromHoursAgo,
+              excludeObjectTypes: [TypeOfObject.Unknown].join(","),
             },
             headers: {
               "Content-Type": "application/json",
@@ -238,7 +239,9 @@ function AisMapContent({
         const newData = { ...latestData.current };
 
         list.forEach((dto) => {
-          newData[dto.mmsi] = dto;
+          if (dto.object_type != TypeOfObject.Unknown) {
+            newData[dto.mmsi] = dto;
+          }
         });
 
         latestData.current = newData;

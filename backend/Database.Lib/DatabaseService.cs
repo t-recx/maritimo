@@ -28,7 +28,7 @@ public class DatabaseService : IDatabaseService
         this.mmsiService = mmsiService;
     }
 
-    public async Task<List<DTOObjectData>> Get(TimeSpan? timespan = null)
+    public async Task<List<DTOObjectData>> Get(TimeSpan? timespan = null, IEnumerable<ObjectType>? excludeObjectTypes = null)
     {
         using (var context = contextFactory.Get())
         {
@@ -40,6 +40,12 @@ public class DatabaseService : IDatabaseService
 
                 query = query
                     .Where(x => x.updated >= startDate);
+            }
+
+            if (excludeObjectTypes != null && excludeObjectTypes.Count() > 0)
+            {
+                query = query
+                    .Where(x => x.object_type.HasValue && !excludeObjectTypes.Contains(x.object_type.Value));
             }
 
             return await mapper
