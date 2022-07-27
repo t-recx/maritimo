@@ -18,8 +18,19 @@ public class AisController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<DTOWebObjectData>>> Get(int? fromHoursAgo = null)
+    public async Task<ActionResult<IEnumerable<DTOWebObjectData>>> Get(int? fromHoursAgo = null, string? excludeObjectTypes = null)
     {
+        string[]? excludedObjectTypesTokens = excludeObjectTypes?.Split(",");
+
+        if (excludedObjectTypesTokens?.Any(x => !int.TryParse(x, out _)) == true)
+        {
+            return BadRequest();
+        }
+        else if (excludedObjectTypesTokens?.Any(x => !Enum.IsDefined(typeof(ObjectType), int.Parse(x))) == true)
+        {
+            return BadRequest();
+        }
+
         TimeSpan? timeSpan = null;
 
         if (fromHoursAgo != null)
@@ -27,7 +38,9 @@ public class AisController : ControllerBase
             timeSpan = new TimeSpan(fromHoursAgo.Value, 0, 0);
         }
 
-        var result = await databaseService.Get(timeSpan);
+        List<ObjectType>? excludedObjectTypes = excludedObjectTypesTokens?.Select(x => (ObjectType)int.Parse(x)).ToList();
+
+        var result = await databaseService.Get(timeSpan, excludedObjectTypes);
 
         return mapper.ProjectTo<DTOWebObjectData>(result.AsQueryable()).ToList();
     }

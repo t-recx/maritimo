@@ -7,7 +7,9 @@ public class WebApiProfile : Profile
 {
     public WebApiProfile()
     {
-        CreateMap<DTOObjectData, DTOWebObjectData>();
+        CreateMap<DTOObjectData, DTOWebObjectData>()
+            .ForMember(m => m.object_type, opt => opt.MapFrom(t => (WebObjectType?)t.object_type))
+        ;
         CreateMap<DTOStation, DTOWebStation>();
     }
 }

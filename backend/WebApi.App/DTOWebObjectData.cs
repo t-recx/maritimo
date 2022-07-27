@@ -57,4 +57,6 @@ public class DTOWebObjectData
     public string? station_operator_name { get; set; }
 
     public DateTime updated { get; set; }
+    public WebObjectType? object_type { get; set; }
+    public int? country_code { get; set; }
 }
