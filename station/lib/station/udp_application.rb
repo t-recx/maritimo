@@ -23,7 +23,7 @@ module Station
 
       begin
         @kernel.puts "Creating queue #{queue_name}"
-        queue = connection.create_channel.queue(queue_name, durable: true)
+        queue = connection.create_channel.queue(queue_name, durable: false)
 
         loop do
           text, sender = socket.recvfrom(1024 * 16)
