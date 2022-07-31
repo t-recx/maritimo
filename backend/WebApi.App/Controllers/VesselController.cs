@@ -25,7 +25,7 @@ public class VesselController : ControllerBase
 
         if (result == null)
         {
-            NotFound();
+            return NotFound();
         }
 
         return mapper.Map<DTOObjectData, DTOWebObjectData>(result!);

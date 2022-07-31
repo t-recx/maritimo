@@ -10,14 +10,15 @@ import {
 import { getShipStatusDescription, ShipStatus } from "../shipStatus";
 import "./Vessel.css";
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import Loading from "./Loading";
 import { Link } from "react-router-dom";
 import formatcoords from "formatcoords";
 import AisMap from "./AisMap";
 import TimeAgo from "timeago-react";
+import NotFound from "./NotFound";
+import http from "../http";
 
-function Vessel() {
+function Vessel({ alert }) {
   let { mmsi } = useParams();
   const [vesselCountryDescription, setVesselCountryDescription] =
     useState(null);
@@ -25,6 +26,7 @@ function Vessel() {
   const [flagInformation, setFlagInformation] = useState(null);
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMissing, setIsMissing] = useState(false);
   const [shipStatusDescription, setShipStatusDescription] = useState(null);
   const [shipCountryDescription, setShipCountryDescription] = useState(null);
   const [objectType, setObjectType] = useState(null);
@@ -38,58 +40,74 @@ function Vessel() {
     process.env.REACT_APP_MAP_OBJECT_LIFESPAN_HOURS * 3600000;
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = () => {
       setIsLoading(true);
 
-      const result = await axios.get(
-        process.env.REACT_APP_WEB_API_URL + "/vessel/" + mmsi,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      http.plain
+        .get("/vessel/" + mmsi)
+        .then((result) => {
+          if (result?.data) {
+            setData(result.data);
 
-      setData(result.data);
-      setShipTypeDescription(getShipTypeDescription(result.data.ship_type));
-      setShipStatusDescription(
-        getShipStatusDescription(result.data.navigation_status)
-      );
-      setFlagInformation(getFlagInformation(result.data.mmsi));
-      setShipCountryDescription(getCountryDescription(result.data.mmsi));
-      setFlagInformation(getFlagInformation(result.data.mmsi));
-      setObjectType(getTypeOfObject(result.data.mmsi));
-      setObjectTypeDescription(getTypeOfObjectDescription(result.data.mmsi));
+            setShipTypeDescription(
+              getShipTypeDescription(result.data.ship_type)
+            );
+            setShipStatusDescription(
+              getShipStatusDescription(result.data.navigation_status)
+            );
+            setFlagInformation(getFlagInformation(result.data.mmsi));
+            setShipCountryDescription(getCountryDescription(result.data.mmsi));
+            setFlagInformation(getFlagInformation(result.data.mmsi));
+            setObjectType(getTypeOfObject(result.data.mmsi));
+            setObjectTypeDescription(
+              getTypeOfObjectDescription(result.data.mmsi)
+            );
 
-      if (result.data.latitude != null && result.data.longitude != null) {
-        setCoordsDMS(
-          formatcoords(result.data.latitude, result.data.longitude).format({
-            latLonSeparator: ", ",
-            decimalPlaces: 0,
-          })
-        );
-      }
+            if (result.data.latitude != null && result.data.longitude != null) {
+              setCoordsDMS(
+                formatcoords(
+                  result.data.latitude,
+                  result.data.longitude
+                ).format({
+                  latLonSeparator: ", ",
+                  decimalPlaces: 0,
+                })
+              );
+            }
 
-      if (
-        result.data.dimension_to_bow != null &&
-        result.data.dimension_to_stern
-      ) {
-        setShipLength(
-          result.data.dimension_to_bow + result.data.dimension_to_stern
-        );
-      }
+            if (
+              result.data.dimension_to_bow != null &&
+              result.data.dimension_to_stern
+            ) {
+              setShipLength(
+                result.data.dimension_to_bow + result.data.dimension_to_stern
+              );
+            }
 
-      if (
-        result.data.dimension_to_port != null &&
-        result.data.dimension_to_starboard
-      ) {
-        setShipBreadth(
-          result.data.dimension_to_port + result.data.dimension_to_starboard
-        );
-      }
+            if (
+              result.data.dimension_to_port != null &&
+              result.data.dimension_to_starboard
+            ) {
+              setShipBreadth(
+                result.data.dimension_to_port +
+                  result.data.dimension_to_starboard
+              );
+            }
 
-      setIsLoading(false);
+            setIsMissing(false);
+          }
+        })
+        .catch((error) => {
+          setIsMissing(error.response.status == 404);
+
+          if (error.response.status != 404) {
+            alert(
+              "danger",
+              "Unable to display vessel, please try again later."
+            );
+          }
+        })
+        .then(() => setIsLoading(false));
     };
 
     fetchData();
@@ -115,7 +133,9 @@ function Vessel() {
 
   return (
     <React.Fragment>
-      {isLoading ? (
+      {isMissing ? (
+        <NotFound />
+      ) : isLoading ? (
         <Loading />
       ) : (
         data != null && (
@@ -140,6 +160,7 @@ function Vessel() {
               {canShowMap && (
                 <div className="column map-column">
                   <AisMap
+                    alert={alert}
                     changeParamsLocation={false}
                     latitude={data.latitude}
                     longitude={data.longitude}

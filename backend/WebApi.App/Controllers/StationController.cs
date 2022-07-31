@@ -25,7 +25,7 @@ public class StationController : ControllerBase
 
         if (result == null)
         {
-            NotFound();
+            return NotFound();
         }
 
         return mapper.Map<DTOStation, DTOWebStation>(result!);
