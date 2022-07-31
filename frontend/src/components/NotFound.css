@@ -1,0 +1,17 @@
+.content--extra-small {
+    padding-left: calc(50% - 480px / 2);
+    padding-right: calc(50% - 480px / 2);
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+
+  @media screen and (max-width: 480px) {
+    .content--extra-small {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+
+  .notification {
+    padding: 1.25rem 1.25rem 1.25rem 1.25rem !important;
+  }

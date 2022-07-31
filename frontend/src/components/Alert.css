@@ -1,0 +1,9 @@
+.alert-notification {
+    position: fixed !important;
+    z-index: 2100 !important;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-bottom: 0px !important;
+    border-radius: 0px !important;
+}

@@ -1,7 +1,6 @@
 import "./Station.css";
 
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Loading from "./Loading";
 import { useParams } from "react-router-dom";
 import {
@@ -11,8 +10,10 @@ import {
 import AisMap from "./AisMap";
 import { faPowerOff } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import NotFound from "./NotFound";
+import http from "../http";
 
-function Station() {
+function Station({ alert }) {
   let { stationId } = useParams();
 
   const [stationCountryDescription, setStationCountryDescription] =
@@ -20,29 +21,37 @@ function Station() {
   const [flagInformation, setFlagInformation] = useState(null);
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMissing, setIsMissing] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = () => {
       setIsLoading(true);
 
-      const result = await axios.get(
-        process.env.REACT_APP_WEB_API_URL + "/station/" + stationId,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      http.plain
+        .get("/station/" + stationId)
+        .then((result) => {
+          if (result?.data) {
+            setData(result.data);
+            setStationCountryDescription(
+              getCountryDescriptionByCountryCode(result.data.countryCode)
+            );
+            setFlagInformation(
+              getFlagInformationByCountryCode(result.data.countryCode)
+            );
+            setIsMissing(false);
+          }
+        })
+        .catch((error) => {
+          setIsMissing(error.response.status == 404);
 
-      setData(result.data);
-      setStationCountryDescription(
-        getCountryDescriptionByCountryCode(result.data.countryCode)
-      );
-      setFlagInformation(
-        getFlagInformationByCountryCode(result.data.countryCode)
-      );
-      setIsLoading(false);
+          if (error.response.status != 404) {
+            alert(
+              "danger",
+              "Unable to display station, please try again later."
+            );
+          }
+        })
+        .then(() => setIsLoading(false));
     };
 
     fetchData();
@@ -50,7 +59,9 @@ function Station() {
 
   return (
     <React.Fragment>
-      {isLoading ? (
+      {isMissing ? (
+        <NotFound />
+      ) : isLoading ? (
         <Loading />
       ) : (
         data != null && (
@@ -109,6 +120,7 @@ function Station() {
             <div className="station-map-container">
               <AisMap
                 changeParamsLocation={false}
+                alert={alert}
                 latitude={
                   data.latitude ||
                   process.env.REACT_APP_MAP_INITIAL_CENTER_LATITUDE

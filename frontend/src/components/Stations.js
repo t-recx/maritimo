@@ -1,7 +1,7 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
+import http from "../http";
 import {
   getCountryDescriptionByCountryCode,
   getFlagInformationByCountryCode,
@@ -9,7 +9,7 @@ import {
 import Loading from "./Loading";
 import Pagination from "./Pagination";
 
-function Stations() {
+function Stations({ alert }) {
   const [search] = useSearchParams();
   const [stations, setStations] = useState(null);
   const [pageNumber, setPageNumber] = useState(null);
@@ -53,19 +53,12 @@ function Stations() {
       try {
         if (pageNumber != null && pageSize != null) {
           setIsLoading(true);
-          const result = await axios.get(
-            process.env.REACT_APP_WEB_API_URL + "/station",
-            {
-              withCredentials: true,
-              params: {
-                pageNumber: pageNumber,
-                pageSize: pageSize,
-              },
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }
-          );
+          const result = await http.plain.get("/station", {
+            params: {
+              pageNumber: pageNumber,
+              pageSize: pageSize,
+            },
+          });
 
           setStations(result.data);
           setTotalPages(result.data.totalPages);
@@ -82,7 +75,7 @@ function Stations() {
           setIsLoading(false);
         }
       } catch (error) {
-        console.error(error);
+        alert("danger", "Unable to display stations, please try again later.");
       }
     }
 

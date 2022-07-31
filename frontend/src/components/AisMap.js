@@ -13,6 +13,7 @@ function AisMap({
   stations,
   followMMSI,
   dataUpdatedCallback,
+  alert,
 }) {
   return (
     <React.Fragment>
@@ -34,6 +35,7 @@ function AisMap({
           followMMSI={followMMSI}
           dataUpdatedCallback={dataUpdatedCallback}
           initialZoom={zoom}
+          alert={alert}
         />
 
         <ZoomControl position="bottomleft" />

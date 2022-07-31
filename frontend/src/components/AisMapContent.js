@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { HubConnectionBuilder } from "@microsoft/signalr";
-import axios from "axios";
 import AisObject from "./AisObject";
 
 import L from "leaflet";
@@ -13,6 +12,8 @@ import {
   getPolygonCentroid,
   shipHasDimensionsAndDirection,
 } from "../shipRepresentation";
+import http from "../http";
+import Loading from "./Loading";
 
 const ConnectionStatus = {
   NotBuilt: "NotBuilt",
@@ -29,6 +30,7 @@ function AisMapContent({
   followMMSI,
   dataUpdatedCallback,
   initialZoom,
+  alert,
 }) {
   const onlyObjectsFromHoursAgo =
     process.env.REACT_APP_MAP_OBJECT_LIFESPAN_HOURS;
@@ -48,6 +50,7 @@ function AisMapContent({
   const latestStartConnectionTries = useRef(null);
   const [fetchConnectionTries, setFetchConnectionTries] = useState(0);
   const latestFetchConnectionTries = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const filtering = useRef(false);
   const filteringDelayTimerId = useRef(null);
@@ -161,24 +164,18 @@ function AisMapContent({
     const controller = new AbortController();
 
     async function fetchData() {
+      //setIsLoading(true);
       console.log("Fetching data");
       setFetchConnectionTries(latestFetchConnectionTries.current + 1);
 
       try {
-        const result = await axios.get(
-          process.env.REACT_APP_WEB_API_URL + "/ais",
-          {
-            signal: controller.signal,
-            withCredentials: true,
-            params: {
-              fromHoursAgo: onlyObjectsFromHoursAgo,
-              excludeObjectTypes: [TypeOfObject.Unknown].join(","),
-            },
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const result = await http.plain.get("/ais", {
+          signal: controller.signal,
+          params: {
+            fromHoursAgo: onlyObjectsFromHoursAgo,
+            excludeObjectTypes: [TypeOfObject.Unknown].join(","),
+          },
+        });
 
         setFetchConnectionTries(0);
         // we start by converting the array into an object with key = mmsi
@@ -207,6 +204,10 @@ function AisMapContent({
         filterObjectsInView(map, dict);
         console.log("finished fetching data");
       } catch (error) {
+        //alert(
+        //"danger",
+        //"Unable to load ship data, schedulling another try for later."
+        //);
         console.error(error);
 
         // todo clean up timeout on unmount component
@@ -216,6 +217,8 @@ function AisMapContent({
             fetchData();
           }, getMillisecondsToNextTry(latestFetchConnectionTries.current - 1));
         }
+      } finally {
+        //setIsLoading(false);
       }
     }
 
@@ -480,6 +483,8 @@ function AisMapContent({
 
   return (
     <React.Fragment>
+      {isLoading ? <Loading /> : <React.Fragment></React.Fragment>}
+
       {Object.keys(objectsInView).map((key) => (
         <AisObject
           key={key}

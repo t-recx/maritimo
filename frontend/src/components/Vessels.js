@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -9,8 +8,9 @@ import Pagination from "./Pagination";
 import "./Vessels.css";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import http from "../http";
 
-function Vessels() {
+function Vessels({ alert }) {
   const [search, setSearch] = useSearchParams();
   const location = useLocation();
   const [pageNumber, setPageNumber] = useState(null);
@@ -158,35 +158,32 @@ function Vessels() {
     };
   }
 
-  async function fetchData() {
-    try {
-      setIsLoading(true);
+  function fetchData() {
+    setIsLoading(true);
 
-      const result = await axios.get(
-        process.env.REACT_APP_WEB_API_URL + "/vessel",
-        {
-          withCredentials: true,
-          params: getParams(),
-          headers: {
-            "Content-Type": "application/json",
-          },
+    http.plain
+      .get("/vessel", {
+        params: getParams(),
+      })
+      .then((result) => {
+        if (result?.data) {
+          setVessels(result.data);
+          setTotalPages(result.data.totalPages);
+          if (result.data && result.data.items) {
+            result.data.items.forEach((dto) => {
+              dto.countryName = getCountryDescription(dto.mmsi);
+              dto.flagInformation = getFlagInformation(dto.mmsi);
+              dto.shipTypeDescription = getShipTypeDescription(dto.ship_type);
+            });
+          }
         }
-      );
-
-      setVessels(result.data);
-      setTotalPages(result.data.totalPages);
-      if (result.data && result.data.items) {
-        result.data.items.forEach((dto) => {
-          dto.countryName = getCountryDescription(dto.mmsi);
-          dto.flagInformation = getFlagInformation(dto.mmsi);
-          dto.shipTypeDescription = getShipTypeDescription(dto.ship_type);
-        });
-      }
-
-      setIsLoading(false);
-    } catch (error) {
-      console.error(error);
-    }
+      })
+      .catch((error) => {
+        alert("danger", "Unable to display vessels, please try again later.");
+      })
+      .then(() => {
+        setIsLoading(false);
+      });
   }
 
   function navigateToVessel(mmsi) {
