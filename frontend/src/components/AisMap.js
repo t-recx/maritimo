@@ -1,6 +1,11 @@
 import "./AisMap.css";
 
-import { MapContainer, TileLayer, ZoomControl } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  ZoomControl,
+  AttributionControl,
+} from "react-leaflet";
 import AisMapContent from "./AisMapContent";
 import Navbar from "./Navbar";
 import React from "react";
@@ -23,6 +28,7 @@ function AisMap({
         zoom={zoom}
         maxZoom={process.env.REACT_APP_MAP_MAX_ZOOM}
         zoomControl={false}
+        attributionControl={false}
       >
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -39,6 +45,7 @@ function AisMap({
         />
 
         <ZoomControl position="bottomleft" />
+        <AttributionControl position="bottomright" prefix={false} />
       </MapContainer>
     </React.Fragment>
   );
