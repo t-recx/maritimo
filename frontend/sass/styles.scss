@@ -6,8 +6,8 @@ $family-sans-serif: "Fira Sans", sans-serif;
 @import "../node_modules/bulma/bulma.sass";
 @import "./leaflet.scss";
 
-body {
-  overflow-y: scroll;
+html {
+  overflow-y: auto;
 }
 
 .flag-img {
