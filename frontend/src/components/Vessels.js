@@ -337,11 +337,11 @@ function Vessels({ alert }) {
                 </div>
               </div>
             </div>
-            <table className="table is-striped is-fullwidth is-bordered  is-hoverable">
+            <table className="table table-vessels is-striped is-fullwidth is-bordered  is-hoverable">
               <thead>
                 <tr>
-                  <th className="is-hidden-mobile">Country</th>
-                  <th className="">MMSI</th>
+                  <th className="is-hidden-mobile th-country">Country</th>
+                  <th className="th-mmsi">MMSI</th>
                   <th>Name</th>
                   <th className=" is-hidden-mobile">Type</th>
                 </tr>
@@ -353,7 +353,7 @@ function Vessels({ alert }) {
                     key={item.mmsi}
                     onClick={() => navigateToVessel(item.mmsi)}
                   >
-                    <td className="td-country is-hidden-mobile">
+                    <td className="td-country is-hidden-mobile td-vessel">
                       {item.flagInformation && (
                         <img
                           className="flag-img-tiny"
@@ -371,7 +371,7 @@ function Vessels({ alert }) {
                         </span>
                       )}
                     </td>
-                    <td className="td-mmsi">{item.mmsi}</td>
+                    <td className="td-mmsi td-vessel">{item.mmsi}</td>
                     <td>
                       <div className="name-container">
                         {item.flagInformation && (
@@ -383,6 +383,8 @@ function Vessels({ alert }) {
                           />
                         )}
                         <span
+                          className="with-ellipsis"
+                          title={item.name || "Unknown"}
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -395,7 +397,7 @@ function Vessels({ alert }) {
                       </div>
                     </td>
 
-                    <td className=" is-hidden-mobile">
+                    <td className=" is-hidden-mobile td-vessel">
                       {item.shipTypeDescription}
                     </td>
                   </tr>

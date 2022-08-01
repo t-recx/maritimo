@@ -1,14 +1,19 @@
+
 .country-name {
     margin-left: 4px;
 }
 
-.th-mmsi {
-    width: 120px;
+.th-station-id {
+    width: 60px;
 }
 
-.th-country {
-    max-width: 240px;
-    width: 240px;
+.th-station-status {
+    width: 100px;
+}
+
+.td-country {
+    max-width: 200px;
+    width: 200px;
 }
 
 .name-container {
@@ -17,12 +22,12 @@
     align-items: center;
 }
 
-.td-vessel {
+.td-station {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis; 
 }
 
-.table-vessels {
+.table-stations {
     table-layout: fixed;
 }
