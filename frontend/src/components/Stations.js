@@ -8,6 +8,7 @@ import {
 } from "../mmsi";
 import Loading from "./Loading";
 import Pagination from "./Pagination";
+import "./Stations.css";
 
 function Stations({ alert }) {
   const [search] = useSearchParams();
@@ -95,7 +96,7 @@ function Stations({ alert }) {
         <h1 className="title">Stations</h1>
         {stations != null && stations.items != null && (
           <React.Fragment>
-            <table className="table is-striped is-fullwidth is-bordered  is-hoverable">
+            <table className="table table-stations is-striped is-fullwidth is-bordered  is-hoverable">
               <thead>
                 <tr>
                   <th className="th-station-id ">ID</th>
@@ -112,8 +113,8 @@ function Stations({ alert }) {
                     key={item.stationId}
                     onClick={() => navigateToStation(item.stationId)}
                   >
-                    <td className="">{item.stationId}</td>
-                    <td className="td-country is-hidden-mobile">
+                    <td className="td-station ">{item.stationId}</td>
+                    <td className="td-station td-country is-hidden-mobile">
                       {item.flagInformation && (
                         <img
                           className="flag-img-tiny"
@@ -131,7 +132,7 @@ function Stations({ alert }) {
                         </span>
                       )}
                     </td>
-                    <td>
+                    <td className="td-station ">
                       <div className="name-container">
                         {item.flagInformation && (
                           <img
@@ -142,6 +143,8 @@ function Stations({ alert }) {
                           />
                         )}
                         <span
+                          className="with-ellipsis"
+                          title={item.name}
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
@@ -153,12 +156,12 @@ function Stations({ alert }) {
                         </span>
                       </div>
                     </td>
-                    <td className="is-hidden-mobile">
+                    <td className="is-hidden-mobile td-station ">
                       {item.stationOperatorName}
                     </td>
                     <td
                       className={
-                        "is-hidden-mobile has-text-weight-bold " +
+                        "is-hidden-mobile has-text-weight-bold td-station " +
                         (item.online ? "has-text-success" : "has-text-danger")
                       }
                     >

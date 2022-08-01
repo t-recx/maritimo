@@ -13,11 +13,13 @@ body {
 .flag-img {
   height: 24px;
   aspect-ratio: 4 / 3;
+  flex-shrink: 0;
 }
 
 .flag-img-tiny {
   height: 12px;
   aspect-ratio: 4 / 3;
+  flex-shrink: 0;
 }
 
 .ais-object-subtitle-container {
@@ -28,4 +30,10 @@ body {
 
 .section-container {
   padding: 1.5rem 1.5rem;
+}
+
+.with-ellipsis {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
