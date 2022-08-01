@@ -21,3 +21,7 @@
         display: flex !important;
     }
 }
+
+.navbar {
+    z-index: 1100;
+}
