@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import MobileSideMenu from "./MobileSideMenu";
 import NavbarItems from "./NavbarItems";
+import { faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function Navbar() {
   const [hamburgerActive, setHamburgerActive] = useState(false);
@@ -33,35 +35,18 @@ function Navbar() {
             <span className="is-size-4 has-text-weight-bold">Maritimo</span>
           </Link>
 
-          {/* on chrome mobile, the is-active transition was creating a small blue rectangle artifact when toggling the state */}
-          {/* as a temporary fix I'm prevent the transition from occurring by doing the following: */}
-          {hamburgerActive && (
-            <a
-              role="button"
-              className="navbar-burger is-active"
-              aria-label="menu"
-              aria-expanded="false"
-              onClick={toggleHamburger}
-            >
-              <span aria-hidden="true"></span>
-              <span aria-hidden="true"></span>
-              <span aria-hidden="true"></span>
-            </a>
-          )}
-          {!hamburgerActive && (
-            <a
-              role="button"
-              className="navbar-burger "
-              aria-label="menu"
-              aria-expanded="false"
-              onClick={toggleHamburger}
-            >
-              <span aria-hidden="true"></span>
-              <span aria-hidden="true"></span>
-              <span aria-hidden="true"></span>
-            </a>
-          )}
-          {/* / */}
+          <a
+            role="button"
+            className="navbar-burger navbar-burger-icon-container"
+            aria-label="menu"
+            aria-expanded="false"
+            onClick={toggleHamburger}
+          >
+            <FontAwesomeIcon
+              icon={hamburgerActive ? faTimes : faBars}
+              size="lg"
+            />
+          </a>
         </div>
 
         <div id="navBarItems" className="navbar-menu">
