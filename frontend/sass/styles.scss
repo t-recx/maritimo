@@ -9,6 +9,9 @@ $family-sans-serif: "Fira Sans", sans-serif;
 html {
   overflow-y: auto;
 }
+body {
+  overflow-y: auto;
+}
 
 .flag-img {
   height: 24px;
@@ -40,4 +43,10 @@ html {
 
 a {
   text-decoration: none !important;
+}
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 3.25rem);
 }

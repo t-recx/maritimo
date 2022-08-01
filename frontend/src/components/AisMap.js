@@ -7,7 +7,6 @@ import {
   AttributionControl,
 } from "react-leaflet";
 import AisMapContent from "./AisMapContent";
-import Navbar from "./Navbar";
 import React from "react";
 
 function AisMap({

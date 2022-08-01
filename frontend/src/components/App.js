@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AisMap from "./AisMap";
+import MainMap from "./MainMap";
 import Navbar from "./Navbar";
 import Station from "./Station";
 import Stations from "./Stations";
@@ -38,7 +38,7 @@ function App() {
           />
           <ScrollToTop />
           <Routes>
-            <Route path="/" element={<AisMap alert={setAlert} />}></Route>
+            <Route path="/" element={<MainMap alert={setAlert} />}></Route>
             <Route
               path="/station/:stationId"
               element={<Station alert={setAlert} />}

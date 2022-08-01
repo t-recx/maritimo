@@ -3,9 +3,3 @@
   /* height: 100vh; */
   height: 100%;
 }
-
-.main-container {
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 3.25rem);
-}
