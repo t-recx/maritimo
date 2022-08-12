@@ -39,6 +39,16 @@ function AboutGlobe({ alert, width, height }) {
   const globeEl = useRef();
 
   useEffect(() => {
+    return () => {
+      console.log("unmounting...");
+      if (connection) {
+        console.log("stopping connection...");
+        connection.stop();
+      }
+    };
+  }, [connection]);
+
+  useEffect(() => {
     globeEl.current.controls().autoRotate = true;
     globeEl.current.controls().autoRotateSpeed = 0.8;
 
