@@ -73,20 +73,18 @@ function NavbarItems({ linkClicked, isDropdown }) {
             <span className="is-size-5-mobile">Github</span>
           </span>
         </a>
-        {false && (
-          <Link
-            to="/about"
-            className="navbar-item  navbar-item-mobile"
-            onClick={linkClickedEvent}
-          >
-            <span className="icon-text">
-              <span className="icon">
-                <FontAwesomeIcon icon={faCircleInfo} />
-              </span>
-              <span className="is-size-5-mobile">About</span>
+        <Link
+          to="/about"
+          className="navbar-item  navbar-item-mobile"
+          onClick={linkClickedEvent}
+        >
+          <span className="icon-text">
+            <span className="icon">
+              <FontAwesomeIcon icon={faCircleInfo} />
             </span>
-          </Link>
-        )}
+            <span className="is-size-5-mobile">About</span>
+          </span>
+        </Link>
       </div>
     </React.Fragment>
   );
