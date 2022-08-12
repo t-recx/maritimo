@@ -16,7 +16,7 @@ const ConnectionStatus = {
   RetryStarting: "RetryStarting",
 };
 
-function AboutGlobe({ alert }) {
+function AboutGlobe({ alert, width, height }) {
   const transparent = useMemo(() => "rgba(0, 0, 0, 0)");
   const onlyObjectsFromHoursAgo =
     process.env.REACT_APP_MAP_OBJECT_LIFESPAN_HOURS;
@@ -43,6 +43,7 @@ function AboutGlobe({ alert }) {
     globeEl.current.controls().autoRotateSpeed = 0.8;
 
     globeEl.current.pointOfView({ lat: 42, lng: 24 }, 0);
+    globeEl.current.controls().enableZoom = false;
   }, []);
 
   useEffect(() => {
@@ -236,8 +237,8 @@ function AboutGlobe({ alert }) {
 
   return (
     <Globe
-      width={700}
-      height={700}
+      width={width >= 700 ? 700 : width}
+      height={width >= 700 ? 700 : width}
       backgroundColor={transparent}
       atmosphereColor="#37426d"
       globeImageUrl="/aboutglobeearth.png"
