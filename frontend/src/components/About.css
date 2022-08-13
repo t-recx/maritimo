@@ -1,0 +1,30 @@
+ .maritimo-title {
+    font-size: 4rem;
+    font-weight: 700;
+ }
+
+ @media screen and (max-width: 768px) {
+    .info-container {
+        text-align: center;
+        align-items: center;
+    }
+}
+
+.info-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    height: 100%;
+}
+
+.hero-main {
+    height: 100%;
+    background: #E9F1F9;
+    background: -webkit-linear-gradient(bottom right, #E9F1F9, #FFFFFF);
+    background: -moz-linear-gradient(bottom right, #E9F1F9, #FFFFFF);
+    background: linear-gradient(to top left, #E9F1F9, #FFFFFF);
+}
+
+.maritimo-hero-image {
+    box-shadow: 0 15px 50px 20px rgba(51,51,79,.12);
+}

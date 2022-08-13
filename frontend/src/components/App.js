@@ -5,6 +5,7 @@ import Station from "./Station";
 import Stations from "./Stations";
 import Vessel from "./Vessel";
 import Vessels from "./Vessels";
+import About from "./About";
 import NotFound from "./NotFound";
 import ScrollToTop from "./ScrollToTop";
 import Alert from "./Alert";
@@ -55,6 +56,7 @@ function App() {
               path="/vessels"
               element={<Vessels alert={setAlert} />}
             ></Route>
+            <Route path="/about" element={<About alert={setAlert} />}></Route>
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>

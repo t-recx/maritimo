@@ -1,6 +1,8 @@
 import * as colorScheme from "color-scheme";
 import { ShipTypes } from "./shipTypes";
 
+let shipColorSchemes = {};
+
 function getShipColorScheme(shipType) {
   let hue = 0;
   const factor = 20;
@@ -37,8 +39,9 @@ function getShipColorScheme(shipType) {
     hue = factor * 15;
   }
 
-  const [color, fillColor, colorTransmitter, fillColorTransmitter] =
-    new colorScheme()
+  if (!shipColorSchemes[hue]) {
+    console.log("filling schemes for " + hue);
+    shipColorSchemes[hue] = new colorScheme()
       .from_hue(hue)
       .scheme("monochromatic")
       .distance(0.5)
@@ -47,7 +50,10 @@ function getShipColorScheme(shipType) {
       .web_safe(true)
       .colors()
       .map((x) => "#" + x);
+  }
 
+  const [color, fillColor, colorTransmitter, fillColorTransmitter] =
+    shipColorSchemes[hue];
   return {
     color,
     fillColor,
