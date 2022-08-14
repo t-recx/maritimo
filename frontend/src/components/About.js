@@ -44,6 +44,8 @@ function About({ alert }) {
                   className="maritimo-hero-image"
                   src="/about_illustration.jpg"
                   title="A cargo ship sailing away - Photo by Ian Taylor on Unsplash"
+                  width={720}
+                  height={480}
                 ></img>
               </div>
             </div>
