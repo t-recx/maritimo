@@ -50,3 +50,7 @@ a {
   flex-direction: column;
   height: calc(100vh - 3.25rem);
 }
+
+.click-disabled {
+  pointer-events: none;
+}

@@ -96,7 +96,8 @@ function Pagination({
             <Link
               to={urlPrevious}
               className={
-                "pagination-previous " + (pageNumber <= 1 ? "is-disabled" : "")
+                "pagination-previous " +
+                (pageNumber <= 1 ? "is-disabled click-disabled" : "")
               }
             >
               Previous
@@ -107,7 +108,7 @@ function Pagination({
               to={urlNext}
               className={
                 "pagination-next " +
-                (pageNumber >= totalPages ? "is-disabled" : "")
+                (pageNumber >= totalPages ? "is-disabled click-disabled" : "")
               }
             >
               Next page
