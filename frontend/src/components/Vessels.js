@@ -337,80 +337,87 @@ function Vessels({ alert }) {
                 </div>
               </div>
             </div>
-            <table className="table table-vessels is-striped is-fullwidth is-bordered  is-hoverable">
-              <thead>
-                <tr>
-                  <th className="is-hidden-mobile th-country">Country</th>
-                  <th className="th-mmsi">MMSI</th>
-                  <th>Name</th>
-                  <th className=" is-hidden-mobile">Type</th>
-                </tr>
-              </thead>
-              <tbody>
-                {vessels.items.map((item) => (
-                  <tr
-                    className=" is-clickable"
-                    key={item.mmsi}
-                    onClick={() => navigateToVessel(item.mmsi)}
-                  >
-                    <td className="td-country is-hidden-mobile td-vessel">
-                      {item.flagInformation && (
-                        <img
-                          className="flag-img-tiny"
-                          src={item.flagInformation.img}
-                          alt={item.flagInformation.alt}
-                          title={item.countryName}
-                        />
-                      )}
-                      {item.countryName && (
-                        <span
-                          className="country-name is-hidden-mobile"
-                          title={item.countryName}
-                        >
-                          {item.countryName}
-                        </span>
-                      )}
-                    </td>
-                    <td className="td-mmsi td-vessel">{item.mmsi}</td>
-                    <td>
-                      <div className="name-container">
-                        {item.flagInformation && (
-                          <img
-                            className="flag-img-tiny is-hidden-tablet"
-                            src={item.flagInformation.img}
-                            alt={item.flagInformation.alt}
-                            title={item.countryName}
-                          />
-                        )}
-                        <span
-                          className="with-ellipsis"
-                          title={item.name || "Unknown"}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }}
-                        >
-                          <Link to={"/vessel/" + item.mmsi}>
-                            {item.name || "Unknown"}
-                          </Link>
-                        </span>
-                      </div>
-                    </td>
+            {vessels.items.length > 0 && (
+              <React.Fragment>
+                <table className="table table-vessels is-striped is-fullwidth is-bordered  is-hoverable">
+                  <thead>
+                    <tr>
+                      <th className="is-hidden-mobile th-country">Country</th>
+                      <th className="th-mmsi">MMSI</th>
+                      <th>Name</th>
+                      <th className=" is-hidden-mobile">Type</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {vessels.items.map((item) => (
+                      <tr
+                        className=" is-clickable"
+                        key={item.mmsi}
+                        onClick={() => navigateToVessel(item.mmsi)}
+                      >
+                        <td className="td-country is-hidden-mobile td-vessel">
+                          {item.flagInformation && (
+                            <img
+                              className="flag-img-tiny"
+                              src={item.flagInformation.img}
+                              alt={item.flagInformation.alt}
+                              title={item.countryName}
+                            />
+                          )}
+                          {item.countryName && (
+                            <span
+                              className="country-name is-hidden-mobile"
+                              title={item.countryName}
+                            >
+                              {item.countryName}
+                            </span>
+                          )}
+                        </td>
+                        <td className="td-mmsi td-vessel">{item.mmsi}</td>
+                        <td>
+                          <div className="name-container">
+                            {item.flagInformation && (
+                              <img
+                                className="flag-img-tiny is-hidden-tablet"
+                                src={item.flagInformation.img}
+                                alt={item.flagInformation.alt}
+                                title={item.countryName}
+                              />
+                            )}
+                            <span
+                              className="with-ellipsis"
+                              title={item.name || "Unknown"}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                              }}
+                            >
+                              <Link to={"/vessel/" + item.mmsi}>
+                                {item.name || "Unknown"}
+                              </Link>
+                            </span>
+                          </div>
+                        </td>
 
-                    <td className=" is-hidden-mobile td-vessel">
-                      {item.shipTypeDescription}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <Pagination
-              location={location}
-              searchParams={search}
-              pageNumberParamName="pageNumber"
-              pageNumber={pageNumber}
-              totalPages={totalPages}
-            />
+                        <td className=" is-hidden-mobile td-vessel">
+                          {item.shipTypeDescription}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <Pagination
+                  location={location}
+                  searchParams={search}
+                  pageNumberParamName="pageNumber"
+                  pageNumber={pageNumber}
+                  totalPages={totalPages}
+                />
+              </React.Fragment>
+            )}
+            {vessels.items.length == 0 && (
+              <div className="box has-text-weight-bold">No vessels found.</div>
+            )}
           </React.Fragment>
         )}
       </section>
