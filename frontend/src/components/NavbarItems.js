@@ -46,18 +46,6 @@ function NavbarItems({ linkClicked, isDropdown }) {
           </span>
         </Link>
         <Link
-          to="/stations"
-          className="navbar-item  navbar-item-mobile"
-          onClick={linkClickedEvent}
-        >
-          <span className="icon-text">
-            <span className="icon">
-              <FontAwesomeIcon icon={faTowerCell} />
-            </span>
-            <span className="is-size-5-mobile">Stations</span>
-          </span>
-        </Link>
-        <Link
           to="/navigation-aids"
           className="navbar-item  navbar-item-mobile"
           onClick={linkClickedEvent}
@@ -67,6 +55,18 @@ function NavbarItems({ linkClicked, isDropdown }) {
               <FontAwesomeIcon icon={lighthouseIcon} />
             </span>
             <span className="is-size-5-mobile">Navigation aids</span>
+          </span>
+        </Link>
+        <Link
+          to="/stations"
+          className="navbar-item  navbar-item-mobile"
+          onClick={linkClickedEvent}
+        >
+          <span className="icon-text">
+            <span className="icon">
+              <FontAwesomeIcon icon={faTowerCell} />
+            </span>
+            <span className="is-size-5-mobile">Stations</span>
           </span>
         </Link>
       </div>
