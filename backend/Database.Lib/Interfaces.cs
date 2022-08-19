@@ -26,6 +26,12 @@ public interface IVesselService
     Task<PaginatedList<DTOObjectData>> GetPaginatedList(int pageNumber, int pageSize, List<int>? countryCodes = null, List<byte>? shipTypes = null, string? text = null);
 }
 
+public interface INavigationAidService
+{
+    Task<DTOObjectData?> Get(uint mmsi);
+    Task<PaginatedList<DTOObjectData>> GetPaginatedList(int pageNumber, int pageSize, List<int>? countryCodes = null, List<byte>? aidTypes = null, string? text = null);
+}
+
 public interface IMaritimoContext : IDisposable
 {
     DbSet<Message> Messages { get; }

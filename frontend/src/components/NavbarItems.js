@@ -9,6 +9,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faGithubAlt } from "@fortawesome/free-brands-svg-icons";
 import React from "react";
+import { lighthouseIcon } from "../lighthouseIcon";
 
 function NavbarItems({ linkClicked, isDropdown }) {
   function linkClickedEvent() {
@@ -54,6 +55,18 @@ function NavbarItems({ linkClicked, isDropdown }) {
               <FontAwesomeIcon icon={faTowerCell} />
             </span>
             <span className="is-size-5-mobile">Stations</span>
+          </span>
+        </Link>
+        <Link
+          to="/navigation-aids"
+          className="navbar-item  navbar-item-mobile"
+          onClick={linkClickedEvent}
+        >
+          <span className="icon-text">
+            <span className="icon">
+              <FontAwesomeIcon icon={lighthouseIcon} />
+            </span>
+            <span className="is-size-5-mobile">Navigation aids</span>
           </span>
         </Link>
       </div>
