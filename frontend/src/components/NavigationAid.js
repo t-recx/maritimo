@@ -1,5 +1,4 @@
 import { useParams } from "react-router-dom";
-import { getShipTypeDescription } from "../shipTypes";
 import {
   getCountryDescription,
   getFlagInformation,
@@ -7,8 +6,7 @@ import {
   getTypeOfObjectDescription,
   TypeOfObject,
 } from "../mmsi";
-import { getShipStatusDescription, ShipStatus } from "../shipStatus";
-import "./Vessel.css";
+import "./NavigationAid.css";
 import React, { useEffect, useState } from "react";
 import Loading from "./Loading";
 import { Link } from "react-router-dom";
@@ -17,24 +15,24 @@ import AisMap from "./AisMap";
 import TimeAgo from "timeago-react";
 import NotFound from "./NotFound";
 import http from "../http";
+import { getNavAidTypeDescription } from "../navAids";
 
-function Vessel({ alert }) {
+function NavigationAid({ alert }) {
   let { mmsi } = useParams();
-  const [vesselCountryDescription, setVesselCountryDescription] =
+  const [navigationAidCountryDescription, setNavigationAidCountryDescription] =
     useState(null);
-  const [shipTypeDescription, setShipTypeDescription] = useState(null);
+  const [navigationAidTypeDescription, setNavigationAidTypeDescription] =
+    useState(null);
   const [flagInformation, setFlagInformation] = useState(null);
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isMissing, setIsMissing] = useState(false);
-  const [shipStatusDescription, setShipStatusDescription] = useState(null);
-  const [shipCountryDescription, setShipCountryDescription] = useState(null);
   const [objectType, setObjectType] = useState(null);
   const [objectTypeDescription, setObjectTypeDescription] = useState(null);
   const [coordsDMS, setCoordsDMS] = useState(null);
   const [canShowMap, setCanShowMap] = useState(false);
-  const [shipLength, setShipLength] = useState(null);
-  const [shipBreadth, setShipBreadth] = useState(null);
+  const [navigationAidLength, setNavigationAidLength] = useState(null);
+  const [navigationAidBreadth, setNavigationAidBreadth] = useState(null);
 
   const objectLifeSpanMilliseconds =
     process.env.REACT_APP_MAP_OBJECT_LIFESPAN_HOURS * 3600000;
@@ -44,19 +42,18 @@ function Vessel({ alert }) {
       setIsLoading(true);
 
       http.plain
-        .get("/vessel/" + mmsi)
+        .get("/navigationAid/" + mmsi)
         .then((result) => {
           if (result?.data) {
             setData(result.data);
 
-            setShipTypeDescription(
-              getShipTypeDescription(result.data.ship_type)
-            );
-            setShipStatusDescription(
-              getShipStatusDescription(result.data.navigation_status)
+            setNavigationAidTypeDescription(
+              getNavAidTypeDescription(result.data.aid_type)
             );
             setFlagInformation(getFlagInformation(result.data.mmsi));
-            setShipCountryDescription(getCountryDescription(result.data.mmsi));
+            setNavigationAidCountryDescription(
+              getCountryDescription(result.data.mmsi)
+            );
             setFlagInformation(getFlagInformation(result.data.mmsi));
             setObjectType(getTypeOfObject(result.data.mmsi));
             setObjectTypeDescription(
@@ -79,7 +76,7 @@ function Vessel({ alert }) {
               result.data.dimension_to_bow != null &&
               result.data.dimension_to_stern != null
             ) {
-              setShipLength(
+              setNavigationAidLength(
                 result.data.dimension_to_bow + result.data.dimension_to_stern
               );
             }
@@ -88,7 +85,7 @@ function Vessel({ alert }) {
               result.data.dimension_to_port != null &&
               result.data.dimension_to_starboard != null
             ) {
-              setShipBreadth(
+              setNavigationAidBreadth(
                 result.data.dimension_to_port +
                   result.data.dimension_to_starboard
               );
@@ -103,7 +100,7 @@ function Vessel({ alert }) {
           if (error.response.status != 404) {
             alert(
               "danger",
-              "Unable to display vessel, please try again later."
+              "Unable to display navigation aid, please try again later."
             );
           }
         })
@@ -148,16 +145,16 @@ function Vessel({ alert }) {
                     className="flag-img"
                     src={flagInformation.img}
                     alt={flagInformation.alt}
-                    title={shipCountryDescription}
+                    title={navigationAidCountryDescription}
                   />
                 )}
-                <span>{shipTypeDescription}</span>
+                <span>{navigationAidTypeDescription}</span>
               </p>
               <hr className="mt-0 mb-2" />
               <div className="mb-4"></div>
             </div>
             {canShowMap && (
-              <div className="block vessel-map-block">
+              <div className="block navigation-aid-map-block">
                 <AisMap
                   alert={alert}
                   changeParamsLocation={false}
@@ -178,10 +175,12 @@ function Vessel({ alert }) {
                       <td className="">{data.mmsi}</td>
                     </tr>
                   )}
-                  {data.imo_number != null && data.imo_number > 0 && (
+                  {navigationAidLength > 0 && navigationAidBreadth > 0 && (
                     <tr>
-                      <td className=" has-text-weight-bold">IMO Number</td>
-                      <td className="">{data.imo_number}</td>
+                      <td className=" has-text-weight-bold">Dimensions</td>
+                      <td className="">
+                        {navigationAidLength} m x {navigationAidBreadth} m
+                      </td>
                     </tr>
                   )}
                   {data.call_sign != null &&
@@ -192,47 +191,6 @@ function Vessel({ alert }) {
                         <td className="">{data.call_sign}</td>
                       </tr>
                     )}
-                  {data.destination != null &&
-                    data.destination.trim().length > 0 && (
-                      <tr>
-                        <td className=" has-text-weight-bold">Destination</td>
-                        <td className="">{data.destination}</td>
-                      </tr>
-                    )}
-                  {shipStatusDescription != null &&
-                    data.navigation_status < ShipStatus.Notdefined && (
-                      <tr>
-                        <td className=" has-text-weight-bold">Status</td>
-                        <td className="">{shipStatusDescription}</td>
-                      </tr>
-                    )}
-                  {shipLength != null && shipBreadth != null && (
-                    <tr>
-                      <td className=" has-text-weight-bold">Dimensions</td>
-                      <td className="">
-                        {shipLength} m x {shipBreadth} m
-                      </td>
-                    </tr>
-                  )}
-
-                  {data.speed_over_ground != null && (
-                    <tr>
-                      <td className="has-text-weight-bold">Speed</td>
-                      <td className="">{data.speed_over_ground} kn</td>
-                    </tr>
-                  )}
-                  {data.course_over_ground != null && (
-                    <tr>
-                      <td className="has-text-weight-bold">Course</td>
-                      <td className="">{data.course_over_ground} °</td>
-                    </tr>
-                  )}
-                  {data.draught != null && (
-                    <tr>
-                      <td className="has-text-weight-bold">Draught</td>
-                      <td className="">{data.draught} m</td>
-                    </tr>
-                  )}
                   {coordsDMS != null && (
                     <tr>
                       <td className="has-text-weight-bold">Position</td>
@@ -273,4 +231,4 @@ function Vessel({ alert }) {
   );
 }
 
-export default Vessel;
+export default NavigationAid;

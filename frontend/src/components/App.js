@@ -5,6 +5,7 @@ import Station from "./Station";
 import Stations from "./Stations";
 import Vessel from "./Vessel";
 import Vessels from "./Vessels";
+import NavigationAid from "./NavigationAid";
 import NavigationAids from "./NavigationAids";
 import About from "./About";
 import NotFound from "./NotFound";
@@ -57,10 +58,10 @@ function App() {
               path="/vessels"
               element={<Vessels alert={setAlert} />}
             ></Route>
-            {/* <Route
+            <Route
               path="/navigation-aid/:mmsi"
               element={<NavigationAid alert={setAlert} />}
-            ></Route> */}
+            ></Route>
             <Route
               path="/navigation-aids"
               element={<NavigationAids alert={setAlert} />}

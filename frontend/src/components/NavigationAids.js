@@ -376,7 +376,7 @@ function NavigationAids({ alert }) {
                                 e.stopPropagation();
                               }}
                             >
-                              <Link to={"/navigationAid/" + item.mmsi}>
+                              <Link to={"/navigation-aid/" + item.mmsi}>
                                 {item.name || "Unknown"}
                               </Link>
                             </span>

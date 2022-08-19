@@ -55,9 +55,13 @@ function AisObjectPopup({ data }) {
           {objectType == TypeOfObject.Ship && (
             <Link to={"/vessel/" + data.mmsi}>{data.name}</Link>
           )}
-          {objectType != TypeOfObject.Ship && (
-            <React.Fragment>{data.name}</React.Fragment>
+          {objectType == TypeOfObject.AidsToNavigation && (
+            <Link to={"/navigation-aid/" + data.mmsi}>{data.name}</Link>
           )}
+          {objectType != TypeOfObject.Ship &&
+            objectType != TypeOfObject.AidsToNavigation && (
+              <React.Fragment>{data.name}</React.Fragment>
+            )}
         </h1>
       )}
       {(data.name == null || data.name.length == 0) && objectTypeDescription && (
