@@ -13,6 +13,7 @@ public class DatabaseModule : NinjectModule
         Kernel.Bind<IDatabaseService>().To<DatabaseService>();
         Kernel.Bind<IStationService>().To<StationService>().WithConstructorArgument("minutesCacheEntryExpiration", minutesCacheEntryExpiration);
         Kernel.Bind<IVesselService>().To<VesselService>();
+        Kernel.Bind<INavigationAidService>().To<NavigationAidService>();
         Kernel.Bind<IMMSIService>().To<MMSIService>();
     }
 

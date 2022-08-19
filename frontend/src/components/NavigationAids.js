@@ -2,28 +2,29 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { FlagsByMid, getCountryDescription, getFlagInformation } from "../mmsi";
-import { getShipTypeDescription, ShipTypes } from "../shipTypes";
 import Loading from "./Loading";
 import Pagination from "./Pagination";
-import "./Vessels.css";
+import "./NavigationAids.css";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import http from "../http";
+import { NavAidTypeDescriptions, getNavAidTypeDescription } from "../navAids";
 
-function Vessels({ alert }) {
+function NavigationAids({ alert }) {
   const [search, setSearch] = useSearchParams();
   const location = useLocation();
   const [pageNumber, setPageNumber] = useState(null);
   const [pageSize, setPageSize] = useState(null);
   const [totalPages, setTotalPages] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [vessels, setVessels] = useState(null);
+  const [navigationAids, setNavigationAids] = useState(null);
   const [searchCountryCodes, setSearchCountryCodes] = useState("");
-  const [searchShipTypes, setSearchShipTypes] = useState("");
+  const [searchNavigationAidTypes, setSearchNavigationAidTypes] = useState("");
   const [searchText, setSearchText] = useState("");
   const [countryCodeFilterDataSource, setCountryCodeFilterDataSource] =
     useState(null);
-  const [shipTypesDataSource, setShipTypesDataSource] = useState(null);
+  const [navigationAidTypesDataSource, setNavigationAidTypesDataSource] =
+    useState(null);
 
   const navigate = useNavigate();
 
@@ -49,39 +50,12 @@ function Vessels({ alert }) {
   }, []);
 
   useEffect(() => {
-    let dataSource = [];
+    let dataSource = Object.keys(NavAidTypeDescriptions).map((key) => [
+      key,
+      NavAidTypeDescriptions[key],
+    ]);
 
-    dataSource.push([ShipTypes.CargoShip.join(","), "Cargo"]);
-    dataSource.push([ShipTypes.TankerShip.join(","), "Tanker"]);
-    dataSource.push([ShipTypes.PassengerShip.join(","), "Passenger"]);
-    dataSource.push([
-      ShipTypes.HighSpeedCraftShip.join(","),
-      "High-speed craft",
-    ]);
-    dataSource.push([ShipTypes.FishingShip.join(","), "Fishing"]);
-    dataSource.push([ShipTypes.TowingShip.join(","), "Towing"]);
-    dataSource.push([ShipTypes.MilitaryShip.join(","), "Military"]);
-    dataSource.push([ShipTypes.SailingShip.join(","), "Sailing"]);
-    dataSource.push([
-      ShipTypes.LawEnforcementShip.join(","),
-      "Law enforcement",
-    ]);
-    dataSource.push([ShipTypes.PleasureCraft.join(","), "Pleasure craft"]);
-    dataSource.push([ShipTypes.PilotVessel.join(","), "Pilot vessel"]);
-    dataSource.push([
-      ShipTypes.SearchAndRescueVessel.join(","),
-      "Search and rescue",
-    ]);
-    dataSource.push([
-      ShipTypes.AntiPolutionEquipment.join(","),
-      "Anti-polution equipment",
-    ]);
-    dataSource.push([ShipTypes.MedicalTransport.join(","), "Medical"]);
-    dataSource.push([ShipTypes.WingInGround.join(","), "Wing in ground"]);
-
-    dataSource = dataSource.sort((a, b) => a[1].localeCompare(b[1]));
-
-    setShipTypesDataSource(dataSource);
+    setNavigationAidTypesDataSource(dataSource);
   }, []);
 
   useEffect(() => {
@@ -92,7 +66,7 @@ function Vessels({ alert }) {
 
     setSearchCountryCodes(params.paramCountryCodes || "");
 
-    setSearchShipTypes(params.paramShipTypes || "");
+    setSearchNavigationAidTypes(params.paramNavigationAidTypes || "");
     setSearchText(params.paramSearchText || "");
   }, [search]);
 
@@ -126,10 +100,13 @@ function Vessels({ alert }) {
     if (paramCountryCodes == null || paramCountryCodes.toString().length == 0) {
       paramCountryCodes = null;
     }
-    let paramShipTypes = search.get("shipTypes");
+    let paramNavigationAidTypes = search.get("navigationAidTypes");
 
-    if (paramShipTypes == null || paramShipTypes.toString().length == 0) {
-      paramShipTypes = null;
+    if (
+      paramNavigationAidTypes == null ||
+      paramNavigationAidTypes.toString().length == 0
+    ) {
+      paramNavigationAidTypes = null;
     }
     let paramSearchText = search.get("text");
 
@@ -141,7 +118,7 @@ function Vessels({ alert }) {
       paramPageNumber: paramPageNumber,
       paramPageSize: paramPageSize,
       paramSearchText: paramSearchText,
-      paramShipTypes: paramShipTypes,
+      paramNavigationAidTypes: paramNavigationAidTypes,
       paramCountryCodes: paramCountryCodes,
     };
   }
@@ -153,7 +130,7 @@ function Vessels({ alert }) {
       pageNumber: paramsFromSearch.paramPageNumber,
       pageSize: paramsFromSearch.paramPageSize,
       countryCodes: paramsFromSearch.paramCountryCodes,
-      shipTypes: paramsFromSearch.paramShipTypes,
+      aidTypes: paramsFromSearch.paramNavigationAidTypes,
       text: paramsFromSearch.paramSearchText,
     };
   }
@@ -162,32 +139,37 @@ function Vessels({ alert }) {
     setIsLoading(true);
 
     http.plain
-      .get("/vessel", {
+      .get("/navigationAid", {
         params: getParams(),
       })
       .then((result) => {
         if (result?.data) {
-          setVessels(result.data);
+          setNavigationAids(result.data);
           setTotalPages(result.data.totalPages);
           if (result.data && result.data.items) {
             result.data.items.forEach((dto) => {
               dto.countryName = getCountryDescription(dto.mmsi);
               dto.flagInformation = getFlagInformation(dto.mmsi);
-              dto.shipTypeDescription = getShipTypeDescription(dto.ship_type);
+              dto.navigationAidTypeDescription = getNavAidTypeDescription(
+                dto.aid_type
+              );
             });
           }
         }
       })
       .catch((error) => {
-        alert("danger", "Unable to display vessels, please try again later.");
+        alert(
+          "danger",
+          "Unable to display navigation aids, please try again later."
+        );
       })
       .then(() => {
         setIsLoading(false);
       });
   }
 
-  function navigateToVessel(mmsi) {
-    navigate("/vessel/" + mmsi);
+  function navigateToNavigationAid(mmsi) {
+    navigate("/navigation-aid/" + mmsi);
   }
 
   function handleCountryCodeChange(event) {
@@ -204,8 +186,8 @@ function Vessels({ alert }) {
     }
   }
 
-  function handleShipTypeChange(event) {
-    setSearchShipTypes(event.target.value);
+  function handleNavigationAidTypeChange(event) {
+    setSearchNavigationAidTypes(event.target.value);
   }
 
   function searchData() {
@@ -218,10 +200,10 @@ function Vessels({ alert }) {
       };
     }
 
-    if (searchShipTypes) {
+    if (searchNavigationAidTypes) {
       updatedSearch = {
         ...updatedSearch,
-        shipTypes: searchShipTypes,
+        navigationAidTypes: searchNavigationAidTypes,
       };
     }
 
@@ -245,7 +227,7 @@ function Vessels({ alert }) {
 
   function resetSearchFilters() {
     setSearchCountryCodes("");
-    setSearchShipTypes("");
+    setSearchNavigationAidTypes("");
     setSearchText("");
   }
 
@@ -253,8 +235,8 @@ function Vessels({ alert }) {
     <React.Fragment>
       {isLoading && <Loading />}
       <section className="section-container">
-        <h1 className="title">Vessels</h1>
-        {vessels != null && vessels.items != null && (
+        <h1 className="title">Navigation aids</h1>
+        {navigationAids != null && navigationAids.items != null && (
           <React.Fragment>
             <div className="box">
               <div className="columns">
@@ -286,12 +268,12 @@ function Vessels({ alert }) {
                     <div className="control">
                       <div className="select is-fullwidth">
                         <select
-                          value={searchShipTypes}
-                          onChange={handleShipTypeChange}
+                          value={searchNavigationAidTypes}
+                          onChange={handleNavigationAidTypeChange}
                           onKeyDown={handleKeyDownSearch}
                         >
                           <option value=""></option>
-                          {shipTypesDataSource.map((x) => (
+                          {navigationAidTypesDataSource.map((x) => (
                             <option key={x[0]} value={x[0]}>
                               {x[1]}
                             </option>
@@ -304,7 +286,7 @@ function Vessels({ alert }) {
 
                 <div className="column">
                   <div className="field">
-                    <label className="label">MMSI/IMO/Name</label>
+                    <label className="label">MMSI/Name</label>
                     <div className="control">
                       <input
                         className="input"
@@ -337,9 +319,9 @@ function Vessels({ alert }) {
                 </div>
               </div>
             </div>
-            {vessels.items.length > 0 && (
+            {navigationAids.items.length > 0 && (
               <React.Fragment>
-                <table className="table table-vessels is-striped is-fullwidth is-bordered  is-hoverable">
+                <table className="table table-navigation-aids is-striped is-fullwidth is-bordered  is-hoverable">
                   <thead>
                     <tr>
                       <th className="is-hidden-mobile th-country">Country</th>
@@ -349,13 +331,13 @@ function Vessels({ alert }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {vessels.items.map((item) => (
+                    {navigationAids.items.map((item) => (
                       <tr
                         className=" is-clickable"
                         key={item.mmsi}
-                        onClick={() => navigateToVessel(item.mmsi)}
+                        onClick={() => navigateToNavigationAid(item.mmsi)}
                       >
-                        <td className="td-country is-hidden-mobile td-vessel">
+                        <td className="td-country is-hidden-mobile td-navigation-aid">
                           {item.flagInformation && (
                             <img
                               className="flag-img-tiny"
@@ -373,7 +355,9 @@ function Vessels({ alert }) {
                             </span>
                           )}
                         </td>
-                        <td className="td-mmsi td-vessel">{item.mmsi}</td>
+                        <td className="td-mmsi td-navigation-aid">
+                          {item.mmsi}
+                        </td>
                         <td>
                           <div className="name-container">
                             {item.flagInformation && (
@@ -392,15 +376,15 @@ function Vessels({ alert }) {
                                 e.stopPropagation();
                               }}
                             >
-                              <Link to={"/vessel/" + item.mmsi}>
+                              <Link to={"/navigationAid/" + item.mmsi}>
                                 {item.name || "Unknown"}
                               </Link>
                             </span>
                           </div>
                         </td>
 
-                        <td className=" is-hidden-mobile td-vessel">
-                          {item.shipTypeDescription}
+                        <td className=" is-hidden-mobile td-navigation-aid">
+                          {item.navigationAidTypeDescription}
                         </td>
                       </tr>
                     ))}
@@ -415,8 +399,10 @@ function Vessels({ alert }) {
                 />
               </React.Fragment>
             )}
-            {vessels.items.length == 0 && (
-              <div className="box has-text-weight-bold">No vessels found.</div>
+            {navigationAids.items.length == 0 && (
+              <div className="box has-text-weight-bold">
+                No navigation aids found.
+              </div>
             )}
           </React.Fragment>
         )}
@@ -425,4 +411,4 @@ function Vessels({ alert }) {
   );
 }
 
-export default Vessels;
+export default NavigationAids;

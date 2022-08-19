@@ -1,0 +1,28 @@
+.country-name {
+    margin-left: 4px;
+}
+
+.th-mmsi {
+    width: 120px;
+}
+
+.th-country {
+    max-width: 240px;
+    width: 240px;
+}
+
+.name-container {
+    gap: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.td-navigation-aid {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.table-navigation-aids {
+    table-layout: fixed;
+}
