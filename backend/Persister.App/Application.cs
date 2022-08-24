@@ -9,13 +9,15 @@ public class Application
     private readonly IDatabaseService databaseService;
     private readonly IMapper mapper;
     private readonly ILogger<Application> logger;
+    private readonly bool saveMessages;
 
-    public Application(IReceiver receiver, IDatabaseService databaseService, ILogger<Application> logger, IMapper mapper)
+    public Application(IReceiver receiver, IDatabaseService databaseService, ILogger<Application> logger, IMapper mapper, bool saveMessages)
     {
         this.receiver = receiver;
         this.databaseService = databaseService;
         this.logger = logger;
         this.mapper = mapper;
+        this.saveMessages = saveMessages;
     }
 
     public void Run(CancellationToken token)
@@ -25,7 +27,11 @@ public class Application
             try
             {
                 databaseService.Save(mapper.Map<DTOObjectData>(decodedMessage));
-                databaseService.Insert(mapper.Map<DTOMessage>(decodedMessage));
+
+                if (saveMessages)
+                {
+                    databaseService.Insert(mapper.Map<DTOMessage>(decodedMessage));
+                }
             }
             catch (Exception exception)
             {

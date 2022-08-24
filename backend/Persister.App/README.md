@@ -17,13 +17,14 @@ Persister is a dotnet application that is used to store decoded AIS messages. It
 
 Configuration is done via environment variables.
 
-| Name                                             | Description                                                        |
-| ------------------------------------------------ | ------------------------------------------------------------------ |
-| MARITIMO_DB_CONNECTION_STRING                    | Database connection string                                         |
-| MARITIMO_RABBITMQ_URI                            | URI for the RabbitMQ broker instance                               |
-| MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME | Broker exchange name for decoded messages                          |
-| MARITIMO_DB_CACHE_MINUTES_EXPIRATION             | Minutes until expiration of a cache entry for a station            |
-| MARITIMO_LOG_LEVEL_MINIMUM                       | Minimum logging level (TRACE/DEBUG/INFORMATION/WARNING/ERROR/NONE) |
+| Name                                             | Description                                                                          |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------ |
+| MARITIMO_DB_CONNECTION_STRING                    | Database connection string                                                           |
+| MARITIMO_RABBITMQ_URI                            | URI for the RabbitMQ broker instance                                                 |
+| MARITIMO_RABBITMQ_DECODED_MESSAGES_EXCHANGE_NAME | Broker exchange name for decoded messages                                            |
+| MARITIMO_DB_CACHE_MINUTES_EXPIRATION             | Minutes until expiration of a cache entry for a station                              |
+| MARITIMO_LOG_LEVEL_MINIMUM                       | Minimum logging level (TRACE/DEBUG/INFORMATION/WARNING/ERROR/NONE)                   |
+| MARITIMO_PERSISTER_SAVE_MESSAGES                 | Specifies whether to save AIS messages (might require a lot of disk space over time) |
 
 ## Running
 

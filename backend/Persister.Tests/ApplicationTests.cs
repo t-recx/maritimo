@@ -27,8 +27,6 @@ public class Tests
         loggerMock = new Mock<ILogger<Application>>();
 
         mapper = (new PersisterModule()).GetMapper();
-
-        application = new Application(receiverMock.Object, databaseServiceMock.Object, loggerMock.Object, mapper);
     }
 
     [Test]
@@ -41,6 +39,18 @@ public class Tests
         databaseServiceMock.Verify(x =>
             x.Insert(It.Is<DTOMessage>(dto =>
                 dto.mmsi == 1 && dto.message_type == 22 && dto.navigation_status == 5)));
+    }
+
+    [Test]
+    public void Run_WhenMessageReceived_ButSaveMessagesParameterIsFalse_ShouldNotCallInsertOnDatabaseService()
+    {
+        SetupApplication(saveMessages: false);
+
+        Send(new DecodedMessage() { mmsi = 1, message_type = 22, navigation_status = 5 });
+
+        databaseServiceMock.Verify(x =>
+            x.Insert(It.Is<DTOMessage>(dto =>
+                dto.mmsi == 1 && dto.message_type == 22 && dto.navigation_status == 5)), Times.Never());
     }
 
     [Test]
@@ -72,8 +82,10 @@ public class Tests
         receiverMock.Raise(m => m.Received += null, this, message);
     }
 
-    void SetupApplication()
+    void SetupApplication(bool saveMessages = true)
     {
+        application = new Application(receiverMock.Object, databaseServiceMock.Object, loggerMock.Object, mapper, saveMessages);
+
         CancellationTokenSource tokenSource = new CancellationTokenSource();
         tokenSource.Cancel();
         // we'll execute Run with a cancelled token so that Run exits immediately after the first execution
