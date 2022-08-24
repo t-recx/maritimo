@@ -10,7 +10,7 @@ namespace Persister.App;
 
 public class PersisterModule
 {
-    public IKernel GetKernel(string connectionString, string exchangeName, string brokerUri, int minutesCacheStationExpiration, LogLevel logLevel)
+    public IKernel GetKernel(string connectionString, string exchangeName, string brokerUri, int minutesCacheStationExpiration, LogLevel logLevel, bool saveMessages)
     {
         var databaseModule = new DatabaseModule(connectionString, minutesCacheStationExpiration);
         var receiverModule = new ReceiverModule(exchangeName, brokerUri);
@@ -32,6 +32,7 @@ public class PersisterModule
         kernel.Bind<ILogger<IStationService>>().ToMethod(x => loggerFactory.CreateLogger<StationService>());
         kernel.Bind<ILogger<IReceiver>>().ToMethod(x => loggerFactory.CreateLogger<IReceiver>());
         kernel.Bind<ILogger<Application>>().ToMethod(x => loggerFactory.CreateLogger<Application>());
+        kernel.Bind<Application>().To<Application>().WithConstructorArgument("saveMessages", saveMessages);
 
         kernel.Get<IMaritimoContextFactory>().Get().Database.Migrate();
 

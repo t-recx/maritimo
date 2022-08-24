@@ -10,6 +10,7 @@ class Program
     const string RabbitMqUriEnvVarName = "MARITIMO_RABBITMQ_URI";
     const string MinutesCacheStationExpirationEnvVarName = "MARITIMO_DB_CACHE_MINUTES_EXPIRATION";
     const string LogLevelEnvVarName = "MARITIMO_LOG_LEVEL_MINIMUM";
+    const string SaveMessagesEnvVarName = "MARITIMO_PERSISTER_SAVE_MESSAGES";
 
     static void Main(string[] args)
     {
@@ -20,6 +21,7 @@ class Program
         int minutesCacheStationExpiration;
         var logLevelString = Environment.GetEnvironmentVariable(LogLevelEnvVarName);
         LogLevel logLevel;
+        var saveMessages = Environment.GetEnvironmentVariable(SaveMessagesEnvVarName);
 
         if (connectionString == null)
         {
@@ -63,9 +65,15 @@ class Program
 
             return;
         }
+        else if (saveMessages == null)
+        {
+            Console.Error.WriteLine("No configuration to define whether messages are persisted was specified. Set {0} environment variable.", SaveMessagesEnvVarName);
+
+            return;
+        }
 
         (new PersisterModule())
-            .GetKernel(connectionString!, exchangeName!, brokerUri!, minutesCacheStationExpiration, logLevel)
+            .GetKernel(connectionString!, exchangeName!, brokerUri!, minutesCacheStationExpiration, logLevel, saveMessages.ToLower() == "true")
             .Get<Application>()
             .Run(new CancellationToken());
     }
