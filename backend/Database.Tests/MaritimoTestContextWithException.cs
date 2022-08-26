@@ -14,6 +14,7 @@ public class MaritimoTestContextWithException : IMaritimoContext
     public DbSet<Station> Stations { get { throw exception; } }
     public DbSet<StationAddress> StationAddresses { get { throw exception; } }
     public DbSet<StationOperator> StationOperators { get { throw exception; } }
+    public DbSet<Photo> Photos { get { throw exception; } }
 
     public DatabaseFacade Database => throw exception;
 
