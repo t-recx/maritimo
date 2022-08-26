@@ -90,6 +90,11 @@ Open [http://localhost](http://localhost) to access the application.
 | [John Wiseman](https://www.cantab.net/users/john.wiseman/Documents/) | Lewis and Harris, Scotland |
 | [Rene](https://www.discriminator.nl/ais/index-en.html)               | Rotterdam, Netherlands     |
 | [John Hearne](http://homepage.eircom.net/~johnhearne/index.html)     | Cork, Ireland              |
+| [Manfred Schenk](www.vallicone.fr)                                   | Vallicone, Corsica, France |
+| [Peter Roosens](www.vvwmendonk.com)                                  | Mendonk, Belgium           |
+| [Telcomserv](www.telcomserv.eu)                                      | Aalst, Belgium             |
+| [Kinsale Angling](www.kinsaleangling.com)                            | Kinsale, Ireland           |
+| [Subsea Survey Services Ltd.](www.subseasurvey.ie/)                  | Cork, Ireland              |
 
 ## Special thanks
 
