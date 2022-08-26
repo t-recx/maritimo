@@ -235,177 +235,179 @@ function NavigationAids({ alert }) {
     <React.Fragment>
       {isLoading && <Loading />}
       <section className="section-container">
-        <h1 className="title">Navigation aids</h1>
-        {navigationAids != null && navigationAids.items != null && (
-          <React.Fragment>
-            <div className="box">
-              <div className="columns">
-                <div className="column is-one-quarter">
-                  <div className="field">
-                    <label className="label">Country</label>
-                    <div className="control">
-                      <div className="select is-fullwidth">
-                        <select
-                          value={searchCountryCodes}
-                          onChange={handleCountryCodeChange}
+        <div className="container">
+          <h1 className="title">Navigation aids</h1>
+          {navigationAids != null && navigationAids.items != null && (
+            <React.Fragment>
+              <div className="box">
+                <div className="columns">
+                  <div className="column is-one-quarter">
+                    <div className="field">
+                      <label className="label">Country</label>
+                      <div className="control">
+                        <div className="select is-fullwidth">
+                          <select
+                            value={searchCountryCodes}
+                            onChange={handleCountryCodeChange}
+                            onKeyDown={handleKeyDownSearch}
+                          >
+                            <option value=""></option>
+                            {countryCodeFilterDataSource.map((x) => (
+                              <option key={x[0]} value={x[0]}>
+                                {x[1]}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="column is-one-quarter">
+                    <div className="field">
+                      <label className="label">Type</label>
+                      <div className="control">
+                        <div className="select is-fullwidth">
+                          <select
+                            value={searchNavigationAidTypes}
+                            onChange={handleNavigationAidTypeChange}
+                            onKeyDown={handleKeyDownSearch}
+                          >
+                            <option value=""></option>
+                            {navigationAidTypesDataSource.map((x) => (
+                              <option key={x[0]} value={x[0]}>
+                                {x[1]}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="column">
+                    <div className="field">
+                      <label className="label">MMSI/Name</label>
+                      <div className="control">
+                        <input
+                          className="input"
+                          type="text"
+                          placeholder=""
+                          value={searchText}
+                          onChange={handleTextSearchChange}
                           onKeyDown={handleKeyDownSearch}
-                        >
-                          <option value=""></option>
-                          {countryCodeFilterDataSource.map((x) => (
-                            <option key={x[0]} value={x[0]}>
-                              {x[1]}
-                            </option>
-                          ))}
-                        </select>
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
-
-                <div className="column is-one-quarter">
-                  <div className="field">
-                    <label className="label">Type</label>
-                    <div className="control">
-                      <div className="select is-fullwidth">
-                        <select
-                          value={searchNavigationAidTypes}
-                          onChange={handleNavigationAidTypeChange}
-                          onKeyDown={handleKeyDownSearch}
+                <div className="field is-grouped is-justify-content-end">
+                  <div className="control">
+                    <button className="button is-link" onClick={searchData}>
+                      <span className="icon">
+                        <FontAwesomeIcon icon={faMagnifyingGlass} size="sm" />
+                      </span>
+                      <span>Search</span>
+                    </button>
+                  </div>
+                  <div className="control">
+                    <button
+                      className="button is-link is-light"
+                      onClick={resetSearchFilters}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {navigationAids.items.length > 0 && (
+                <React.Fragment>
+                  <table className="table table-navigation-aids is-striped is-fullwidth is-bordered  is-hoverable">
+                    <thead>
+                      <tr>
+                        <th className="is-hidden-mobile th-country">Country</th>
+                        <th className="th-mmsi">MMSI</th>
+                        <th>Name</th>
+                        <th className=" is-hidden-mobile">Type</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {navigationAids.items.map((item) => (
+                        <tr
+                          className=" is-clickable"
+                          key={item.mmsi}
+                          onClick={() => navigateToNavigationAid(item.mmsi)}
                         >
-                          <option value=""></option>
-                          {navigationAidTypesDataSource.map((x) => (
-                            <option key={x[0]} value={x[0]}>
-                              {x[1]}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="column">
-                  <div className="field">
-                    <label className="label">MMSI/Name</label>
-                    <div className="control">
-                      <input
-                        className="input"
-                        type="text"
-                        placeholder=""
-                        value={searchText}
-                        onChange={handleTextSearchChange}
-                        onKeyDown={handleKeyDownSearch}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="field is-grouped is-justify-content-end">
-                <div className="control">
-                  <button className="button is-link" onClick={searchData}>
-                    <span className="icon">
-                      <FontAwesomeIcon icon={faMagnifyingGlass} size="sm" />
-                    </span>
-                    <span>Search</span>
-                  </button>
-                </div>
-                <div className="control">
-                  <button
-                    className="button is-link is-light"
-                    onClick={resetSearchFilters}
-                  >
-                    Clear
-                  </button>
-                </div>
-              </div>
-            </div>
-            {navigationAids.items.length > 0 && (
-              <React.Fragment>
-                <table className="table table-navigation-aids is-striped is-fullwidth is-bordered  is-hoverable">
-                  <thead>
-                    <tr>
-                      <th className="is-hidden-mobile th-country">Country</th>
-                      <th className="th-mmsi">MMSI</th>
-                      <th>Name</th>
-                      <th className=" is-hidden-mobile">Type</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {navigationAids.items.map((item) => (
-                      <tr
-                        className=" is-clickable"
-                        key={item.mmsi}
-                        onClick={() => navigateToNavigationAid(item.mmsi)}
-                      >
-                        <td className="td-country is-hidden-mobile td-navigation-aid">
-                          {item.flagInformation && (
-                            <img
-                              className="flag-img-tiny"
-                              src={item.flagInformation.img}
-                              alt={item.flagInformation.alt}
-                              title={item.countryName}
-                            />
-                          )}
-                          {item.countryName && (
-                            <span
-                              className="country-name is-hidden-mobile"
-                              title={item.countryName}
-                            >
-                              {item.countryName}
-                            </span>
-                          )}
-                        </td>
-                        <td className="td-mmsi td-navigation-aid">
-                          {item.mmsi}
-                        </td>
-                        <td>
-                          <div className="name-container">
+                          <td className="td-country is-hidden-mobile td-navigation-aid">
                             {item.flagInformation && (
                               <img
-                                className="flag-img-tiny is-hidden-tablet"
+                                className="flag-img-tiny"
                                 src={item.flagInformation.img}
                                 alt={item.flagInformation.alt}
                                 title={item.countryName}
                               />
                             )}
-                            <span
-                              className="with-ellipsis"
-                              title={item.name || "Unknown"}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                              }}
-                            >
-                              <Link to={"/navigation-aid/" + item.mmsi}>
-                                {item.name || "Unknown"}
-                              </Link>
-                            </span>
-                          </div>
-                        </td>
+                            {item.countryName && (
+                              <span
+                                className="country-name is-hidden-mobile"
+                                title={item.countryName}
+                              >
+                                {item.countryName}
+                              </span>
+                            )}
+                          </td>
+                          <td className="td-mmsi td-navigation-aid">
+                            {item.mmsi}
+                          </td>
+                          <td>
+                            <div className="name-container">
+                              {item.flagInformation && (
+                                <img
+                                  className="flag-img-tiny is-hidden-tablet"
+                                  src={item.flagInformation.img}
+                                  alt={item.flagInformation.alt}
+                                  title={item.countryName}
+                                />
+                              )}
+                              <span
+                                className="with-ellipsis"
+                                title={item.name || "Unknown"}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
+                              >
+                                <Link to={"/navigation-aid/" + item.mmsi}>
+                                  {item.name || "Unknown"}
+                                </Link>
+                              </span>
+                            </div>
+                          </td>
 
-                        <td className=" is-hidden-mobile td-navigation-aid">
-                          {item.navigationAidTypeDescription}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-                <Pagination
-                  location={location}
-                  searchParams={search}
-                  pageNumberParamName="pageNumber"
-                  pageNumber={pageNumber}
-                  totalPages={totalPages}
-                />
-              </React.Fragment>
-            )}
-            {navigationAids.items.length == 0 && (
-              <div className="box has-text-weight-bold">
-                No navigation aids found.
-              </div>
-            )}
-          </React.Fragment>
-        )}
+                          <td className=" is-hidden-mobile td-navigation-aid">
+                            {item.navigationAidTypeDescription}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <Pagination
+                    location={location}
+                    searchParams={search}
+                    pageNumberParamName="pageNumber"
+                    pageNumber={pageNumber}
+                    totalPages={totalPages}
+                  />
+                </React.Fragment>
+              )}
+              {navigationAids.items.length == 0 && (
+                <div className="box has-text-weight-bold">
+                  No navigation aids found.
+                </div>
+              )}
+            </React.Fragment>
+          )}
+        </div>
       </section>
     </React.Fragment>
   );

@@ -57,6 +57,7 @@ An additional configuration .env file is also expected on the [frontend/](fronte
 | -------------------------------------- | ------------------------------------------------------------ |
 | REACT_APP_WEB_API_URL                  | URL for the REST API endpoint for the latest AIS information |
 | REACT_APP_TRANSMITTER_HUB_URL          | URL for the transmitter hub endpoint                         |
+| REACT_APP_PHOTOS_URL                   | URL for the photos endpoint                                  |
 | REACT_APP_MAP_OBJECT_LIFESPAN_HOURS    | Object lifespan in hours                                     |
 | REACT_APP_MAP_INITIAL_CENTER_LATITUDE  | Map's initial latitude                                       |
 | REACT_APP_MAP_INITIAL_CENTER_LONGITUDE | Map's initial longitude                                      |

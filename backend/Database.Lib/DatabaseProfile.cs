@@ -15,5 +15,6 @@ public class DatabaseProfile : Profile
             .ForAllMembers(opts => opts
                 .Condition((src, dest, srcMember) => opts.DestinationMember.Name == "source_id" || opts.DestinationMember.Name == "source_ip_address" || srcMember != null));
         CreateMap<Station, DTOStation>();
+        CreateMap<Photo, DTOPhoto>();
     }
 }
