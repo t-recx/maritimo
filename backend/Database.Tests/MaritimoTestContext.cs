@@ -10,6 +10,7 @@ public class MaritimoTestContext : DbContext, IMaritimoContext
     public DbSet<Station> Stations => Set<Station>();
     public DbSet<StationAddress> StationAddresses => Set<StationAddress>();
     public DbSet<StationOperator> StationOperators => Set<StationOperator>();
+    public DbSet<Photo> Photos => Set<Photo>();
 
     public MaritimoTestContext(DbContextOptions<MaritimoTestContext> options)
         : base(options)

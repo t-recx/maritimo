@@ -16,6 +16,7 @@ import TimeAgo from "timeago-react";
 import NotFound from "./NotFound";
 import http from "../http";
 import { getNavAidTypeDescription } from "../navAids";
+import PhotoThumbnailAis from "./PhotoThumbnailAis";
 
 function NavigationAid({ alert }) {
   let { mmsi } = useParams();
@@ -137,92 +138,120 @@ function NavigationAid({ alert }) {
       ) : (
         data != null && (
           <section className="section-container ">
-            <div>
-              <h1 className="title">{data.name || objectTypeDescription}</h1>
-              <p className="subtitle ais-object-subtitle-container mb-2">
-                {flagInformation && (
-                  <img
-                    className="flag-img"
-                    src={flagInformation.img}
-                    alt={flagInformation.alt}
-                    title={navigationAidCountryDescription}
-                  />
-                )}
-                <span>{navigationAidTypeDescription}</span>
-              </p>
-              <hr className="mt-0 mb-2" />
-              <div className="mb-4"></div>
-            </div>
-            {canShowMap && (
-              <div className="block navigation-aid-map-block">
-                <AisMap
-                  alert={alert}
-                  changeParamsLocation={false}
-                  latitude={data.latitude}
-                  longitude={data.longitude}
-                  followMMSI={data.mmsi}
-                  dataUpdatedCallback={handleDataUpdated}
-                  zoom={13}
-                />
+            <div className="container">
+              <div>
+                <h1 className="title">{data.name || objectTypeDescription}</h1>
+                <p className="subtitle ais-object-subtitle-container mb-2">
+                  {flagInformation && (
+                    <img
+                      className="flag-img"
+                      src={flagInformation.img}
+                      alt={flagInformation.alt}
+                      title={navigationAidCountryDescription}
+                    />
+                  )}
+                  <span>{navigationAidTypeDescription}</span>
+                </p>
+                <hr className="mt-0 mb-2" />
+                <div className="mb-4"></div>
               </div>
-            )}
-            <div className="block">
-              <table className="table is-fullwidth is-striped is-bordered">
-                <tbody>
-                  {data.mmsi != null && data.mmsi > 0 && (
-                    <tr>
-                      <td className=" has-text-weight-bold">MMSI</td>
-                      <td className="">{data.mmsi}</td>
-                    </tr>
-                  )}
-                  {navigationAidLength > 0 && navigationAidBreadth > 0 && (
-                    <tr>
-                      <td className=" has-text-weight-bold">Dimensions</td>
-                      <td className="">
-                        {navigationAidLength} m x {navigationAidBreadth} m
-                      </td>
-                    </tr>
-                  )}
-                  {data.call_sign != null &&
-                    data.call_sign.length > 0 &&
-                    data.call_sign != "0" && (
-                      <tr>
-                        <td className=" has-text-weight-bold">Call Sign</td>
-                        <td className="">{data.call_sign}</td>
-                      </tr>
-                    )}
-                  {coordsDMS != null && (
-                    <tr>
-                      <td className="has-text-weight-bold">Position</td>
-                      <td className="">{coordsDMS}</td>
-                    </tr>
-                  )}
-                  {data.updated != null && (
-                    <tr>
-                      <td className="has-text-weight-bold">Updated</td>
-                      <td className="updated-time-ago-cell">
-                        <TimeAgo datetime={data.updated} />
-                      </td>
-                    </tr>
-                  )}
-                  {data.station_name != null && (
-                    <tr>
-                      <td className="has-text-weight-bold">Source</td>
-                      <td
-                        className=""
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                      >
-                        <Link to={`/station/${data.station_id}`}>
-                          {data.station_name}
-                        </Link>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+              <div className="columns">
+                <div className="column is-two-fifths">
+                  <div className="card">
+                    <div className="card-image">
+                      <PhotoThumbnailAis alert={alert} mmsi={data.mmsi} />
+                    </div>
+                    <div className="card-content">
+                      <table className="table is-fullwidth is-striped is-bordered">
+                        <tbody>
+                          {data.mmsi != null && data.mmsi > 0 && (
+                            <tr>
+                              <td className=" has-text-weight-bold">MMSI</td>
+                              <td className="">{data.mmsi}</td>
+                            </tr>
+                          )}
+                          {navigationAidLength > 0 && navigationAidBreadth > 0 && (
+                            <tr>
+                              <td className=" has-text-weight-bold">
+                                Dimensions
+                              </td>
+                              <td className="">
+                                {navigationAidLength} m x {navigationAidBreadth}{" "}
+                                m
+                              </td>
+                            </tr>
+                          )}
+                          {data.call_sign != null &&
+                            data.call_sign.length > 0 &&
+                            data.call_sign != "0" && (
+                              <tr>
+                                <td className=" has-text-weight-bold">
+                                  Call Sign
+                                </td>
+                                <td className="">{data.call_sign}</td>
+                              </tr>
+                            )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div className="column">
+                  <div className="card">
+                    <div className="card-image">
+                      {canShowMap && (
+                        <div className="block navigation-aid-map-block">
+                          <AisMap
+                            alert={alert}
+                            changeParamsLocation={false}
+                            latitude={data.latitude}
+                            longitude={data.longitude}
+                            followMMSI={data.mmsi}
+                            dataUpdatedCallback={handleDataUpdated}
+                            zoom={13}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div className="card-content">
+                      <table className="table is-fullwidth is-striped is-bordered">
+                        <tbody>
+                          {coordsDMS != null && (
+                            <tr>
+                              <td className="has-text-weight-bold">Position</td>
+                              <td className="">{coordsDMS}</td>
+                            </tr>
+                          )}
+                          {data.updated != null && (
+                            <tr>
+                              <td className="has-text-weight-bold">Updated</td>
+                              <td className="updated-time-ago-cell">
+                                <TimeAgo datetime={data.updated} />
+                              </td>
+                            </tr>
+                          )}
+                          {data.station_name != null && (
+                            <tr>
+                              <td className="has-text-weight-bold">Source</td>
+                              <td
+                                className=""
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
+                              >
+                                <Link to={`/station/${data.station_id}`}>
+                                  {data.station_name}
+                                </Link>
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
         )

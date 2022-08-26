@@ -64,6 +64,7 @@ builder.Services.AddScoped<IMapper>(x => kernel.Get<IMapper>());
 builder.Services.AddScoped<IDatabaseService>(x => kernel.Get<IDatabaseService>());
 builder.Services.AddScoped<IStationService>(x => kernel.Get<IStationService>());
 builder.Services.AddScoped<IVesselService>(x => kernel.Get<IVesselService>());
+builder.Services.AddScoped<IPhotoService>(x => kernel.Get<IPhotoService>());
 builder.Services.AddScoped<INavigationAidService>(x => kernel.Get<INavigationAidService>());
 
 builder.Services.AddControllers().AddJsonOptions(options =>

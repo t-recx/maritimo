@@ -1,9 +1,17 @@
-.station-map-container {
-    height: 100%;
-}
-
 .station-section {
     height: 100%;
     display: flex;
     flex-direction: column;
+}
+
+.table-station-information {
+    table-layout: fixed;
+}
+
+.td-station-field {
+    width: 105px;
+}
+
+.station-map-container {
+    height: 600px;
 }

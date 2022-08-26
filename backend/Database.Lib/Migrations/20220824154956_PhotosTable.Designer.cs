@@ -3,6 +3,7 @@ using System;
 using Database.Lib;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Database.Lib.Migrations
 {
     [DbContext(typeof(MaritimoContext))]
-    partial class MaritimoContextModelSnapshot : ModelSnapshot
+    [Migration("20220824154956_PhotosTable")]
+    partial class PhotosTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -396,28 +398,13 @@ namespace Database.Lib.Migrations
                     b.Property<string>("Author")
                         .HasColumnType("text");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Filename")
-                        .HasColumnType("text");
-
-                    b.Property<string>("FilenameThumbnail")
-                        .HasColumnType("text");
-
-                    b.Property<int?>("Height")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Homepage")
                         .HasColumnType("text");
 
-                    b.Property<int?>("StationId")
-                        .HasColumnType("integer");
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
 
-                    b.Property<int?>("Width")
-                        .HasColumnType("integer");
-
-                    b.Property<long?>("mmsi")
+                    b.Property<long>("mmsi")
                         .HasColumnType("bigint");
 
                     b.HasKey("PhotoId");

@@ -93,105 +93,109 @@ function Stations({ alert }) {
     <React.Fragment>
       {isLoading && <Loading />}
       <section className="section-container">
-        <h1 className="title">Stations</h1>
-        {stations != null && stations.items != null && (
-          <React.Fragment>
-            {stations.items.length > 0 && (
-              <React.Fragment>
-                <table className="table table-stations is-striped is-fullwidth is-bordered  is-hoverable">
-                  <thead>
-                    <tr>
-                      <th className="th-station-id ">ID</th>
-                      <th className="is-hidden-mobile">Country</th>
-                      <th>Name</th>
-                      <th className="is-hidden-mobile">Operator</th>
-                      <th className="th-station-status is-hidden-mobile">
-                        Status
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {stations.items.map((item) => (
-                      <tr
-                        className="is-clickable"
-                        key={item.stationId}
-                        onClick={() => navigateToStation(item.stationId)}
-                      >
-                        <td className="td-station ">{item.stationId}</td>
-                        <td className="td-station td-country is-hidden-mobile">
-                          {item.flagInformation && (
-                            <img
-                              className="flag-img-tiny"
-                              src={item.flagInformation.img}
-                              alt={item.flagInformation.alt}
-                              title={item.countryName}
-                            />
-                          )}
-                          {item.countryName && (
-                            <span
-                              className="country-name is-hidden-mobile"
-                              title={item.countryName}
-                            >
-                              {item.countryName}
-                            </span>
-                          )}
-                        </td>
-                        <td className="td-station ">
-                          <div className="name-container">
+        <div className="container">
+          <h1 className="title">Stations</h1>
+          {stations != null && stations.items != null && (
+            <React.Fragment>
+              {stations.items.length > 0 && (
+                <React.Fragment>
+                  <table className="table table-stations is-striped is-fullwidth is-bordered  is-hoverable">
+                    <thead>
+                      <tr>
+                        <th className="th-station-id ">ID</th>
+                        <th className="is-hidden-mobile">Country</th>
+                        <th>Name</th>
+                        <th className="is-hidden-mobile">Operator</th>
+                        <th className="th-station-status is-hidden-mobile">
+                          Status
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {stations.items.map((item) => (
+                        <tr
+                          className="is-clickable"
+                          key={item.stationId}
+                          onClick={() => navigateToStation(item.stationId)}
+                        >
+                          <td className="td-station ">{item.stationId}</td>
+                          <td className="td-station td-country is-hidden-mobile">
                             {item.flagInformation && (
                               <img
-                                className="flag-img-tiny is-hidden-tablet"
+                                className="flag-img-tiny"
                                 src={item.flagInformation.img}
                                 alt={item.flagInformation.alt}
                                 title={item.countryName}
                               />
                             )}
-                            <span
-                              className="with-ellipsis"
-                              title={item.name}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                              }}
-                            >
-                              <Link to={"/station/" + item.stationId}>
-                                {item.name}
-                              </Link>
-                            </span>
-                          </div>
-                        </td>
-                        <td className="is-hidden-mobile td-station ">
-                          {item.stationOperatorName}
-                        </td>
-                        <td
-                          className={
-                            "is-hidden-mobile has-text-weight-bold td-station " +
-                            (item.online
-                              ? "has-text-success"
-                              : "has-text-danger")
-                          }
-                        >
-                          {item.online ? "Online" : "Offline"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                            {item.countryName && (
+                              <span
+                                className="country-name is-hidden-mobile"
+                                title={item.countryName}
+                              >
+                                {item.countryName}
+                              </span>
+                            )}
+                          </td>
+                          <td className="td-station ">
+                            <div className="name-container">
+                              {item.flagInformation && (
+                                <img
+                                  className="flag-img-tiny is-hidden-tablet"
+                                  src={item.flagInformation.img}
+                                  alt={item.flagInformation.alt}
+                                  title={item.countryName}
+                                />
+                              )}
+                              <span
+                                className="with-ellipsis"
+                                title={item.name}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                }}
+                              >
+                                <Link to={"/station/" + item.stationId}>
+                                  {item.name}
+                                </Link>
+                              </span>
+                            </div>
+                          </td>
+                          <td className="is-hidden-mobile td-station ">
+                            {item.stationOperatorName}
+                          </td>
+                          <td
+                            className={
+                              "is-hidden-mobile has-text-weight-bold td-station " +
+                              (item.online
+                                ? "has-text-success"
+                                : "has-text-danger")
+                            }
+                          >
+                            {item.online ? "Online" : "Offline"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
 
-                <Pagination
-                  location={location}
-                  searchParams={search}
-                  pageNumberParamName="pageNumber"
-                  pageNumber={pageNumber}
-                  totalPages={totalPages}
-                />
-              </React.Fragment>
-            )}
-            {stations.items.length == 0 && (
-              <div className="box has-text-weight-bold">No stations found.</div>
-            )}
-          </React.Fragment>
-        )}
+                  <Pagination
+                    location={location}
+                    searchParams={search}
+                    pageNumberParamName="pageNumber"
+                    pageNumber={pageNumber}
+                    totalPages={totalPages}
+                  />
+                </React.Fragment>
+              )}
+              {stations.items.length == 0 && (
+                <div className="box has-text-weight-bold">
+                  No stations found.
+                </div>
+              )}
+            </React.Fragment>
+          )}
+        </div>
       </section>
     </React.Fragment>
   );

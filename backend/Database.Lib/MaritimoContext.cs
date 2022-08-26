@@ -12,6 +12,8 @@ public class MaritimoContext : DbContext, IMaritimoContext
     public DbSet<StationAddress> StationAddresses => Set<StationAddress>();
     public DbSet<StationOperator> StationOperators => Set<StationOperator>();
 
+    public DbSet<Photo> Photos => Set<Photo>();
+
     public MaritimoContext(string? connectionString = null)
     {
         this.connectionString = connectionString;

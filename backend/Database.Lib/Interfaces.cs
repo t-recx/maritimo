@@ -39,6 +39,7 @@ public interface IMaritimoContext : IDisposable
     DbSet<Station> Stations { get; }
     DbSet<StationAddress> StationAddresses { get; }
     DbSet<StationOperator> StationOperators { get; }
+    DbSet<Photo> Photos { get; }
 
     int SaveChanges();
     DatabaseFacade Database { get; }
@@ -53,4 +54,9 @@ public interface IMMSIService
 {
     ObjectType GetObjectTypeByMMSI(uint mmsi);
     int? GetCountryCodeByMMSI(uint mmsi);
+}
+
+public interface IPhotoService
+{
+    Task<PaginatedList<DTOPhoto>> GetPaginatedList(int pageNumber, int pageSize, List<uint>? mmsis = null, List<int>? stationIds = null);
 }
