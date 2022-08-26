@@ -25,6 +25,8 @@ function Station({ alert }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isMissing, setIsMissing] = useState(false);
   const [coordsDMS, setCoordsDMS] = useState(null);
+  const [stationOperatorHomepageLabel, setStationOperatorHomepageLabel] =
+    useState(null);
 
   useEffect(() => {
     const fetchData = () => {
@@ -42,6 +44,18 @@ function Station({ alert }) {
               getFlagInformationByCountryCode(result.data.countryCode)
             );
             setIsMissing(false);
+
+            if (result?.data?.stationOperatorHomepage) {
+              setStationOperatorHomepageLabel(
+                result?.data?.stationOperatorHomepage
+                  .replace("https://www.", "")
+                  .replace("http://www.", "")
+                  .replace("https://", "")
+                  .replace("http://", "")
+              );
+            } else {
+              setStationOperatorHomepageLabel(null);
+            }
 
             if (result.data.latitude != null && result.data.longitude != null) {
               setCoordsDMS(
@@ -142,7 +156,7 @@ function Station({ alert }) {
                                   target="_blank"
                                   rel="noreferrer"
                                 >
-                                  {data.stationOperatorHomepage}
+                                  {stationOperatorHomepageLabel}
                                 </a>
                               </td>
                             </tr>
