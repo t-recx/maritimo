@@ -174,7 +174,9 @@ function Station({ alert }) {
                               <td className="td-station-field has-text-weight-bold">
                                 Equipment
                               </td>
-                              <td className="">{data.equipmentDescription}</td>
+                              <td className="td-equipment-description">
+                                {data.equipmentDescription}
+                              </td>
                             </tr>
                           )}
                         </tbody>

@@ -15,3 +15,7 @@
 .station-map-container {
     height: 600px;
 }
+
+.td-equipment-description {
+    white-space: pre-wrap;
+}
