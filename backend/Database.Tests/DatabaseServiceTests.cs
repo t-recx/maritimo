@@ -130,6 +130,15 @@ public class DatabaseServiceTests
     }
 
     [Test]
+    public void Insert_WhenMessageSourceHasAnAssociatedStation_ShouldSetLastUpdatedFieldOnStation()
+    {
+        var result = service.Insert(new DTOMessage() { mmsi = 123456789, dimension_to_port = 10, source_id = "200" });
+
+        var messageUpdated = contextFactory.Get().Messages.Single(x => x.id == result.Value.id).updated;
+        Assert.AreEqual(messageUpdated, contextFactory.Get().Stations.Single(x => x.StationId == 1).LastMessageUpdated!);
+    }
+
+    [Test]
     public void Save_WhenNoItemInDatabase_ShouldAddObjectData()
     {
         service.Save(new DTOObjectData() { mmsi = 123456789 });
@@ -234,6 +243,16 @@ public class DatabaseServiceTests
         var result = service.Save(new DTOObjectData() { mmsi = 123456789, dimension_to_port = 10 });
 
         Assert.IsTrue(result.IsError);
+    }
+
+
+    [Test]
+    public void Save_WhenObjectSourceHasAnAssociatedStation_ShouldSetLastUpdatedFieldOnStation()
+    {
+        var result = service.Save(new DTOObjectData() { mmsi = 123456789, dimension_to_port = 10, source_id = "200" });
+
+        var objectUpdated = contextFactory.Get().Objects.Single(x => x.mmsi == result.Value.mmsi).updated;
+        Assert.AreEqual(objectUpdated, contextFactory.Get().Stations.Single(x => x.StationId == 1).LastMessageUpdated!);
     }
 
     [Test]

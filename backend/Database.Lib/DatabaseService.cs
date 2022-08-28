@@ -167,6 +167,16 @@ public class DatabaseService : IDatabaseService
                 }
             }
 
+            if (objectData.StationId != null)
+            {
+                var station = context.Stations.SingleOrDefault(x => x.StationId == objectData.StationId);
+
+                if (station != null)
+                {
+                    station.LastMessageUpdated = objectData.updated;
+                }
+            }
+
             context.SaveChanges();
 
             return Ok(mapper.Map<DTOObjectData>(objectData));
