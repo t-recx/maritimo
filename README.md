@@ -96,6 +96,7 @@ Open [http://localhost](http://localhost) to access the application.
 | [Kinsale Angling](http://www.kinsaleangling.com)                     | Kinsale, Ireland           |
 | [Subsea Survey Services Ltd.](http://www.subseasurvey.ie/)           | Cork, Ireland              |
 | [ARAF/Mateus PP5FMM](https://www.araf.org.br/)                       | Florianópolis, Brazil      |
+| [Alberto Pérez](http://www.buques.org/)                              | Cantábria, Spain           |
 
 ## Special thanks
 
