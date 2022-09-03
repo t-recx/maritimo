@@ -5,7 +5,6 @@ public class DTOWebObjectData
     public uint mmsi { get; set; }
 
     public byte? navigation_status { get; set; }
-    public float rate_of_turn { get; set; }
     public float? speed_over_ground { get; set; }
     public float? longitude { get; set; }
     public float? latitude { get; set; }
@@ -19,23 +18,10 @@ public class DTOWebObjectData
     public byte? dimension_to_starboard { get; set; }
     public uint? imo_number { get; set; }
     public string? call_sign { get; set; }
-    public byte? eta_month { get; set; }
-    public byte? eta_day { get; set; }
-    public byte? eta_hour { get; set; }
-    public byte? eta_minute { get; set; }
     public float? draught { get; set; }
     public string? destination { get; set; }
     public uint? mothership_mmsi { get; set; }
-    public ushort? utc_year { get; set; }
-    public byte? utc_month { get; set; }
-    public byte? utc_day { get; set; }
-    public byte? utc_hour { get; set; }
-    public byte? utc_minute { get; set; }
-    public byte? utc_second { get; set; }
     public byte? aid_type { get; set; }
-    public bool? off_position { get; set; }
-    public float? magnetic_declination { get; set; }
-    public string? source_id { get; set; }
     public int? station_id { get; set; }
     public string? station_name { get; set; }
 
