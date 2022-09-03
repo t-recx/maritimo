@@ -3,10 +3,11 @@ import React, { useState, useEffect } from "react";
 import PhotoThumbnail from "./PhotoThumbnail";
 
 function PhotoThumbnailAis({ alert, mmsi, stationId }) {
-  const [photoData, setPhotoData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [imgTitle, setImgTitle] = useState(null);
   const [filename, setFilename] = useState(null);
+  const [width, setWidth] = useState(null);
+  const [height, setHeight] = useState(null);
   const [filenameThumbnail, setFilenameThumbnail] = useState(null);
 
   useEffect(() => {
@@ -26,9 +27,9 @@ function PhotoThumbnailAis({ alert, mmsi, stationId }) {
           });
 
           if (result?.data?.items?.length > 0) {
-            setPhotoData(result.data.items[0]);
+            updatePhotoData(result.data.items[0]);
           } else {
-            setPhotoData(null);
+            updatePhotoData(null);
           }
         } catch (error) {
           alert("danger", "Unable to display photo, please try again later.");
@@ -43,7 +44,7 @@ function PhotoThumbnailAis({ alert, mmsi, stationId }) {
     return () => controller.abort();
   }, [mmsi, stationId]);
 
-  useEffect(() => {
+  function updatePhotoData(photoData) {
     if (photoData?.author != null) {
       setImgTitle("Photo by " + photoData.author);
     } else {
@@ -67,15 +68,18 @@ function PhotoThumbnailAis({ alert, mmsi, stationId }) {
     } else {
       setFilename(null);
     }
-  }, [photoData]);
+
+	setWidth(photoData?.width);
+	setHeight(photoData?.height);
+  }
 
   return (
     <PhotoThumbnail
       isLoading={isLoading}
       filename={filename}
       filenameThumbnail={filenameThumbnail}
-      width={photoData?.width}
-      height={photoData?.height}
+      width={width}
+      height={height}
       title={imgTitle}
     />
   );
