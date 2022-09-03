@@ -64,7 +64,7 @@ public class CollationService : ICollationService
         {
             mapper.Map(decodedMessage, newDTO);
 
-            var stationData = stationService.GetStationEssentialData(newDTO.source_id, newDTO.source_ip_address);
+            var stationData = stationService.GetStationEssentialData(decodedMessage.source_id, decodedMessage.source_ip_address);
 
             if (stationData == null)
             {

@@ -86,25 +86,6 @@ public class CollationServiceTests
     }
 
     [Test]
-    public async Task GetObjectData_ShouldAlwaysOverwriteSourceIdAndSourceIPAddressEvenIfNull()
-    {
-        firstObjectData.source_id = "SOURCE1";
-        firstObjectData.source_ip_address = "200.100.100.2";
-
-        var collated = (await subject.GetCollated(new List<DecodedMessage>() { new DecodedMessage() { mmsi = firstMMSI } })).First();
-        Assert.IsNull(collated.source_id);
-        Assert.IsNull(collated.source_ip_address);
-
-        collated = (await subject.GetCollated(new List<DecodedMessage>() { new DecodedMessage() { mmsi = firstMMSI, source_id = "A", source_ip_address = "30.30.10.1" } })).First();
-        Assert.AreEqual("A", collated.source_id);
-        Assert.AreEqual("30.30.10.1", collated.source_ip_address);
-
-        collated = (await subject.GetCollated(new List<DecodedMessage>() { new DecodedMessage() { mmsi = firstMMSI, source_ip_address = "100.1.1.9" } })).First();
-        Assert.IsNull(collated.source_id);
-        Assert.AreEqual("100.1.1.9", collated.source_ip_address);
-    }
-
-    [Test]
     public async Task GetObjectData_ShouldSetStationDataFromStationService()
     {
         stationServiceMock.Setup(x => x.GetStationEssentialData("TESTSOURCE", null)).Returns(new DTOStationEssentialData()
@@ -118,13 +99,11 @@ public class CollationServiceTests
 
         Assert.AreEqual(20, collated.station_id);
         Assert.AreEqual("STATION TEST", collated.station_name);
-        Assert.AreEqual("ROBOT OPERATOR", collated.station_operator_name);
 
         collated = (await subject.GetCollated(new List<DecodedMessage>() { new DecodedMessage() { mmsi = firstMMSI, source_id = "ANOTHER" } })).First();
 
         Assert.IsNull(collated.station_id);
         Assert.IsNull(collated.station_name);
-        Assert.IsNull(collated.station_operator_name);
     }
 
     [Test]
@@ -158,10 +137,8 @@ public class CollationServiceTests
         Assert.AreEqual(2, firstCollated.aid_type);
         Assert.AreEqual("test #2", secondCollated.name);
         Assert.AreEqual(4, secondCollated.ship_type);
-        Assert.AreEqual("test source id", secondCollated.source_id);
         Assert.AreEqual(7, anotherCollated.ship_type);
         Assert.AreEqual("hello", anotherCollated.name);
-        Assert.AreEqual(2, anotherCollated.utc_second);
 
         before = DateTime.UtcNow;
         var anotherCollatedList = await subject.GetCollated(new List<DecodedMessage>() {
@@ -177,7 +154,6 @@ public class CollationServiceTests
         Assert.AreEqual(7, anotherCollated.ship_type);
         Assert.AreEqual("changed", anotherCollated.name);
         Assert.AreEqual("CALLSIGN", anotherCollated.call_sign);
-        Assert.AreEqual(2, anotherCollated.utc_second);
         Assert.AreEqual("first", firstCollated.name);
         Assert.AreEqual(9, firstCollated.navigation_status);
         Assert.AreEqual(5, firstCollated.ship_type);
