@@ -97,6 +97,7 @@ Open [http://localhost](http://localhost) to access the application.
 | [Subsea Survey Services Ltd.](http://www.subseasurvey.ie/)           | Cork, Ireland              |
 | [ARAF/Mateus PP5FMM](https://www.araf.org.br/)                       | Florianópolis, Brazil      |
 | [Alberto Pérez](http://www.buques.org/)                              | Cantábria, Spain           |
+| [ALERT PLUS](http://alertplus.info/)                                 | Szczecin, Poland           |
 
 ## Special thanks
 
