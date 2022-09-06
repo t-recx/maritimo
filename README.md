@@ -98,6 +98,7 @@ Open [http://localhost](http://localhost) to access the application.
 | [ARAF/Mateus PP5FMM](https://www.araf.org.br/)                       | Florianópolis, Brazil      |
 | [Alberto Pérez](http://www.buques.org/)                              | Cantábria, Spain           |
 | [ALERT PLUS](http://alertplus.info/)                                 | Szczecin, Poland           |
+| [ADVANCED TECHNOLOGY ENGINEERING](https://ate.com.pl/)               | Szczecin, Poland           |
 
 ## Special thanks
 
