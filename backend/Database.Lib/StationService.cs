@@ -42,14 +42,34 @@ public class StationService : IStationService
         }
     }
 
-    public async Task<PaginatedList<DTOStation>> GetPaginatedList(int pageNumber, int pageSize)
+    public async Task<PaginatedList<DTOStation>> GetPaginatedList(int pageNumber, int pageSize, List<int>? countryCodes = null, List<int>? operators = null, string? text = null)
     {
         using (var context = contextFactory.Get())
         {
             var query = context
                     .Stations
                     .Include(x => x.StationOperator)
-                    .AsNoTracking()
+                    .AsNoTracking();
+
+            if (countryCodes != null)
+            {
+                query = query
+                    .Where(x => x.CountryCode != null && countryCodes.Select(x => x.ToString()).Contains(x.CountryCode));
+            }
+
+            if (operators != null)
+            {
+                query = query
+                    .Where(x => operators.Contains(x.StationOperatorId));
+            }
+
+            if (!String.IsNullOrWhiteSpace(text))
+            {
+                query = query
+                    .Where(x => x.Name.ToUpper().Contains(text.ToUpper()));
+            }
+
+            query = query
                     .OrderBy(x => x.StationId);
 
             return await PaginatedList<DTOStation>.CreateAsync(query, pageNumber, pageSize, mapper);
@@ -126,6 +146,18 @@ public class StationService : IStationService
             }
 
             return null;
+        }
+    }
+
+    public async Task<List<DTOStationOperator>> GetStationOperators()
+    {
+        using (var context = contextFactory.Get())
+        {
+            var query = context
+                    .StationOperators
+                    .AsNoTracking();
+
+            return await mapper.ProjectTo<DTOStationOperator>(query).ToListAsync();
         }
     }
 }
