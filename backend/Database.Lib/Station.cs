@@ -16,5 +16,5 @@ public class Station
     public StationOperator StationOperator { get; set; } = default!;
     public List<StationAddress> StationAddresses { get; set; } = default!;
     public DateTime? LastMessageUpdated { get; set; }
-
+    public string? Homepage { get; set; }
 }
