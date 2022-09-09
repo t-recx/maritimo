@@ -25,8 +25,8 @@ function Station({ alert }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isMissing, setIsMissing] = useState(false);
   const [coordsDMS, setCoordsDMS] = useState(null);
-  const [stationOperatorHomepageLabel, setStationOperatorHomepageLabel] =
-    useState(null);
+  const [homepageLabel, setHomepageLabel] = useState(null);
+  const [homepageUrl, setHomepageUrl] = useState(null);
 
   useEffect(() => {
     const fetchData = () => {
@@ -45,16 +45,26 @@ function Station({ alert }) {
             );
             setIsMissing(false);
 
-            if (result?.data?.stationOperatorHomepage) {
-              setStationOperatorHomepageLabel(
-                result?.data?.stationOperatorHomepage
+            let homepage = null;
+
+            if (result?.data?.homepage) {
+              homepage = result?.data?.homepage;
+            } else if (result?.data?.stationOperatorHomepage) {
+              homepage = result?.data?.stationOperatorHomepage;
+            }
+
+            setHomepageUrl(homepage);
+
+            if (homepage) {
+              setHomepageLabel(
+                homepage
                   .replace("https://www.", "")
                   .replace("http://www.", "")
                   .replace("https://", "")
                   .replace("http://", "")
               );
             } else {
-              setStationOperatorHomepageLabel(null);
+              setHomepageLabel(null);
             }
 
             if (result.data.latitude != null && result.data.longitude != null) {
@@ -145,18 +155,18 @@ function Station({ alert }) {
                               <td className="">{data.stationOperatorName}</td>
                             </tr>
                           )}
-                          {data.stationOperatorHomepage != null && (
+                          {homepageUrl != null && (
                             <tr>
                               <td className="td-station-field  has-text-weight-bold">
                                 Homepage
                               </td>
                               <td className="td-ellipsis">
                                 <a
-                                  href={data.stationOperatorHomepage}
+                                  href={homepageUrl}
                                   target="_blank"
                                   rel="noreferrer"
                                 >
-                                  {stationOperatorHomepageLabel}
+                                  {homepageLabel}
                                 </a>
                               </td>
                             </tr>

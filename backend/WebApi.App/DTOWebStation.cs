@@ -14,4 +14,5 @@ public class DTOWebStation
     public string? StationOperatorHomepage { get; set; }
     public DateTime? LastMessageUpdated { get; set; }
     public bool Online { get; set; }
+    public string? Homepage { get; set; }
 }

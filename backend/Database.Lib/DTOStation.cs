@@ -13,5 +13,6 @@ public class DTOStation
     public string StationOperatorName { get; set; } = default!;
     public string? StationOperatorHomepage { get; set; }
     public DateTime? LastMessageUpdated { get; set; }
+    public string? Homepage { get; set; }
     public bool Online => LastMessageUpdated != null && DateTime.UtcNow - LastMessageUpdated < TimeSpan.FromHours(1);
 }
