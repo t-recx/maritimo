@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { getCountriesFilterDatasource } from "../mmsi";
 import http from "../http";
 import {
   getCountryDescriptionByCountryCode,
@@ -8,21 +9,50 @@ import {
 } from "../mmsi";
 import Loading from "./Loading";
 import Pagination from "./Pagination";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./Stations.css";
 
 function Stations({ alert }) {
-  const [search] = useSearchParams();
+  const [search, setSearch] = useSearchParams();
   const [stations, setStations] = useState(null);
   const [pageNumber, setPageNumber] = useState(null);
   const [pageSize, setPageSize] = useState(null);
   const [totalPages, setTotalPages] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchStatus, setSearchStatus] = useState("");
+  const [searchCountryCodes, setSearchCountryCodes] = useState("");
+  const [searchOperators, setSearchOperators] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [countryCodeFilterDataSource, setCountryCodeFilterDataSource] =
+    useState(null);
+  const [operatorsDataSource, setOperatorsDataSource] = useState(null);
+  const [loadingTimes, setLoadingTimes] = useState(0);
+  const latestLoadingTimes = useRef(null);
 
   const location = useLocation();
 
   const navigate = useNavigate();
 
+  latestLoadingTimes.current = loadingTimes;
+
   useEffect(() => {
+    setCountryCodeFilterDataSource(getCountriesFilterDatasource());
+  }, []);
+
+  useEffect(() => {
+    let params = getFromSearch();
+
+    setPageNumber(params.paramPageNumber);
+    setPageSize(params.paramPageSize);
+
+    setSearchCountryCodes(params.paramCountryCodes || "");
+
+    setSearchOperators(params.paramOperators || "");
+    setSearchText(params.paramSearchText || "");
+  }, [search]);
+
+  function getFromSearch() {
     let paramPageNumber = parseInt(search.get("pageNumber"));
 
     if (
@@ -43,50 +73,178 @@ function Stations({ alert }) {
       paramPageSize = 10;
     }
 
-    setPageNumber(paramPageNumber);
-    setPageSize(paramPageSize);
-  }, [search]);
+    let paramCountryCodes = search.get("countryCodes");
 
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function fetchData() {
-      try {
-        if (pageNumber != null && pageSize != null) {
-          setIsLoading(true);
-          const result = await http.plain.get("/station", {
-            params: {
-              pageNumber: pageNumber,
-              pageSize: pageSize,
-            },
-          });
-
-          setStations(result.data);
-          setTotalPages(result.data.totalPages);
-          if (result.data && result.data.items) {
-            result.data.items.forEach((dto) => {
-              dto.countryName = getCountryDescriptionByCountryCode(
-                dto.countryCode
-              );
-              dto.flagInformation = getFlagInformationByCountryCode(
-                dto.countryCode
-              );
-            });
-          }
-          setIsLoading(false);
-        }
-      } catch (error) {
-        alert("danger", "Unable to display stations, please try again later.");
-      }
+    if (paramCountryCodes == null || paramCountryCodes.toString().length == 0) {
+      paramCountryCodes = null;
     }
 
-    fetchData();
+    let paramOperators = search.get("operators");
 
-    return () => controller.abort();
-  }, [pageNumber, pageSize]);
+    if (paramOperators == null || paramOperators.toString().length == 0) {
+      paramOperators = null;
+    }
+    let paramSearchText = search.get("text");
+
+    if (paramSearchText == null || paramSearchText.length == 0) {
+      paramSearchText = null;
+    }
+
+    let paramOnline = search.get("online");
+
+    if (paramOnline == null || paramOnline.toString().length == 0) {
+      paramOnline = null;
+    }
+
+    return {
+      paramPageNumber: paramPageNumber,
+      paramPageSize: paramPageSize,
+      paramSearchText: paramSearchText,
+      paramOperators: paramOperators,
+      paramCountryCodes: paramCountryCodes,
+      paramOnline: paramOnline,
+    };
+  }
+
+  function getParams() {
+    let paramsFromSearch = getFromSearch();
+
+    return {
+      pageNumber: paramsFromSearch.paramPageNumber,
+      pageSize: paramsFromSearch.paramPageSize,
+      countryCodes: paramsFromSearch.paramCountryCodes,
+      operators: paramsFromSearch.paramOperators,
+      online: paramsFromSearch.paramOnline,
+      text: paramsFromSearch.paramSearchText,
+    };
+  }
+
+  useEffect(() => {
+    latestLoadingTimes.current = (latestLoadingTimes.current || 0) + 1;
+    setLoadingTimes(latestLoadingTimes.current);
+    setIsLoading(latestLoadingTimes.current > 0);
+
+    http.plain
+      .get("/stationOperator", {})
+      .then((result) => {
+        setOperatorsDataSource(result.data);
+      })
+      .catch((error) => {
+        alert("danger", "Unable to load operators, please try again later.");
+      })
+      .then(() => {
+        latestLoadingTimes.current = (latestLoadingTimes.current || 0) - 1;
+        setLoadingTimes(latestLoadingTimes.current);
+        setIsLoading(latestLoadingTimes.current > 0);
+      });
+  }, []);
+
+  useEffect(() => {
+    latestLoadingTimes.current = (latestLoadingTimes.current || 0) + 1;
+    setLoadingTimes(latestLoadingTimes.current);
+    setIsLoading(latestLoadingTimes.current > 0);
+
+    http.plain
+      .get("/station", {
+        params: getParams(),
+      })
+      .then((result) => {
+        setStations(result.data);
+        setTotalPages(result.data.totalPages);
+        if (result.data && result.data.items) {
+          result.data.items.forEach((dto) => {
+            dto.countryName = getCountryDescriptionByCountryCode(
+              dto.countryCode
+            );
+            dto.flagInformation = getFlagInformationByCountryCode(
+              dto.countryCode
+            );
+          });
+        }
+      })
+      .catch((error) => {
+        alert("danger", "Unable to display stations, please try again later.");
+      })
+      .then(() => {
+        latestLoadingTimes.current = (latestLoadingTimes.current || 0) - 1;
+        setLoadingTimes(latestLoadingTimes.current);
+        setIsLoading(latestLoadingTimes.current > 0);
+      });
+  }, [search]);
 
   function navigateToStation(id) {
     navigate("/station/" + id);
+  }
+
+  function handleStatusChange(event) {
+    setSearchStatus(event.target.value);
+  }
+
+  function handleCountryCodeChange(event) {
+    setSearchCountryCodes(event.target.value);
+  }
+
+  function handleTextSearchChange(event) {
+    setSearchText(event.target.value);
+  }
+
+  function handleKeyDownSearch(event) {
+    if (event.key === "Enter") {
+      searchData();
+    }
+  }
+
+  function handleOperatorChange(event) {
+    setSearchOperators(event.target.value);
+  }
+
+  function searchData() {
+    let updatedSearch = {};
+
+    if (searchCountryCodes) {
+      updatedSearch = {
+        ...updatedSearch,
+        countryCodes: searchCountryCodes,
+      };
+    }
+
+    if (searchStatus) {
+      updatedSearch = {
+        ...updatedSearch,
+        online: searchStatus,
+      };
+    }
+
+    if (searchOperators) {
+      updatedSearch = {
+        ...updatedSearch,
+        operators: searchOperators,
+      };
+    }
+
+    if (searchText && searchText.length > 0) {
+      updatedSearch = { ...updatedSearch, text: searchText };
+    }
+
+    if (search.get("pageNumber")) {
+      updatedSearch = {
+        ...updatedSearch,
+        pageNumber: 1,
+      };
+    }
+
+    if (search.get("pageSize")) {
+      updatedSearch = { ...updatedSearch, pageSize: search.get("pageSize") };
+    }
+
+    setSearch(updatedSearch, { replace: true });
+  }
+
+  function resetSearchFilters() {
+    setSearchCountryCodes("");
+    setSearchOperators("");
+    setSearchText("");
+    setSearchStatus("");
   }
 
   return (
@@ -97,6 +255,114 @@ function Stations({ alert }) {
           <h1 className="title">Stations</h1>
           {stations != null && stations.items != null && (
             <React.Fragment>
+              <div className="box">
+                <div className="columns">
+                  <div className="column is-one-quarter">
+                    <div className="field">
+                      <label className="label">Country</label>
+                      <div className="control">
+                        <div className="select is-fullwidth">
+                          <select
+                            value={searchCountryCodes}
+                            onChange={handleCountryCodeChange}
+                            onKeyDown={handleKeyDownSearch}
+                          >
+                            <option value=""></option>
+                            {countryCodeFilterDataSource.map((x) => (
+                              <option key={x[0]} value={x[0]}>
+                                {x[1]}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="column">
+                    <div className="field">
+                      <label className="label">Name</label>
+                      <div className="control">
+                        <input
+                          className="input"
+                          type="text"
+                          placeholder=""
+                          value={searchText}
+                          onChange={handleTextSearchChange}
+                          onKeyDown={handleKeyDownSearch}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="column is-one-quarter">
+                    <div className="field">
+                      <label className="label">Operator</label>
+                      <div className="control">
+                        <div className="select is-fullwidth">
+                          <select
+                            value={searchOperators}
+                            onChange={handleOperatorChange}
+                            onKeyDown={handleKeyDownSearch}
+                          >
+                            <option value=""></option>
+                            {operatorsDataSource &&
+                              operatorsDataSource.map((x) => (
+                                <option
+                                  key={x.stationOperatorId}
+                                  value={x.stationOperatorId}
+                                >
+                                  {x.name}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="column is-one-quarter">
+                    <div className="field">
+                      <label className="label">Status</label>
+                      <div className="control">
+                        <div className="select is-fullwidth">
+                          <select
+                            value={searchStatus}
+                            onChange={handleStatusChange}
+                            onKeyDown={handleKeyDownSearch}
+                          >
+                            <option value=""></option>
+                            <option key="true" value="true">
+                              Online
+                            </option>
+                            <option key="false" value="false">
+                              Offline
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="field is-grouped is-justify-content-end">
+                  <div className="control">
+                    <button className="button is-link" onClick={searchData}>
+                      <span className="icon">
+                        <FontAwesomeIcon icon={faMagnifyingGlass} size="sm" />
+                      </span>
+                      <span>Search</span>
+                    </button>
+                  </div>
+                  <div className="control">
+                    <button
+                      className="button is-link is-light"
+                      onClick={resetSearchFilters}
+                    >
+                      Clear
+                    </button>
+                  </div>
+                </div>
+              </div>
               {stations.items.length > 0 && (
                 <React.Fragment>
                   <table className="table table-stations is-striped is-fullwidth is-bordered  is-hoverable">

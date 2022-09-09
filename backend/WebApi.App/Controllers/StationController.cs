@@ -32,9 +32,21 @@ public class StationController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<WebPaginatedList<DTOWebStation>>> Get(int? pageNumber = null, int? pageSize = null)
+    public async Task<ActionResult<WebPaginatedList<DTOWebStation>>> Get(int? pageNumber = null, int? pageSize = null, string? countryCodes = null, string? operators = null, string? text = null, bool? online = null)
     {
-        var result = await stationService.GetPaginatedList(pageNumber ?? 1, pageSize ?? 10);
+        if (countryCodes?.Split(",").Any(x => !int.TryParse(x, out _)) == true)
+        {
+            return BadRequest();
+        }
+        else if (operators?.Split(",").Any(x => !int.TryParse(x, out _)) == true)
+        {
+            return BadRequest();
+        }
+
+        List<int>? countryCodesFilter = countryCodes?.Split(",").Select(x => int.Parse(x)).ToList();
+        List<int>? operatorsFilter = operators?.Split(",").Select(x => int.Parse(x)).ToList();
+
+        var result = await stationService.GetPaginatedList(pageNumber ?? 1, pageSize ?? 10, countryCodesFilter, operatorsFilter, text, online);
 
         return WebPaginatedList<DTOWebStation>.CreateFrom<DTOStation>(result, mapper);
     }

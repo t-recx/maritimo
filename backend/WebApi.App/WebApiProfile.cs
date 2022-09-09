@@ -11,6 +11,7 @@ public class WebApiProfile : Profile
             .ForMember(m => m.object_type, opt => opt.MapFrom(t => (WebObjectType?)t.object_type))
         ;
         CreateMap<DTOStation, DTOWebStation>();
+        CreateMap<DTOStationOperator, DTOWebStationOperator>();
         CreateMap<DTOPhoto, DTOWebPhoto>();
     }
 }
