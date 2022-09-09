@@ -17,7 +17,7 @@ public interface IStationService
 {
     DTOStationEssentialData? GetStationEssentialData(string? sourceId = null, string? sourceIpAddress = null);
     Task<DTOStation?> Get(int stationId);
-    Task<PaginatedList<DTOStation>> GetPaginatedList(int pageNumber, int pageSize, List<int>? countryCodes = null, List<int>? operators = null, string? text = null);
+    Task<PaginatedList<DTOStation>> GetPaginatedList(int pageNumber, int pageSize, List<int>? countryCodes = null, List<int>? operators = null, string? text = null, bool? online = null);
     Task<List<DTOStationOperator>> GetStationOperators();
 }
 

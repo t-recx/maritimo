@@ -42,7 +42,7 @@ public class StationService : IStationService
         }
     }
 
-    public async Task<PaginatedList<DTOStation>> GetPaginatedList(int pageNumber, int pageSize, List<int>? countryCodes = null, List<int>? operators = null, string? text = null)
+    public async Task<PaginatedList<DTOStation>> GetPaginatedList(int pageNumber, int pageSize, List<int>? countryCodes = null, List<int>? operators = null, string? text = null, bool? online = null)
     {
         using (var context = contextFactory.Get())
         {
@@ -67,6 +67,20 @@ public class StationService : IStationService
             {
                 query = query
                     .Where(x => x.Name.ToUpper().Contains(text.ToUpper()));
+            }
+
+            if (online != null)
+            {
+                if (online.Value)
+                {
+                    query = query
+                        .Where(x => x.LastMessageUpdated != null && DateTime.UtcNow - x.LastMessageUpdated < TimeSpan.FromHours(1));
+                }
+                else
+                {
+                    query = query
+                        .Where(x => x.LastMessageUpdated == null || DateTime.UtcNow - x.LastMessageUpdated >= TimeSpan.FromHours(1));
+                }
             }
 
             query = query

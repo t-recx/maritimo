@@ -20,14 +20,15 @@ function Stations({ alert }) {
   const [pageSize, setPageSize] = useState(null);
   const [totalPages, setTotalPages] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchStatus, setSearchStatus] = useState("");
   const [searchCountryCodes, setSearchCountryCodes] = useState("");
   const [searchOperators, setSearchOperators] = useState("");
   const [searchText, setSearchText] = useState("");
   const [countryCodeFilterDataSource, setCountryCodeFilterDataSource] =
     useState(null);
   const [operatorsDataSource, setOperatorsDataSource] = useState(null);
-	const [loadingTimes, setLoadingTimes] = useState(0);
-	const latestLoadingTimes = useRef(null);
+  const [loadingTimes, setLoadingTimes] = useState(0);
+  const latestLoadingTimes = useRef(null);
 
   const location = useLocation();
 
@@ -89,12 +90,19 @@ function Stations({ alert }) {
       paramSearchText = null;
     }
 
+    let paramOnline = search.get("online");
+
+    if (paramOnline == null || paramOnline.toString().length == 0) {
+      paramOnline = null;
+    }
+
     return {
       paramPageNumber: paramPageNumber,
       paramPageSize: paramPageSize,
       paramSearchText: paramSearchText,
       paramOperators: paramOperators,
       paramCountryCodes: paramCountryCodes,
+      paramOnline: paramOnline,
     };
   }
 
@@ -106,18 +114,18 @@ function Stations({ alert }) {
       pageSize: paramsFromSearch.paramPageSize,
       countryCodes: paramsFromSearch.paramCountryCodes,
       operators: paramsFromSearch.paramOperators,
+      online: paramsFromSearch.paramOnline,
       text: paramsFromSearch.paramSearchText,
     };
   }
 
   useEffect(() => {
-	latestLoadingTimes.current = (latestLoadingTimes.current || 0) + 1;
-	setLoadingTimes(latestLoadingTimes.current);
-	setIsLoading(latestLoadingTimes.current > 0);
+    latestLoadingTimes.current = (latestLoadingTimes.current || 0) + 1;
+    setLoadingTimes(latestLoadingTimes.current);
+    setIsLoading(latestLoadingTimes.current > 0);
 
     http.plain
-      .get("/stationOperator", {
-      })
+      .get("/stationOperator", {})
       .then((result) => {
         setOperatorsDataSource(result.data);
       })
@@ -125,16 +133,16 @@ function Stations({ alert }) {
         alert("danger", "Unable to load operators, please try again later.");
       })
       .then(() => {
-		latestLoadingTimes.current = (latestLoadingTimes.current || 0) - 1;
-		setLoadingTimes(latestLoadingTimes.current);
-		setIsLoading(latestLoadingTimes.current > 0);
+        latestLoadingTimes.current = (latestLoadingTimes.current || 0) - 1;
+        setLoadingTimes(latestLoadingTimes.current);
+        setIsLoading(latestLoadingTimes.current > 0);
       });
   }, []);
 
   useEffect(() => {
-	latestLoadingTimes.current = (latestLoadingTimes.current || 0) + 1;
-	setLoadingTimes(latestLoadingTimes.current);
-	setIsLoading(latestLoadingTimes.current > 0);
+    latestLoadingTimes.current = (latestLoadingTimes.current || 0) + 1;
+    setLoadingTimes(latestLoadingTimes.current);
+    setIsLoading(latestLoadingTimes.current > 0);
 
     http.plain
       .get("/station", {
@@ -158,14 +166,18 @@ function Stations({ alert }) {
         alert("danger", "Unable to display stations, please try again later.");
       })
       .then(() => {
-		latestLoadingTimes.current = (latestLoadingTimes.current || 0) - 1;
-		setLoadingTimes(latestLoadingTimes.current);
-		setIsLoading(latestLoadingTimes.current > 0);
+        latestLoadingTimes.current = (latestLoadingTimes.current || 0) - 1;
+        setLoadingTimes(latestLoadingTimes.current);
+        setIsLoading(latestLoadingTimes.current > 0);
       });
   }, [search]);
 
   function navigateToStation(id) {
     navigate("/station/" + id);
+  }
+
+  function handleStatusChange(event) {
+    setSearchStatus(event.target.value);
   }
 
   function handleCountryCodeChange(event) {
@@ -193,6 +205,13 @@ function Stations({ alert }) {
       updatedSearch = {
         ...updatedSearch,
         countryCodes: searchCountryCodes,
+      };
+    }
+
+    if (searchStatus) {
+      updatedSearch = {
+        ...updatedSearch,
+        online: searchStatus,
       };
     }
 
@@ -225,6 +244,7 @@ function Stations({ alert }) {
     setSearchCountryCodes("");
     setSearchOperators("");
     setSearchText("");
+    setSearchStatus("");
   }
 
   return (
@@ -259,28 +279,6 @@ function Stations({ alert }) {
                     </div>
                   </div>
 
-                  <div className="column is-one-quarter">
-                    <div className="field">
-                      <label className="label">Operator</label>
-                      <div className="control">
-                        <div className="select is-fullwidth">
-                          <select
-                            value={searchOperators}
-                            onChange={handleOperatorChange}
-                            onKeyDown={handleKeyDownSearch}
-                          >
-                            <option value=""></option>
-                            {operatorsDataSource && operatorsDataSource.map((x) => (
-                              <option key={x.stationOperatorId} value={x.stationOperatorId}>
-                                {x.name}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
                   <div className="column">
                     <div className="field">
                       <label className="label">Name</label>
@@ -293,6 +291,55 @@ function Stations({ alert }) {
                           onChange={handleTextSearchChange}
                           onKeyDown={handleKeyDownSearch}
                         />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="column is-one-quarter">
+                    <div className="field">
+                      <label className="label">Operator</label>
+                      <div className="control">
+                        <div className="select is-fullwidth">
+                          <select
+                            value={searchOperators}
+                            onChange={handleOperatorChange}
+                            onKeyDown={handleKeyDownSearch}
+                          >
+                            <option value=""></option>
+                            {operatorsDataSource &&
+                              operatorsDataSource.map((x) => (
+                                <option
+                                  key={x.stationOperatorId}
+                                  value={x.stationOperatorId}
+                                >
+                                  {x.name}
+                                </option>
+                              ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="column is-one-quarter">
+                    <div className="field">
+                      <label className="label">Status</label>
+                      <div className="control">
+                        <div className="select is-fullwidth">
+                          <select
+                            value={searchStatus}
+                            onChange={handleStatusChange}
+                            onKeyDown={handleKeyDownSearch}
+                          >
+                            <option value=""></option>
+                            <option key="true" value="true">
+                              Online
+                            </option>
+                            <option key="false" value="false">
+                              Offline
+                            </option>
+                          </select>
+                        </div>
                       </div>
                     </div>
                   </div>
