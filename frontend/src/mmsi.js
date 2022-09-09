@@ -1112,7 +1112,25 @@ function getTypeOfObjectDescription(mmsi) {
   return TypeOfObjectDescription[getTypeOfObject(mmsi)];
 }
 
+function getCountriesFilterDatasource() {
+  const flagsEntries = Object.entries(FlagsByMid);
+  const countries = [
+    ...new Set(Object.values(FlagsByMid).map((x) => x.country)),
+  ];
+
+  return countries
+    .map((country) => [
+      flagsEntries
+        .filter((x) => x[1].country == country)
+        .map((x) => x[0])
+        .join(","),
+      country,
+    ])
+    .sort((a, b) => a[1].localeCompare(b[1]));
+}
+
 export {
+  getCountriesFilterDatasource,
   getCountryDescription,
   getFlagInformation,
   getCountryDescriptionByCountryCode,

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { FlagsByMid, getCountryDescription, getFlagInformation } from "../mmsi";
+import { getCountriesFilterDatasource, getCountryDescription, getFlagInformation } from "../mmsi";
 import Loading from "./Loading";
 import Pagination from "./Pagination";
 import "./NavigationAids.css";
@@ -29,24 +29,7 @@ function NavigationAids({ alert }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    let dataSource = null;
-
-    const flagsEntries = Object.entries(FlagsByMid);
-    const countries = [
-      ...new Set(Object.values(FlagsByMid).map((x) => x.country)),
-    ];
-
-    dataSource = countries
-      .map((country) => [
-        flagsEntries
-          .filter((x) => x[1].country == country)
-          .map((x) => x[0])
-          .join(","),
-        country,
-      ])
-      .sort((a, b) => a[1].localeCompare(b[1]));
-
-    setCountryCodeFilterDataSource(dataSource);
+    setCountryCodeFilterDataSource(getCountriesFilterDatasource());
   }, []);
 
   useEffect(() => {

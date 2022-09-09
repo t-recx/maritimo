@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
-import { FlagsByMid, getCountryDescription, getFlagInformation } from "../mmsi";
+import { getCountriesFilterDatasource } from "../mmsi";
 import http from "../http";
 import {
   getCountryDescriptionByCountryCode,
@@ -35,26 +35,8 @@ function Stations({ alert }) {
 
   latestLoadingTimes.current = loadingTimes;
 
-  // todo: extract code from views to avoid repetition:
   useEffect(() => {
-    let dataSource = null;
-
-    const flagsEntries = Object.entries(FlagsByMid);
-    const countries = [
-      ...new Set(Object.values(FlagsByMid).map((x) => x.country)),
-    ];
-
-    dataSource = countries
-      .map((country) => [
-        flagsEntries
-          .filter((x) => x[1].country == country)
-          .map((x) => x[0])
-          .join(","),
-        country,
-      ])
-      .sort((a, b) => a[1].localeCompare(b[1]));
-
-    setCountryCodeFilterDataSource(dataSource);
+    setCountryCodeFilterDataSource(getCountriesFilterDatasource());
   }, []);
 
   useEffect(() => {
