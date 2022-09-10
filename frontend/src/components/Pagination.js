@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { faChevronRight } from "@fortawesome/free-solid-svg-icons";
+import { faChevronLeft } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function Pagination({
   location,
@@ -100,6 +103,9 @@ function Pagination({
                 (pageNumber <= 1 ? "is-disabled click-disabled" : "")
               }
             >
+              <span className="icon">
+                <FontAwesomeIcon icon={faChevronLeft} size="sm" />
+              </span>
               Previous
             </Link>
           )}
@@ -112,6 +118,9 @@ function Pagination({
               }
             >
               Next page
+              <span className="icon">
+                <FontAwesomeIcon icon={faChevronRight} size="sm" />
+              </span>
             </Link>
           )}
           <ul className="pagination-list">
