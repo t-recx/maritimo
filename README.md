@@ -99,6 +99,7 @@ Open [http://localhost](http://localhost) to access the application.
 | [Alberto Pérez](http://www.buques.org/)                              | Cantábria, Spain           |
 | [ALERT PLUS](http://alertplus.info/)                                 | Szczecin, Poland           |
 | [ADVANCED TECHNOLOGY ENGINEERING](https://ate.com.pl/)               | Szczecin, Poland           |
+| [Erik Jõgi](https://codeborne.com/)                                  | Miiduranna, Estonia        |
 
 ## Special thanks
 
