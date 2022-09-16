@@ -100,6 +100,9 @@ Open [http://localhost](http://localhost) to access the application.
 | [ALERT PLUS](http://alertplus.info/)                                 | Szczecin, Poland           |
 | [ADVANCED TECHNOLOGY ENGINEERING](https://ate.com.pl/)               | Szczecin, Poland           |
 | [Erik Jõgi](https://codeborne.com/)                                  | Miiduranna, Estonia        |
+| [Peter Fässberg](https://fassberg.se)                                | Trollhättan, Sweden        |
+| [SigmaPlusVO](https://sigma-plus.kz)                                 | Ақтау, Kazakhstan          |
+| [Michael Stutzbach (DO6LSM)](https://wetterstationschlei.de)         | Borgwedel, Germany         |
 
 ## Special thanks
 
