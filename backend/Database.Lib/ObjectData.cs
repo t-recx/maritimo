@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Database.Lib;
 
+[Index(nameof(object_type))]
 public class ObjectData
 {
     [Key]
