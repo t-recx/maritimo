@@ -17,4 +17,5 @@ public class Station
     public List<StationAddress> StationAddresses { get; set; } = default!;
     public DateTime? LastMessageUpdated { get; set; }
     public string? Homepage { get; set; }
+    public uint? MMSI { get; set; }
 }

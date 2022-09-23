@@ -63,17 +63,7 @@ function Vessel({ alert }) {
               getTypeOfObjectDescription(result.data.mmsi)
             );
 
-            if (result.data.latitude != null && result.data.longitude != null) {
-              setCoordsDMS(
-                formatcoords(
-                  result.data.latitude,
-                  result.data.longitude
-                ).format({
-                  latLonSeparator: ", ",
-                  decimalPlaces: 0,
-                })
-              );
-            }
+            setCoords(result.data.latitude, result.data.longitude);
 
             if (
               result.data.dimension_to_bow != null &&
@@ -125,8 +115,20 @@ function Vessel({ alert }) {
     }
   }, [data]);
 
+  function setCoords(latitude, longitude) {
+    if (latitude != null && longitude != null) {
+      setCoordsDMS(
+        formatcoords(latitude, longitude).format({
+          latLonSeparator: ", ",
+          decimalPlaces: 0,
+        })
+      );
+    }
+  }
+
   function handleDataUpdated(newData) {
     if (data != null && data.mmsi && newData != null && newData[data.mmsi]) {
+      setCoords(newData[data.mmsi].latitude, newData[data.mmsi].longitude);
       setData(newData[data.mmsi]);
     }
   }
