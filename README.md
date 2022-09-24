@@ -103,6 +103,7 @@ Open [http://localhost](http://localhost) to access the application.
 | [Peter Fässberg](https://fassberg.se)                                | Trollhättan, Sweden        |
 | [SigmaPlusVO](https://sigma-plus.kz)                                 | Ақтау, Kazakhstan          |
 | [Michael Stutzbach (DO6LSM)](https://wetterstationschlei.de)         | Borgwedel, Germany         |
+| [Stephen Carns](http://www.nauticarazi.com/)                         | Los Angeles, USA           |
 
 ## Special thanks
 

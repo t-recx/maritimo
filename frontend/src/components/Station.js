@@ -22,6 +22,7 @@ function Station({ alert }) {
     useState(null);
   const [flagInformation, setFlagInformation] = useState(null);
   const [data, setData] = useState(null);
+  const [mmsi, setMMSI] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isMissing, setIsMissing] = useState(false);
   const [coordsDMS, setCoordsDMS] = useState(null);
@@ -37,6 +38,7 @@ function Station({ alert }) {
         .then((result) => {
           if (result?.data) {
             setData(result.data);
+            setMMSI(result.data.mmsi);
             setStationCountryDescription(
               getCountryDescriptionByCountryCode(result.data.countryCode)
             );
@@ -67,17 +69,7 @@ function Station({ alert }) {
               setHomepageLabel(null);
             }
 
-            if (result.data.latitude != null && result.data.longitude != null) {
-              setCoordsDMS(
-                formatcoords(
-                  result.data.latitude,
-                  result.data.longitude
-                ).format({
-                  latLonSeparator: ", ",
-                  decimalPlaces: 0,
-                })
-              );
-            }
+            setCoords(result.data.latitude, result.data.longitude);
           }
         })
         .catch((error) => {
@@ -95,6 +87,23 @@ function Station({ alert }) {
 
     fetchData();
   }, [stationId]);
+
+  function setCoords(latitude, longitude) {
+    if (latitude != null && longitude != null) {
+      setCoordsDMS(
+        formatcoords(latitude, longitude).format({
+          latLonSeparator: ", ",
+          decimalPlaces: 0,
+        })
+      );
+    }
+  }
+
+  function handleDataUpdated(newData) {
+    if (data != null && data.mmsi && newData != null && newData[data.mmsi]) {
+      setCoords(newData[data.mmsi].latitude, newData[data.mmsi].longitude);
+    }
+  }
 
   return (
     <React.Fragment>
@@ -118,7 +127,8 @@ function Station({ alert }) {
                         title={stationCountryDescription}
                       />
                     )}
-                    <span>Station</span>
+                    {mmsi != null && <span>Roaming station</span>}
+                    {mmsi == null && <span>Station</span>}
                     <span className="icon-text has-text-weight-bold ml-auto ">
                       <span
                         className={
@@ -171,6 +181,14 @@ function Station({ alert }) {
                               </td>
                             </tr>
                           )}
+                          {data.mmsi != null && (
+                            <tr>
+                              <td className="td-station-field has-text-weight-bold">
+                                MMSI
+                              </td>
+                              <td className="">{data.mmsi}</td>
+                            </tr>
+                          )}
                           {coordsDMS != null && (
                             <tr>
                               <td className="td-station-field has-text-weight-bold">
@@ -200,6 +218,7 @@ function Station({ alert }) {
                       <AisMap
                         changeParamsLocation={false}
                         alert={alert}
+                        zoom={8}
                         latitude={
                           data.latitude ||
                           process.env.REACT_APP_MAP_INITIAL_CENTER_LATITUDE
@@ -208,8 +227,9 @@ function Station({ alert }) {
                           data.longitude ||
                           process.env.REACT_APP_MAP_INITIAL_CENTER_LONGITUDE
                         }
-                        zoom={8}
-                        stations={[data]}
+                        dataUpdatedCallback={handleDataUpdated}
+                        followMMSI={mmsi}
+                        stations={mmsi ? null : [data]}
                       />
                     </div>
                   </div>
