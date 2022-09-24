@@ -2,7 +2,7 @@ import "./Station.css";
 
 import React, { useState, useEffect } from "react";
 import Loading from "./Loading";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import {
   getCountryDescriptionByCountryCode,
   getFlagInformationByCountryCode,
@@ -157,6 +157,18 @@ function Station({ alert }) {
                     <div className="card-content">
                       <table className="table table-station-information is-fullwidth is-striped is-bordered">
                         <tbody>
+                          {data.mmsi != null && (
+                            <tr>
+                              <td className="td-station-field has-text-weight-bold">
+                                MMSI
+                              </td>
+                              <td className="">
+                                <Link to={"/vessel/" + data.mmsi}>
+                                  {data.mmsi}
+                                </Link>
+                              </td>
+                            </tr>
+                          )}
                           {data.stationOperatorName != null && (
                             <tr>
                               <td className="td-station-field has-text-weight-bold">
@@ -179,14 +191,6 @@ function Station({ alert }) {
                                   {homepageLabel}
                                 </a>
                               </td>
-                            </tr>
-                          )}
-                          {data.mmsi != null && (
-                            <tr>
-                              <td className="td-station-field has-text-weight-bold">
-                                MMSI
-                              </td>
-                              <td className="">{data.mmsi}</td>
                             </tr>
                           )}
                           {coordsDMS != null && (
