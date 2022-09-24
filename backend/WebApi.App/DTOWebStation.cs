@@ -15,5 +15,5 @@ public class DTOWebStation
     public DateTime? LastMessageUpdated { get; set; }
     public bool Online { get; set; }
     public string? Homepage { get; set; }
-	public uint? MMSI { get; set; }
+    public uint? MMSI { get; set; }
 }

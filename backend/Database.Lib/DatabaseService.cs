@@ -167,12 +167,13 @@ public class DatabaseService : IDatabaseService
                 }
             }
 
-			var stationWithMMSI = context.Stations.SingleOrDefault(x => x.MMSI == dto.mmsi);
+            var stationWithMMSI = context.Stations.SingleOrDefault(x => x.MMSI == dto.mmsi);
 
-			if (stationWithMMSI != null) {
-				stationWithMMSI.Latitude = objectData.latitude;
-				stationWithMMSI.Longitude = objectData.longitude;
-			}
+            if (stationWithMMSI != null)
+            {
+                stationWithMMSI.Latitude = objectData.latitude;
+                stationWithMMSI.Longitude = objectData.longitude;
+            }
 
             if (objectData.StationId != null)
             {
