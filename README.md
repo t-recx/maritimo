@@ -104,6 +104,7 @@ Open [http://localhost](http://localhost) to access the application.
 | [SigmaPlusVO](https://sigma-plus.kz)                                 | Ақтау, Kazakhstan          |
 | [Michael Stutzbach (DO6LSM)](https://wetterstationschlei.de)         | Borgwedel, Germany         |
 | [Stephen Carns](http://www.nauticarazi.com/)                         | Los Angeles, USA           |
+| [Regis Electronics St Lucia](http://www.regiselectronics.com/)       | Gros Islet, St. Lucia      |
 
 ## Special thanks
 
