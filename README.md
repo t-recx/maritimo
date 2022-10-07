@@ -105,6 +105,9 @@ Open [http://localhost](http://localhost) to access the application.
 | [Michael Stutzbach (DO6LSM)](https://wetterstationschlei.de)         | Borgwedel, Germany         |
 | [Stephen Carns](http://www.nauticarazi.com/)                         | Los Angeles, USA           |
 | [Regis Electronics St Lucia](http://www.regiselectronics.com/)       | Gros Islet, St. Lucia      |
+| [Digimap Guernsey](https://www.digimap.gg/)                          | Guernsey                   |
+
+Got a station and would like to help out? Shoot me an email at [hi@joaobruno.xyz](hi@joaobruno.xyz).
 
 ## Special thanks
 
