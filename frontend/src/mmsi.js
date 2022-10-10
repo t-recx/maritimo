@@ -75,6 +75,7 @@ import ge from "./images/flags/ge.svg";
 import gf from "./images/flags/gf.svg";
 import gh from "./images/flags/gh.svg";
 import gi from "./images/flags/gi.svg";
+import gg from "./images/flags/gg.svg";
 import gl from "./images/flags/gl.svg";
 import gm from "./images/flags/gm.svg";
 import gn from "./images/flags/gn.svg";
@@ -225,6 +226,10 @@ import ye from "./images/flags/ye.svg";
 import za from "./images/flags/za.svg";
 import zm from "./images/flags/zm.svg";
 import zw from "./images/flags/zw.svg";
+
+const FlagsByCode = {
+  gg: { img: gg, country: "Guernsey", alt: "Flag of Guernsey" },
+};
 
 const FlagsByMid = {
   201: { img: al, country: "Albania", alt: "Flag of Albania" },
@@ -700,6 +705,10 @@ const FlagsByMid = {
   775: { img: ve, country: "Venezuela", alt: "Flag of Venezuela" },
 };
 
+const CountryDescriptionsByCode = {
+  gg: "Guernsey",
+};
+
 const CountryDescriptionsByMid = {
   201: "Albania",
   202: "Andorra",
@@ -1101,11 +1110,14 @@ function getFlagInformation(mmsi) {
 }
 
 function getCountryDescriptionByCountryCode(countryCode) {
-  return CountryDescriptionsByMid[countryCode];
+  return (
+    CountryDescriptionsByMid[countryCode] ||
+    CountryDescriptionsByCode[countryCode]
+  );
 }
 
 function getFlagInformationByCountryCode(countryCode) {
-  return FlagsByMid[countryCode];
+  return FlagsByMid[countryCode] || FlagsByCode[countryCode];
 }
 
 function getTypeOfObjectDescription(mmsi) {
