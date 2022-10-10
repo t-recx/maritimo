@@ -64,7 +64,9 @@ function shipHasDimensionsAndDirection(
     dimension_to_port != null &&
     dimension_to_starboard != null &&
     dimension_to_stern != null &&
-    true_heading != null
+    true_heading != null &&
+    (dimension_to_bow || 0 + dimension_to_stern || 0) > 0 &&
+    (dimension_to_port || 0 + dimension_to_starboard || 0) > 0
   );
 }
 
