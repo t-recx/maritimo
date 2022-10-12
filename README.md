@@ -106,6 +106,7 @@ Open [http://localhost](http://localhost) to access the application.
 | [Stephen Carns](http://www.nauticarazi.com/)                         | Los Angeles, USA           |
 | [Regis Electronics St Lucia](http://www.regiselectronics.com/)       | Gros Islet, St. Lucia      |
 | [Digimap Guernsey](https://www.digimap.gg/)                          | Guernsey                   |
+| [Dirk Metz (SWLJO43)](https://metz-familie.de/)                      | Wentorf, Germany           |
 
 Got a station and would like to help out? Shoot me an email at [hi@joaobruno.xyz](hi@joaobruno.xyz).
 
