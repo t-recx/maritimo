@@ -107,6 +107,7 @@ Open [http://localhost](http://localhost) to access the application.
 | [Regis Electronics St Lucia](http://www.regiselectronics.com/)       | Gros Islet, St. Lucia      |
 | [Digimap Guernsey](https://www.digimap.gg/)                          | Guernsey                   |
 | [Dirk Metz (SWLJO43)](https://metz-familie.de/)                      | Wentorf, Germany           |
+| [Pedro Almeida (CT7ARQ)](https://www.qrz.com/db/CT7ARQ)              | Esposende, Portugal        |
 
 Got a station and would like to help out? Shoot me an email at [hi@joaobruno.xyz](hi@joaobruno.xyz).
 
