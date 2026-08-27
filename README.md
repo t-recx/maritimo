@@ -1,4 +1,4 @@
-# [Maritimo](https://maritimo.digital/) &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/t-recx/maritimo/blob/main/LICENSE)
+# [Maritimo](https://joaobruno.xyz/projects/maritimo/) &middot; [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/t-recx/maritimo/blob/main/LICENSE)
 
 Maritimo is a set of applications used to decode, persist and display AIS data. It aims to be fast, scalable and easy to extend.
 
